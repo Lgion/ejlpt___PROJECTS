@@ -1,0 +1,78 @@
+Plan de Développement Technique : Architecture d'une Solution d'Apprentissage du Japonais
+
+1. Vision Stratégique et Objectifs du Système
+
+Dans l'écosystème EdTech actuel, la conception d'un outil d'apprentissage du japonais exige un équilibre subtil entre agilité de développement et rigueur académique. En tant qu'architecte, je préconise une approche modulaire s'appuyant sur des API spécialisées pour réduire drastiquement le Time-to-Market tout en garantissant l'intégrité des données linguistiques. L'enjeu est de s'affranchir de la maintenance d'une base de données lexicographique propriétaire — tâche titanesque — pour se concentrer sur l'ingénierie de la valeur : l'interactivité et la rétention.
+
+L'architecture proposée dépasse le simple cadre de la consultation de dictionnaire. En fusionnant la reconnaissance d'écriture manuscrite et une gestion de métadonnées structurées (niveaux JLPT, Kanken, codes SKIP), nous transformons l'expérience utilisateur. Contrairement aux méthodes traditionnelles passives, ce système sollicite la mémoire procédurale de l'apprenant, essentielle pour la maîtrise des 2 136 Jōyō Kanji. Cette sélection technologique rigoureuse est le fondement d'un système capable de répondre aux exigences de certifications internationales tout en offrant une interface fluide et réactive.
+
+2. Écosystème des API et Indexation des Données Linguistiques
+
+Le socle de données repose sur une stratégie de fédération d'API complétée par une persistance locale pour optimiser les performances de recherche.
+
+Comparaison des Sources de Données et Services
+
+Ressource	Type	Rôle Stratégique & Métadonnées
+kanjiapi.dev	API JSON	Source principale pour les lectures (On/Kun) et définitions via une structure REST moderne.
+Kanji Alive	SDK / RapidAPI	Tutoriels multimédias et exemples d'usage contextualisés pour chaque caractère.
+WaniKani API	REST (v2)	Synchronisation du progrès utilisateur via Personal Access Tokens et moteur SRS.
+scriptin/kanji-frequency	Data Repository	Données de fréquence d'usage pour prioriser l'apprentissage selon le contexte réel.
+
+Stratégie d'Enrichissement et Indexation
+
+Pour offrir une recherche avancée, l'architecture intègre deux paramètres critiques issus du contexte source :
+
+* Système SKIP (System of Kanji Indexing by Patterns) : Contrairement à une recherche par radicaux classique, l'implémentation du codage SKIP permet une identification géométrique rapide du kanji par l'utilisateur, facilitant l'accès aux données de Kanjipedia et Jisho.org.
+* Persistance et Caching : Afin d'éviter les limitations de débit (rate limiting) des API tierces, une base de données SQL locale (type PostgreSQL) sera utilisée pour mettre en cache les métadonnées de kanjiapi.dev. Cela permet des requêtes complexes combinant les niveaux JLPT N2, les grades Kanken (production native) et les rangs de fréquence.
+
+3. Moteur de Saisie et Reconnaissance d'Écriture
+
+L'interactivité repose sur une interface dual-mode : saisie textuelle dynamique et tracé manuscrit.
+
+Pile Technologique de Saisie
+
+* WanaKana.js : Centralise la conversion Romaji/Kana en temps réel. Sa capacité à détecter l'état de l'IME (Input Method Editor) est cruciale pour adapter les champs de saisie sans friction.
+* Handwriting.js (Bridge Google IME) : Ce module capture les coordonnées vectorielles du tracé utilisateur pour les soumettre au service de reconnaissance de Google. C'est le différenciateur clé : l'écriture favorise la rétention par rapport à la simple reconnaissance visuelle.
+* Kuroshiro & Analyse Morphologique : L'implémentation de kuroshiro pour la conversion et les furigana nécessite impérativement un analyseur morphologique. Nous intégrerons kuromoji.js côté client ou un backend MeCab pour assurer une segmentation grammaticale précise.
+
+L'objectif est d'offrir une validation immédiate du tracé, transformant l'acte d'écrire en un feedback pédagogique instantané.
+
+4. Visualisation Graphique et Données Vectorielles
+
+La précision graphique est assurée par l'exploitation des données atomiques des caractères japonais.
+
+Ingénierie du Rendu Visuel
+
+* Exploitation des fichiers KanjiVG : Le système utilise les fichiers SVG de KanjiVG comme "Source of Truth". Chaque trait est identifié individuellement, permettant non seulement le rendu, mais aussi l'analyse structurelle.
+* Animation et Validation (animCJK) : L'intégration de animCJK permet de visualiser l'ordre des traits (Stroke Order).
+* Algorithme de Collision : Une innovation majeure consiste à comparer les coordonnées capturées par handwriting.js avec les chemins SVG de KanjiVG. Cela permet de créer un système de "Hot/Cold" feedback, validant en temps réel si l'utilisateur respecte le sens et la direction du tracé.
+* Visualisation de la Maîtrise : L'implémentation d'une Kanji Heatmap (inspirée de PikaPikaGems) permet de représenter spatialement la progression de l'utilisateur, colorant les caractères selon leur fréquence d'usage et leur niveau de maîtrise SRS.
+
+5. Synthèse de l'Architecture Logicielle Proposée
+
+L'architecture est structurée pour séparer strictement la logique de présentation, le traitement linguistique et la synchronisation des données.
+
+Flux de Données Chronologique (Action de Révision)
+
+1. Input : L'utilisateur trace un kanji sur le composant Canvas (handwriting.js).
+2. Validation : Les coordonnées sont comparées aux données vectorielles (KanjiVG) pour valider l'ordre des traits, tandis qu'un appel POST est envoyé au service Google IME via le bridge.
+3. Identification : Le candidat retenu est croisé avec l'index local (Code SKIP / ID Unicode).
+4. Enrichissement : Le système récupère en cache local (ou via kanjiapi.dev) les métadonnées : niveau JLPT N2, fréquence d'usage et exemples de phrases.
+5. Persistance : En cas de succès, le statut SRS est mis à jour. Un webhook ou un appel API vers le backend (inspiré de la structure Django de Kaniwani kw-backend) synchronise le progrès avec le profil WaniKani de l'utilisateur.
+
+Formats d'Échange
+
+* Données : JSON pour les métadonnées et les logs de progression.
+* Graphisme : SVG pour tous les rendus de caractères afin de garantir une netteté absolue sur tous les écrans.
+
+6. Conclusion et Recommandations d'Implémentation
+
+Cette stratégie technique positionne la solution comme une plateforme haut de gamme, capable de rivaliser avec des outils comme iKnow! grâce à sa précision chirurgicale. En exploitant des indexations avancées comme le code SKIP et les données de fréquence, nous offrons une granularité d'apprentissage supérieure aux standards du marché.
+
+Les trois piliers du succès technique :
+
+* Interopérabilité des API : Une synchronisation robuste entre les métadonnées linguistiques statiques et le flux dynamique des progrès utilisateur (SRS).
+* Fidélité Graphique : L'utilisation de données vectorielles pour l'auto-correction et la visualisation de la progression (Heatmap).
+* Dualité de Saisie : Une ergonomie parfaite entre la saisie clavier (WanaKana) et l'écriture manuscrite pour couvrir tous les cas d'usage, de la révision rapide à l'étude approfondie du Kanken.
+
+Pour le prototypage (MVP), je recommande de finaliser d'abord l'intégration de la couche de persistance locale pour les données de kanjiapi.dev et KanjiVG, assurant ainsi une base de recherche ultra-performante avant de déployer les modules d'animation complexes.

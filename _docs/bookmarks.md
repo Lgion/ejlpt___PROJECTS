@@ -1,0 +1,200 @@
+# Bookmarks
+
+- **Barre de favoris**
+  - [fb ||| 1&Bi...](https://www.facebook.com/)
+  - [](https://cloud.mongodb.com/v2/6849d14c399dd4226889f6ab#/metrics/replicaSet/6849d1de6249013adad7b56b/explorer/test/datas/find)
+  - **eJLPT**
+    - [atesoe/atesoe.github.io: A list of useful resources for learning Japanese.](https://github.com/atesoe/atesoe.github.io)
+    - [École Administration](http://localhost:3000/eleves/68b2cd5ec65808cbe9ff71b7)
+    - [daku-ten handaku-ten - Recherche Google](https://www.google.com/search?q=daku-ten+handaku-ten&sca_esv=0bb3cdacdbccbcf5&ei=V9BKZ_LmO6qlkdUPiqGjiAM&ved=0ahUKEwiy7smM1YOKAxWqUqQEHYrQCDEQ4dUDCA8&uact=5&oq=daku-ten+handaku-ten&gs_lp=Egxnd3Mtd2l6LXNlcnAiFGRha3UtdGVuIGhhbmRha3UtdGVuMgoQABiwAxjWBBhHMgoQABiwAxjWBBhHMgoQABiwAxjWBBhHMgoQABiwAxjWBBhHSPcFUBVYuQNwAXgBkAEAmAEAoAEAqgEAuAEDyAEA-AEB-AECmAIBoAIHmAMAiAYBkAYEkgcBMaAHAA&sclient=gws-wiz-serp)
+    - **libs**
+      - **wanakana**
+        - [wanakana - npm](https://www.npmjs.com/package/wanakana)
+        - [WanaKana.js](https://wanakana.com/)
+        - [Global - Documentation](https://wanakana.com/docs/global.html)
+      - [ChenYuHo/handwriting.js: A simple API access to the handwriting recognition service of Google IME](https://github.com/ChenYuHo/handwriting.js?tab=readme-ov-file)
+    - **APIs**
+      - **kanjiapi**
+        - [kanjiapi: Kanji data, accessible as a modern JSON API](https://kanjiapi.dev/#!/documentation)
+        - [kanjiapi.dev/v1/kanji/車](https://kanjiapi.dev/v1/kanji/%E8%BB%8A)
+      - **kanjialive**
+        - [Kanji alive Web Application](https://app.kanjialive.com/api/docs)
+        - [kanji alive APIs (Free Tutorials, SDK Documentation & Pricing)](https://rapidapi.com/search?term=kanji%20alive&sortBy=ByRelevance)
+        - [Learn to read and write Japanese kanji](https://rapidapi.com/KanjiAlive/api/learn-to-read-and-write-japanese-kanji/playground/55c741bce4b011e6e59416b0)
+        - [kanjialive-api.p.rapidapi.com/api/public/kanji/訪?rapidapi-key=c13210fa8emsh56f9209d7f8ed26p10e7e3jsncef3dc6bfd66](https://kanjialive-api.p.rapidapi.com/api/public/kanji/%E8%A8%AA?rapidapi-key=c13210fa8emsh56f9209d7f8ed26p10e7e3jsncef3dc6bfd66)
+      - **wanikani**
+        - [Update a Study Material – WaniKani API Reference](https://docs.api.wanikani.com/20170710/#update-a-study-material)
+        - [WaniKani / Settings / Personal Access Tokens](https://www.wanikani.com/settings/personal_access_tokens)
+        - [unofficial-wanikani - npm](https://www.npmjs.com/package/unofficial-wanikani)
+    - **repos - pkg**
+      - **kaniwani (KN)**
+        - [Kaniwani/kw-backend: Server, Database, and Backend functionality for KaniWani](https://github.com/Kaniwani/kw-backend)
+      - [Kaniwani/kw-frontend: UI and Client functionality for KaniWani](https://github.com/Kaniwani/kw-frontend)
+      - [gabor-kovacs/the-kanji-map](https://github.com/gabor-kovacs/the-kanji-map)
+    - **Grammaire**
+      - [Japanese Grammar Guide (PDF)](http://www.guidetojapanese.org/grammar_guide.pdf)
+      - [Fiche sur l'emploi de formes grammaticales en japonais](https://www.labouret.net/japonais/formes/)
+    - **RESOURCES**
+      - **PDFs**
+        - [scriptin/kanji-frequency: Kanji usage frequency data collected from various sources](https://github.com/scriptin/kanji-frequency/tree/master)
+        - [漢字表ポスターのダウンロード | いちまるとはじめよう！わくわく漢検 | 日本漢字能力検定](https://www.kanken.or.jp/kanken/dl10/)
+      - [kanjivg/kanji at master · KanjiVG/kanjivg](https://github.com/KanjiVG/kanjivg/tree/master/kanji)
+      - [Kanji radicals](https://sylhare.github.io/kanji/graph/)
+      - [parsimonhi/animCJK: Draw animated Japanese characters (Kanji and Kana), Korean characters (Hanja) and Chinese characters (Hanzi) in correct stroke order using svg, free open-source code.](https://github.com/parsimonhi/animCJK?tab=readme-ov-file)
+      - [Jisho.org: Japanese Dictionary](https://jisho.org/)
+      - [漢字ペディア　漢字や言葉の意味を調べてみよう！](https://www.kanjipedia.jp/)
+      - [Handwritten kanji search at sljfaq.org](https://kanji.sljfaq.org/draw.html)
+    - **training**
+      - [Kanji Trainer](https://kanji-trainer.org/learn.php?zum_test=1&ln_neu=en)
+      - [Welcome to Marshall’s Site! | Marshall's Site](https://marshallyin.com/welcome/)
+      - [Online Self Level Check | MLC Japanese Language School in Tokyo](https://www.mlcjapanese.co.jp/level_check.html)
+      - [MLC Japanese Language School in Tokyo | Japanese lessons for English speakers](https://www.mlcjapanese.co.jp/#Materials)
+      - [N2の文法クイズ No.1 | MLC Japanese Language School in Tokyo](https://www.mlcjapanese.co.jp/n2_01_05.html)
+      - [JLPT N2 | MLC Japanese Language School in Tokyo](https://www.mlcjapanese.co.jp/n2.html)
+      - [JLPT past papers](https://www.tanos.co.uk/jlpt/skills/pastpapers/)
+      - [J-LEARNING.COM : Learn Japanese On Line](https://www.nihongo.fr/main.cgi?lang=en&page=kanji_i)
+      - [アニメ・マンガの日本語 Japanese in Anime & Manga](https://anime-manga.jp/fr/)
+      - [受検級の目安チェック｜漢検（日本漢字能力検定）](https://www.kanken.or.jp/kanken/grades/meyasucheck/)
+      - [漢検受検級の目安チェック｜受検級について｜漢検（日本漢字能力検定）](https://www.kanken.or.jp/kanken/grades/check/)
+      - [問題例｜漢検（日本漢字能力検定）](https://www.kanken.or.jp/kanken/grades/sample/)
+      - [各級の概要（出題内容・審査基準・合格基準・採点基準）｜漢検（日本漢字能力検定）](https://www.kanken.or.jp/kanken/grades/overview/)
+      - [【漢検】漢字検定ＷＥＢ問題集](https://kanken.jitenon.jp/)
+    - **appToTry**
+      - [iKnow! by DMM Eikaiwa - Learn faster and remember longer - iKnow! - iKnow!](https://iknow.jp/)
+      - [FredericaBernkastel/WaniKani: Ultimate Kanji learning experience ☐☐☐](https://github.com/FredericaBernkastel/WaniKani)
+      - [WaniKani / Dashboard](https://www.wanikani.com/)
+      - [VocabBubble - Desktop vocabulary trainer](https://www.tanos.co.uk/jlpt/skills/vocab/vocabbubble/)
+    - **gooWebsiteResource**
+      - [Kanji Heatmap](https://kanjiheatmap.com/?)
+      - [PikaPikaGems/kanji-heatmap: More common kanji are in brighter colors, rarer ones are duller. Visualize Kanji frequency rankings from 17+ sources.](https://github.com/PikaPikaGems/kanji-heatmap)
+      - [Kanji usage frequency](https://scriptin.github.io/kanji-frequency/)
+      - [Kanji radicals](https://sylhare.github.io/kanji/)
+      - [JLPT-Go Apprendre le japonais et préparer le JLPT](https://www.jlptgo.com/index.php)
+      - [JLPT Level N2 Resources - Free vocabulary lists and MP3 sound files](https://www.tanos.co.uk/jlpt/jlpt2/)
+      - [JLPT Skills](https://www.tanos.co.uk/jlpt/skills/)
+      - [Takoboto | Japanese dictionary and Nihongo learning tool](https://takoboto.jp/)
+      - [JLPT-Go Apprendre le japonais et préparer le JLPT](https://www.jlptgo.com/index.php)
+      - [Guide to iKnow! - iKnow!](https://iknow.jp/tour)
+      - [図 | The Kanji Map](https://thekanjimap.com/%E5%9B%B3)
+    - **infos**
+      - [Kyōiku kanji - Wikipedia](https://en.wikipedia.org/wiki/Ky%C5%8Diku_kanji)
+      - [The Kodansha Kanji Learner's Dictionary - Wikipedia](https://en.wikipedia.org/wiki/The_Kodansha_Kanji_Learner%27s_Dictionary)
+    - **courses**
+      - [Cours de la langue japonaise, cours de japonais à Paris - Institut japonais new](https://www.institutjaponais.com/)
+    - **apps**
+      - [Japanese Dictionary Takoboto – Applications sur Google Play](https://play.google.com/store/apps/details?id=jp.takoboto)
+      - [NIHONGO eな - Portal for Learning Japanese](https://nihongo-e-na.com/android/eng/)
+      - [いちまると旅しよう！　しりもじ漢検 – Applications sur Google Play](https://play.google.com/store/apps/details?id=jp.or.kanken.shirikan.free)
+      - [いちまると旅しよう！しりもじ漢検 | アプリのお部屋 | いちまるスペシャルサイト | 日本漢字能力検定](https://www.kanken.or.jp/kanken/book_ichimaru/app_shirimoji.html)
+      - [漢検対策ならコレ！協会公式過去問アプリ 漢検スタート – Applications sur Google Play](https://play.google.com/store/apps/details?id=jp.co.imagineer.kanken.start)
+      - [漢検　オフィシャル商品 | 漢検の概要 | 日本漢字能力検定](https://www.kanken.or.jp/kanken/outline/official.html)
+      - [物書堂 (iOS only)](https://www.monokakido.jp/)
+    - **Tools**
+      - [川 | The Kanji Map](https://thekanjimap.com/%E5%B7%9D)
+      - [gabor-kovacs/the-kanji-map](https://github.com/gabor-kovacs/the-kanji-map)
+      - **thakanjimap**
+        - [benwilson34/WK-kanji-map: Show kanji you've learned on WaniKani on a map graphic](https://github.com/benwilson34/WK-kanji-map)
+        - [The Kanji Map](https://thekanjimap.com/?k=%E5%85%B6)
+        - [I made a visual kanji database to make learning easier. Enjoy! : LearnJapanese](https://www.reddit.com/r/LearnJapanese/comments/6gpeol/i_made_a_visual_kanji_database_to_make_learning/)
+      - [Cascading kanji view 図: 図 Kanji Detail - Kanshudo](https://www.kanshudo.com/kanji/%E5%9B%B3)
+      - [kuroshiro - npm](https://www.npmjs.com/package/kuroshiro)
+      - [Input kanji by codes](https://kanji.sljfaq.org/codes.html)
+    - **TV**
+      - [Japanese TV - AQ Stream](https://aqstream.com/jp/)
+      - [KeyHoleTV: Watch Live Japanese TV Online!](https://xorsyst.com/japan/watch-japanese-tv-online/)
+    - **video**
+      - [高校講座](http://www.nhk.or.jp/kokokoza/)
+      - [テレ朝NEWS｜テレビ朝日のニュースサイト](https://news.tv-asahi.co.jp/)
+      - **YTchannels**
+        - [アニプレックス チャンネル - YouTube](https://www.youtube.com/@aniplex)
+    - **news**
+    - **radio**
+      - [Japanese radio stations](https://www.tanos.co.uk/jlpt/skills/listening/japaneseradio/)
+      - [簡単エントリー方法 | J-WAVE LISTEN+ | リッスン・プラス](https://www.j-wave.co.jp/jlc/listenplus/howto.html)
+      - [J-WAVEアプリ – Applications sur Google Play](https://play.google.com/store/apps/details?id=jp.co.jwave.android.Jme)
+      - [サイマルラジオ](https://www.simulradio.info/)
+    - [shuukatsu-jumpstart_jp.pdf](https://shuukatsu-jumpstart.cegloc.tsukuba.ac.jp/assets/pdf/shuukatsu-jumpstart_jp.pdf)
+    - **?**
+      - [別表　学年別漢字配当表：文部科学省](https://www.mext.go.jp/a_menu/shotou/new-cs/youryou/syo/koku/001.htm)
+      - [人工知能（ＡＩ）による漢字・日本語学習研究 | 事業・活動情報 | 公益財団法人 日本漢字能力検定協会](https://www.kanken.or.jp/project/investigation/project/ai.html)
+      - [モジナビ | みんなのインターネット漢和辞典](https://mojinavi.com/)
+      - [漢字辞典オンライン](https://kanji.jitenon.jp/)
+      - [かくなびトップページ|【かくなび】](https://kaku-navi.com/)
+      - [vasturiano/three-spritetext: A sprite based text component for ThreeJS](https://github.com/vasturiano/three-spritetext)
+    - **débutants**
+      - [MARUGOTO-NO-KOTOBA](https://words.marugotoweb.jp/top.php?lang=fr)
+      - [Le japonais en douceur, audio gratuit & textes des leçons | NHK WORLD RADIO JAPAN](https://www3.nhk.or.jp/nhkworld/lesson/french/)
+      - [J-LEARNING.COM : Learn Japanese On Line](https://j-learning.com/)
+    - [「エリンが挑戦！にほんごできます。」コンテンツライブラリー | 国際交流基金](https://www.erin.jpf.go.jp/)
+    - [J-LEARNING.COM : Learn Japanese On Line](https://www.nihongo.fr/main.cgi?lang=en&page=documents)
+    - [NIHONGO eな - Portal for Learning Japanese](https://nihongo-e-na.com/eng/)
+    - [NIHONGO eな - Portal for Learning Japanese](https://nihongo-e-na.com/eng/site/tag/Tool/keyword/Advanced/)
+    - [différents types d'exercices possible selon niveau (badges jaunes): 各級の概要（出題内容・審査基準・合格基準・採点基準）｜漢検（日本漢字能力検定）](https://www.kanken.or.jp/kanken/grades/overview/)
+    - **_**
+      - [【プライベート】レッスンの申し込み](https://japasuta.thinkific.com/courses/private-lesson)
+      - [Vocabulaire pour le niveau 4 du test d'aptitude en japonais](http://www.labouret.net/japonais/vocabulaire.html)
+      - [hi.cyri...|||1&Bi...: BCP DE JEUX ET D'OUTILS, MAIS MAL PRÉSENTÉ   Learn Japanese fast and effectively - Kanshudo](https://www.kanshudo.com/)
+      - [Satori Reader | Home](https://www.satorireader.com/)
+      - [Stroke Order Diagram for 雨 [ame] - Tanoshii Japanese](https://www.tanoshiijapanese.com/dictionary/stroke_order_details.cfm?entry_id=16180)
+      - [Apprenez plus de 150 langues étrangères avec des enseignants professionnels en ligne](https://www.italki.com/)
+      - [WaniKani, a kanji learning application by Tofugu](https://www.wanikani.com/)
+      - [Private Lessons | Nihongo-Pro.com](https://www.nihongo-pro.com/private-lessons?level=jlptN2#schedule)
+      - [日本語学習ウェブサイト「ひろがる」](https://hirogaru-nihongo.jp/en/)
+      - [La vie et la culture - La nourriture : NIPPONIA](https://web-japan.org/nipponia/archives/fr/life_culture/food.html)
+    - **knowledge**
+      - [Guide de Grammaire Japonaise de LingQ](https://www.lingq.com/fr/grammar-resource/japanese/)
+      - [SKIP: Dico des kanji japonais - Codage des kanji](http://kanji.free.fr/docs.php?doc=encoding&page=4)
+      - [SKIP: Dico des kanji japonais - Recherche par code SKIP](http://kanji.free.fr/skip.php)
+    - **unicode**
+      - [Dico des kanji japonais - Codage des kanji](http://kanji.free.fr/docs.php?doc=encoding)
+      - [Unicode Kanji Code Table](http://www.rikai.com/library/kanjitables/kanji_codes.unicode.shtml)
+      - [Bloc Unicode «Clés chinoises K’ang-hsi»](https://www.compart.com/fr/unicode/block/U+2F00)
+      - [Écritures (ISO 15924) «katakana»](https://www.compart.com/fr/unicode/scripts/Kana)
+      - [Écritures (ISO 15924) «hiragana»](https://www.compart.com/fr/unicode/scripts/Hira)
+    - **databse - lists**
+      - [List of kanji by concept - Search results - Wikipedia](https://en.wikipedia.org/w/index.php?fulltext=1&search=List+of+kanji+by+concept&title=Special%3ASearch&ns0=1)
+      - [Kanji database, perform SQL queries](https://www.kanjidatabase.com/sql.php)
+    - **grammar**
+      - [The Japanese Grammar Index](https://www.tofugu.com/japanese-grammar/)
+      - [Japanese Sentence and Clause Structure](https://www.tofugu.com/japanese-grammar/sentences-and-clauses/)
+    - **JLPT**
+      - [jlpt](https://jlptstudy.net/N2/)
+      - [JLPT – SakuraMani](https://www.sakuramani.com/category/jlpt/)
+    - **reading**
+      - [Journaux en ligne](http://nippongo.free.fr/journaux.html)
+    - **sing-song**
+      - [Super Simple 日本語 - 童謡とこどもの歌 - YouTube](https://www.youtube.com/user/supersimplejapanese/videos)
+    - **kanjidamage:   plein de page existent représentant les kanji de différentes manières.....just search them up man**
+      - [Radicals | KANJIDAMAGE](http://www.kanjidamage.com/radicals)
+      - [Kanji Listing | KANJIDAMAGE](https://www.kanjidamage.com/kanji)
+      - [Tags | KANJIDAMAGE](https://www.kanjidamage.com/tags)
+    - **ezoe methode**
+      - [La méthode Ezoe | Shinjuku Japanese Language Institute - SNG](https://www.sng.ac.jp/fr/about/ezoe-method.html)
+      - [methode ezoe - Recherche Google](https://www.google.com/search?q=methode+ezoe&oq=methode+ezoe&aqs=chrome..69i57.2753j0j7&sourceid=chrome&ie=UTF-8)
+    - **bunka.jp**
+      - [explications文化庁 | 国語施策・日本語教育 | 国語施策情報 | 内閣告示・内閣訓令](https://www.bunka.go.jp/kokugo_nihongo/sisaku/joho/joho/kijun/naikaku/index.html)
+      - [文化庁 | 国語施策・日本語教育 | 国語施策情報 | 常用漢字表の音訓索引](https://www.bunka.go.jp/kokugo_nihongo/sisaku/joho/joho/kijun/naikaku/kanji/joyokanjisakuin/index.html#pagetop)
+    - **API**
+      - [https://jisho.org/api/v1/search/words?keyword=好](https://jisho.org/api/v1/search/words?keyword=%E5%A5%BD)
+      - [kanjiapi: Kanji data, accessible as a modern JSON API](https://kanjiapi.dev/#!/documentation)
+      - **kanjialive**
+        - [Kanji alive Web Application](https://app.kanjialive.com/api/docs)
+        - [Learn to read and write Japanese kanji API Documentation (KanjiAlive) | RapidAPI](https://rapidapi.com/KanjiAlive/api/learn-to-read-and-write-japanese-kanji)
+      - **wanikani**
+        - [Introduction – WaniKani API Reference](https://docs.api.wanikani.com/20170710/)
+        - [WaniKani — api](https://www.wanikani.com/settings/personal_access_tokens)
+      - [Jibiki | Japanese - English dictionary](https://jibiki.app/docs)
+      - **appsToTry**
+    - **genkiMethod**
+      - [Genki Exercises - 2nd Edition | Genki Study Resources](https://sethclydesdale.github.io/genki-study-resources/)
+      - [Genki-Online Le site officiel de GENKI : Méthode intégrée de japonais débutant (Troisième édition)](https://genki3.japantimes.co.jp/fr/)
+      - [Grammar Index | Genki Study Resources](https://sethclydesdale.github.io/genki-study-resources/lessons-3rd/appendix/grammar-index/)
+    - [Kanji Koohii](https://kanji.koohii.com/)
+    - [Tatoeba : recueil de phrases et de traductions](https://tatoeba.org/fr/)
+    - [hi.cyr....|||bigc....: WaniKani / Dashboard](https://www.wanikani.com/dashboard)
+    - [The Kodansha Kanji Learner's Dictionary](https://kodansha.us/product/the-kodansha-kanji-learners-dictionary/)
+    - [Tofugu — A Japanese Culture & Language Blog](https://www.tofugu.com/)
+    - [14 - Review manga : Super Radical Gag Family (feat. Runo) - YouTube](https://www.youtube.com/watch?v=QFHZfchrYe8)
+    - [japanophone - YouTube](https://www.youtube.com/@japanophone9792)
+    - [jlpt listening - YouTube](https://www.youtube.com/results?search_query=jlpt+listening)
+    - [Guide to iKnow! - iKnow!](https://iknow.jp/tour)

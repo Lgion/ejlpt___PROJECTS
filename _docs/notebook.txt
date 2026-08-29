@@ -1,0 +1,37 @@
+Partie 1 : Spécifications Fonctionnelles
+Introduction et Objectifs d’Apprentissage : Définition de la cible (étudiants du JLPT N5 à N1) et des objectifs de l’application.
+Module de Lecture Assistée (Furigana Évolutifs) : Système d’affichage des Furigana s’adaptant dynamiquement au niveau JLPT cible de l'utilisateur (masquage des lectures acquises, affichage des lectures inconnues)
+.
+Module de Traduction Multi-Échelles : Bac à sable permettant la traduction par mot, par phrase (avec exemples contextuels) et par paragraphe entier
+.
+L'Arbre de Filiation des Kanji (Cascading Kanji Tree) : Visualisation interactive permettant de décomposer un kanji complexe en radicaux de base et de voir sa filiation conceptuelle (quelles clés le composent et quels kanji plus complexes en découlent)
+.
+Parcours Méthodologiques (Genki & Ezoe) :
+Intégration des leçons et de l’index grammatical de la méthode Genki
+.
+Représentation visuelle de la structure des phrases selon la méthode Ezoe (utilisation de codes couleurs et de blocs pour identifier les particules, les verbes, etc.)
+.
+Hub d'Immersion Multimédia : Agrégateur de playlists YouTube d'entraînement à l'écoute, de flux TV/Radio en direct et de podcasts de la NHK pour la compréhension orale
+.
+Moteur d'Évaluation Active : Exercices d'écriture manuscrite et de saisie phonétique avec retour visuel immédiat
+.
+Partie 2 : Spécifications Techniques
+Architecture logicielle globale : Schéma d’intégration client/serveur, utilisation de Web Components et gestion des états locaux.
+Spécifications d'intégration des API & Librairies (Source Mapping) :
+Reconnaissance et saisie : handwriting.js (Google IME API)
+ et WanaKana.js (conversion Romaji/Kana)
+.
+Analyse linguistique et rendu : kuroshiro (analyseur morphologique pour les Furigana)
+ et animCJK / KanjiVG (génération de SVG animés pour l'ordre des traits)
+.
+Données lexicales et traduction : API de Jisho.org
+, kanjiapi.dev
+, Kanji Alive
+, et base de phrases de Tatoeba
+.
+Suivi de la progression (SRS) : API de WaniKani
+ et intégration de cartes visuelles (WK-kanji-map, the-kanji-map, kanji-heatmap)
+.
+Flux de données et interopérabilité : Protocoles d'échange de données pour les cours de la méthode Genki (indexation des leçons de Seth Clydesdale
+) et la gestion des flux TV/Radio (AQ Stream, SimulRadio, NHK)
+.

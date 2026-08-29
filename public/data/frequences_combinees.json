@@ -1,0 +1,21 @@
+{
+  "description": "Matrice de fréquences combinées multi-corpus pour eJLPT",
+  "corpora_included": [
+    "aozora",
+    "news",
+    "twitter",
+    "wikipedia",
+    "innocent_fiction"
+  ],
+  "total_kanji": 0,
+  "schema": {
+    "kanji": "string",
+    "aozora": "integer",
+    "news": "integer",
+    "twitter": "integer",
+    "wikipedia": "integer",
+    "innocent_rank": "integer",
+    "innocent_count": "integer"
+  },
+  "data": []
+}

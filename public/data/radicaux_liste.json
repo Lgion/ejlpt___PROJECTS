@@ -1,0 +1,2260 @@
+{
+  "description": "Référentiel des 214 radicaux traditionnels japonais (Kangxi)",
+  "total_radicals": 321,
+  "schema": {
+    "strokes": "integer",
+    "meaning": "string",
+    "reading_j": "string",
+    "reading_r": "string",
+    "position_j": "string"
+  },
+  "data": {
+    "⼀": {
+      "strokes": 1,
+      "meaning": "one, horizontal stroke",
+      "reading_j": "いち",
+      "reading_r": "ichi",
+      "position_j": ""
+    },
+    "⼁": {
+      "strokes": 1,
+      "meaning": "vertical stroke",
+      "reading_j": "たてぼう",
+      "reading_r": "tatebou",
+      "position_j": ""
+    },
+    "⼂": {
+      "strokes": 1,
+      "meaning": "dot",
+      "reading_j": "てん",
+      "reading_r": "ten",
+      "position_j": ""
+    },
+    "⼃": {
+      "strokes": 1,
+      "meaning": "diagonal sweeping stroke",
+      "reading_j": "の",
+      "reading_r": "no",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 1,
+      "meaning": "diagonal sweeping stroke",
+      "reading_j": "のかんむり",
+      "reading_r": "nokanmuri",
+      "position_j": "かんむり"
+    },
+    "⼄": {
+      "strokes": 1,
+      "meaning": "the second",
+      "reading_j": "おつ",
+      "reading_r": "otsu",
+      "position_j": ""
+    },
+    "⺃": {
+      "strokes": 1,
+      "meaning": "the second",
+      "reading_j": "おつ",
+      "reading_r": "otsu",
+      "position_j": ""
+    },
+    "⼅": {
+      "strokes": 1,
+      "meaning": "vertical stroke with a hook",
+      "reading_j": "はねぼう",
+      "reading_r": "hanebou",
+      "position_j": ""
+    },
+    "⼆": {
+      "strokes": 2,
+      "meaning": "two",
+      "reading_j": "に",
+      "reading_r": "ni",
+      "position_j": ""
+    },
+    "⼇": {
+      "strokes": 2,
+      "meaning": "lid, top",
+      "reading_j": "なべぶた",
+      "reading_r": "nabebuta",
+      "position_j": "かんむり"
+    },
+    "⼈": {
+      "strokes": 2,
+      "meaning": "person",
+      "reading_j": "ひと",
+      "reading_r": "hito",
+      "position_j": ""
+    },
+    "⺅": {
+      "strokes": 2,
+      "meaning": "person",
+      "reading_j": "にんべん",
+      "reading_r": "ninben",
+      "position_j": "へん"
+    },
+    "𠆢": {
+      "strokes": 2,
+      "meaning": "person",
+      "reading_j": "ひとやね",
+      "reading_r": "hitoyane",
+      "position_j": "かんむり"
+    },
+    "⼉": {
+      "strokes": 2,
+      "meaning": "human legs",
+      "reading_j": "ひとあし",
+      "reading_r": "hitoashi",
+      "position_j": "あし"
+    },
+    "⼊": {
+      "strokes": 2,
+      "meaning": "to enter",
+      "reading_j": "いる",
+      "reading_r": "iru",
+      "position_j": ""
+    },
+    "⼋": {
+      "strokes": 2,
+      "meaning": "eight",
+      "reading_j": "はち",
+      "reading_r": "hachi",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 2,
+      "meaning": "eight",
+      "reading_j": "はちがしら",
+      "reading_r": "hachigashira",
+      "position_j": ""
+    },
+    "⼌": {
+      "strokes": 2,
+      "meaning": "to enclose",
+      "reading_j": "けいがまえ",
+      "reading_r": "keigamae",
+      "position_j": "かまえ, けいがまえ"
+    },
+    "⼍": {
+      "strokes": 2,
+      "meaning": "cover, crown",
+      "reading_j": "わかんむり",
+      "reading_r": "wakanmuri",
+      "position_j": "かんむり"
+    },
+    "⼎": {
+      "strokes": 2,
+      "meaning": "ice",
+      "reading_j": "にすい",
+      "reading_r": "nisui",
+      "position_j": "へん"
+    },
+    "⼏": {
+      "strokes": 2,
+      "meaning": "table",
+      "reading_j": "きにょう",
+      "reading_r": "kinyou",
+      "position_j": "つくり"
+    },
+    "⺇": {
+      "strokes": 2,
+      "meaning": "wind",
+      "reading_j": "かぜかんむり",
+      "reading_r": "kazekanmuri",
+      "position_j": "かんむり"
+    },
+    "⼐": {
+      "strokes": 2,
+      "meaning": "container, open box",
+      "reading_j": "かんにょう",
+      "reading_r": "kannyou",
+      "position_j": "にょう"
+    },
+    "⼑": {
+      "strokes": 2,
+      "meaning": "knife, sword",
+      "reading_j": "かたな",
+      "reading_r": "katana",
+      "position_j": ""
+    },
+    "⺉": {
+      "strokes": 2,
+      "meaning": "knife, sword",
+      "reading_j": "りっとう",
+      "reading_r": "rittou",
+      "position_j": "つくり"
+    },
+    "⼒": {
+      "strokes": 2,
+      "meaning": "power",
+      "reading_j": "ちから",
+      "reading_r": "chikara",
+      "position_j": ""
+    },
+    "⼓": {
+      "strokes": 2,
+      "meaning": "to wrap",
+      "reading_j": "つつみがまえ",
+      "reading_r": "tsutsumigamae",
+      "position_j": "かまえ, つつみがまえ"
+    },
+    "⼔": {
+      "strokes": 2,
+      "meaning": "spoon",
+      "reading_j": "さじ",
+      "reading_r": "saji",
+      "position_j": "つくり"
+    },
+    "⼕": {
+      "strokes": 2,
+      "meaning": "box",
+      "reading_j": "はこがまえ",
+      "reading_r": "hakogamae",
+      "position_j": "かまえ, はこがまえ"
+    },
+    "⼖": {
+      "strokes": 2,
+      "meaning": "to conceal, hide",
+      "reading_j": "かくしがまえ",
+      "reading_r": "kakushigamae",
+      "position_j": "かまえ, はこがまえ"
+    },
+    "⼗": {
+      "strokes": 2,
+      "meaning": "ten",
+      "reading_j": "じゅう",
+      "reading_r": "juu",
+      "position_j": ""
+    },
+    "⼘": {
+      "strokes": 2,
+      "meaning": "oracle",
+      "reading_j": "ぼく",
+      "reading_r": "boku",
+      "position_j": ""
+    },
+    "⼙": {
+      "strokes": 2,
+      "meaning": "stamp, seal",
+      "reading_j": "ふしづくり",
+      "reading_r": "fushizukuri",
+      "position_j": "つくり"
+    },
+    "⼚": {
+      "strokes": 2,
+      "meaning": "cliff",
+      "reading_j": "がんだれ",
+      "reading_r": "gandare",
+      "position_j": "たれ"
+    },
+    "⼛": {
+      "strokes": 2,
+      "meaning": "private, Katakana Mu",
+      "reading_j": "む",
+      "reading_r": "mu",
+      "position_j": ""
+    },
+    "⼜": {
+      "strokes": 2,
+      "meaning": "again, right hand",
+      "reading_j": "また",
+      "reading_r": "mata",
+      "position_j": ""
+    },
+    "⼝": {
+      "strokes": 3,
+      "meaning": "mouth",
+      "reading_j": "くち",
+      "reading_r": "kuchi",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 3,
+      "meaning": "mouth",
+      "reading_j": "くちへん",
+      "reading_r": "kuchihen",
+      "position_j": "へん"
+    },
+    "⼞": {
+      "strokes": 3,
+      "meaning": "border, territorial boundaries",
+      "reading_j": "くにがまえ",
+      "reading_r": "kunigamae",
+      "position_j": "かまえ, くにがまえ"
+    },
+    "⼟": {
+      "strokes": 3,
+      "meaning": "earth",
+      "reading_j": "つち",
+      "reading_r": "tsuchi",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 3,
+      "meaning": "earth",
+      "reading_j": "つちへん",
+      "reading_r": "tsuchihen",
+      "position_j": "へん"
+    },
+    "⼠": {
+      "strokes": 3,
+      "meaning": "man, scholar, samurai",
+      "reading_j": "さむらい",
+      "reading_r": "samurai",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 3,
+      "meaning": "man, scholar, samurai",
+      "reading_j": "さむらいかんむり",
+      "reading_r": "samuraikanmuri",
+      "position_j": "かんむり"
+    },
+    "⼡": {
+      "strokes": 3,
+      "meaning": "to follow",
+      "reading_j": "のまた",
+      "reading_r": "nomata",
+      "position_j": ""
+    },
+    "⼢": {
+      "strokes": 3,
+      "meaning": "to go slowly",
+      "reading_j": "なつあし",
+      "reading_r": "natsuashi",
+      "position_j": "あし"
+    },
+    "⼣": {
+      "strokes": 3,
+      "meaning": "evening",
+      "reading_j": "ゆうべ",
+      "reading_r": "yuube",
+      "position_j": ""
+    },
+    "⼤": {
+      "strokes": 3,
+      "meaning": "large, big",
+      "reading_j": "だい",
+      "reading_r": "dai",
+      "position_j": ""
+    },
+    "⼥": {
+      "strokes": 3,
+      "meaning": "woman",
+      "reading_j": "おんな",
+      "reading_r": "onna",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 3,
+      "meaning": "woman",
+      "reading_j": "おんなへん",
+      "reading_r": "onnahen",
+      "position_j": "へん"
+    },
+    "⼦": {
+      "strokes": 3,
+      "meaning": "child, son",
+      "reading_j": "こ",
+      "reading_r": "ko",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 3,
+      "meaning": "child, son",
+      "reading_j": "こへん",
+      "reading_r": "kohen",
+      "position_j": "へん"
+    },
+    "⼧": {
+      "strokes": 3,
+      "meaning": "roof, house",
+      "reading_j": "うかんむり",
+      "reading_r": "ukanmuri",
+      "position_j": "かんむり"
+    },
+    "⼨": {
+      "strokes": 3,
+      "meaning": "inch, (2.25 cm)",
+      "reading_j": "すん",
+      "reading_r": "sun",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 3,
+      "meaning": "inch, (2.25 cm)",
+      "reading_j": "すんづくり",
+      "reading_r": "sunzukuri",
+      "position_j": "つくり"
+    },
+    "⼩": {
+      "strokes": 3,
+      "meaning": "small",
+      "reading_j": "しょう",
+      "reading_r": "shou",
+      "position_j": ""
+    },
+    "⺌": {
+      "strokes": 3,
+      "meaning": "small",
+      "reading_j": "しょうかんむり",
+      "reading_r": "shoukanmuri",
+      "position_j": "かんむり"
+    },
+    "⺐": {
+      "strokes": 3,
+      "meaning": "lame leg",
+      "reading_j": "だいのまげあし",
+      "reading_r": "dainomageashi",
+      "position_j": "つくり"
+    },
+    "⼫": {
+      "strokes": 3,
+      "meaning": "corpse, awning",
+      "reading_j": "しかばね",
+      "reading_r": "shikabane",
+      "position_j": "たれ"
+    },
+    "⼬": {
+      "strokes": 3,
+      "meaning": "sprout",
+      "reading_j": "くさのめ",
+      "reading_r": "kusanome",
+      "position_j": ""
+    },
+    "⼭": {
+      "strokes": 3,
+      "meaning": "mountain",
+      "reading_j": "やま",
+      "reading_r": "yama",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 3,
+      "meaning": "mountain",
+      "reading_j": "やまへん",
+      "reading_r": "yamahen",
+      "position_j": "へん"
+    },
+    "": {
+      "strokes": 3,
+      "meaning": "mountain",
+      "reading_j": "やまかんむり",
+      "reading_r": "yamakanmuri",
+      "position_j": "かんむり"
+    },
+    "⼮": {
+      "strokes": 3,
+      "meaning": "winding river",
+      "reading_j": "まがりがわ",
+      "reading_r": "magarigawa",
+      "position_j": ""
+    },
+    "川": {
+      "strokes": 3,
+      "meaning": "river",
+      "reading_j": "さんぼんがわ",
+      "reading_r": "sanbongawa",
+      "position_j": ""
+    },
+    "⼯": {
+      "strokes": 3,
+      "meaning": "work, carpenter, skill",
+      "reading_j": "たくみ",
+      "reading_r": "takumi",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 3,
+      "meaning": "work, carpenter, skill",
+      "reading_j": "たくみへん",
+      "reading_r": "takumihen",
+      "position_j": "へん"
+    },
+    "⼰": {
+      "strokes": 3,
+      "meaning": "self",
+      "reading_j": "おのれ",
+      "reading_r": "onore",
+      "position_j": ""
+    },
+    "⼱": {
+      "strokes": 3,
+      "meaning": "cloth",
+      "reading_j": "はば",
+      "reading_r": "haba",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 3,
+      "meaning": "cloth",
+      "reading_j": "はばへん",
+      "reading_r": "habahen",
+      "position_j": "へん"
+    },
+    "⼲": {
+      "strokes": 3,
+      "meaning": "to dry, shield",
+      "reading_j": "かん",
+      "reading_r": "kan",
+      "position_j": ""
+    },
+    "⺓": {
+      "strokes": 3,
+      "meaning": "young, slight",
+      "reading_j": "いとがしら",
+      "reading_r": "itogashira",
+      "position_j": ""
+    },
+    "⼴": {
+      "strokes": 3,
+      "meaning": "slanting roof",
+      "reading_j": "まだれ",
+      "reading_r": "madare",
+      "position_j": "たれ"
+    },
+    "⼵": {
+      "strokes": 3,
+      "meaning": "to move, stretch",
+      "reading_j": "えんにょう",
+      "reading_r": "ennyou",
+      "position_j": "にょう"
+    },
+    "⼶": {
+      "strokes": 3,
+      "meaning": "folded hands",
+      "reading_j": "にじゅうあし",
+      "reading_r": "nijuuashi",
+      "position_j": "あし"
+    },
+    "⼷": {
+      "strokes": 3,
+      "meaning": "javelin",
+      "reading_j": "いぐるみ",
+      "reading_r": "igurumi",
+      "position_j": ""
+    },
+    "⼸": {
+      "strokes": 3,
+      "meaning": "bow（in archery）",
+      "reading_j": "ゆみ",
+      "reading_r": "yumi",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 3,
+      "meaning": "bow（in archery）",
+      "reading_j": "ゆみへん",
+      "reading_r": "yumihen",
+      "position_j": "へん"
+    },
+    "⼹": {
+      "strokes": 3,
+      "meaning": "pig’s head",
+      "reading_j": "けいがしら",
+      "reading_r": "keigashira",
+      "position_j": ""
+    },
+    "⺕": {
+      "strokes": 3,
+      "meaning": "pig’s head",
+      "reading_j": "けいがしら",
+      "reading_r": "keigashira",
+      "position_j": ""
+    },
+    "⺔": {
+      "strokes": 3,
+      "meaning": "pig’s head",
+      "reading_j": "けいがしら",
+      "reading_r": "keigashira",
+      "position_j": ""
+    },
+    "⼺": {
+      "strokes": 3,
+      "meaning": "hair-style, light rays",
+      "reading_j": "さんづくり",
+      "reading_r": "sanzukuri",
+      "position_j": "つくり"
+    },
+    "⼻": {
+      "strokes": 3,
+      "meaning": "step, stride, street, to go",
+      "reading_j": "ぎょうにんべん",
+      "reading_r": "gyouninben",
+      "position_j": "へん"
+    },
+    "⺾": {
+      "strokes": 3,
+      "meaning": "grass",
+      "reading_j": "くさかんむり",
+      "reading_r": "kusakanmuri",
+      "position_j": "かんむり"
+    },
+    "⻌": {
+      "strokes": 3,
+      "meaning": "road, walk, to advance",
+      "reading_j": "しんにょう",
+      "reading_r": "shinnyou",
+      "position_j": "にょう"
+    },
+    "⻏": {
+      "strokes": 3,
+      "meaning": "village, country, city",
+      "reading_j": "おおざと",
+      "reading_r": "oozato",
+      "position_j": "つくり"
+    },
+    "⻖": {
+      "strokes": 3,
+      "meaning": "hill, mound",
+      "reading_j": "こざとへん",
+      "reading_r": "kozatohen",
+      "position_j": "へん"
+    },
+    "⺍": {
+      "strokes": 3,
+      "meaning": "Katakana Tsu",
+      "reading_j": "つ",
+      "reading_r": "tsu",
+      "position_j": "かんむり"
+    },
+    "⺖": {
+      "strokes": 3,
+      "meaning": "heart, mind, spirit",
+      "reading_j": "りっしんべん",
+      "reading_r": "risshinben",
+      "position_j": "へん"
+    },
+    "⺘": {
+      "strokes": 3,
+      "meaning": "hand",
+      "reading_j": "てへん",
+      "reading_r": "tehen",
+      "position_j": "へん"
+    },
+    "⺡": {
+      "strokes": 3,
+      "meaning": "water",
+      "reading_j": "さんずい",
+      "reading_r": "sanzui",
+      "position_j": "へん"
+    },
+    "⺨": {
+      "strokes": 3,
+      "meaning": "beast",
+      "reading_j": "けものへん",
+      "reading_r": "kemonohen",
+      "position_j": "へん"
+    },
+    "⼼": {
+      "strokes": 4,
+      "meaning": "heart, mind, spirit",
+      "reading_j": "こころ",
+      "reading_r": "kokoro",
+      "position_j": ""
+    },
+    "⺗": {
+      "strokes": 4,
+      "meaning": "heart, mind, spirit",
+      "reading_j": "したごころ",
+      "reading_r": "shitagokoro",
+      "position_j": "あし"
+    },
+    "⼽": {
+      "strokes": 4,
+      "meaning": "spear, weapon",
+      "reading_j": "ほこ",
+      "reading_r": "hoko",
+      "position_j": ""
+    },
+    "⼾": {
+      "strokes": 4,
+      "meaning": "door",
+      "reading_j": "と",
+      "reading_r": "to",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 4,
+      "meaning": "door",
+      "reading_j": "とだれ",
+      "reading_r": "todare",
+      "position_j": "たれ"
+    },
+    "⼿": {
+      "strokes": 4,
+      "meaning": "hand",
+      "reading_j": "て",
+      "reading_r": "te",
+      "position_j": ""
+    },
+    "⽀": {
+      "strokes": 4,
+      "meaning": "branch",
+      "reading_j": "しにょう",
+      "reading_r": "shinyou",
+      "position_j": ""
+    },
+    "⽁": {
+      "strokes": 4,
+      "meaning": "activity, to strike, hit",
+      "reading_j": "ぼくづくり",
+      "reading_r": "bokuzukuri",
+      "position_j": "つくり"
+    },
+    "⺙": {
+      "strokes": 4,
+      "meaning": "activity, to strike, hit",
+      "reading_j": "ぼくづくり",
+      "reading_r": "bokuzukuri",
+      "position_j": "つくり"
+    },
+    "⽂": {
+      "strokes": 4,
+      "meaning": "literature, letters",
+      "reading_j": "ぶん",
+      "reading_r": "bun",
+      "position_j": ""
+    },
+    "⽃": {
+      "strokes": 4,
+      "meaning": "big dipper, ladle, 18 liters",
+      "reading_j": "ますづくり",
+      "reading_r": "masuzukuri",
+      "position_j": "つくり"
+    },
+    "⽄": {
+      "strokes": 4,
+      "meaning": "axe",
+      "reading_j": "おのづくり",
+      "reading_r": "onozukuri",
+      "position_j": "つくり"
+    },
+    "⽅": {
+      "strokes": 4,
+      "meaning": "direction, flag",
+      "reading_j": "ほう",
+      "reading_r": "hou",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 4,
+      "meaning": "direction, flag",
+      "reading_j": "ほうへん",
+      "reading_r": "houhen",
+      "position_j": "へん"
+    },
+    "⽆": {
+      "strokes": 4,
+      "meaning": "not",
+      "reading_j": "むにょう",
+      "reading_r": "munyou",
+      "position_j": ""
+    },
+    "⽇": {
+      "strokes": 4,
+      "meaning": "sun, day, time",
+      "reading_j": "ひ",
+      "reading_r": "hi",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 4,
+      "meaning": "sun, day, time",
+      "reading_j": "ひへん",
+      "reading_r": "hihen",
+      "position_j": "へん"
+    },
+    "⽈": {
+      "strokes": 4,
+      "meaning": "to say",
+      "reading_j": "ひらび",
+      "reading_r": "hirabi",
+      "position_j": ""
+    },
+    "⽉": {
+      "strokes": 4,
+      "meaning": "moon, month, period",
+      "reading_j": "つき",
+      "reading_r": "tsuki",
+      "position_j": ""
+    },
+    "⺝": {
+      "strokes": 4,
+      "meaning": "moon, month, period",
+      "reading_j": "つきへん",
+      "reading_r": "tsukihen",
+      "position_j": "へん"
+    },
+    "": {
+      "strokes": 4,
+      "meaning": "meat, flesh",
+      "reading_j": "にくづき",
+      "reading_r": "nikuzuki",
+      "position_j": ""
+    },
+    "⽊": {
+      "strokes": 4,
+      "meaning": "tree, wood",
+      "reading_j": "き",
+      "reading_r": "ki",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 4,
+      "meaning": "tree, wood",
+      "reading_j": "きへん",
+      "reading_r": "kihen",
+      "position_j": "へん"
+    },
+    "⽋": {
+      "strokes": 4,
+      "meaning": "to lack, yawn",
+      "reading_j": "あくび",
+      "reading_r": "akubi",
+      "position_j": ""
+    },
+    "⽌": {
+      "strokes": 4,
+      "meaning": "to stop",
+      "reading_j": "とめる",
+      "reading_r": "tomeru",
+      "position_j": ""
+    },
+    "⽍": {
+      "strokes": 4,
+      "meaning": "death & dying, to decompose",
+      "reading_j": "がつ",
+      "reading_r": "gatsu",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 4,
+      "meaning": "death & dying, to decompose",
+      "reading_j": "がつへん",
+      "reading_r": "gatsuhen",
+      "position_j": "へん"
+    },
+    "⽎": {
+      "strokes": 4,
+      "meaning": "lance shaft, action",
+      "reading_j": "るまた",
+      "reading_r": "rumata",
+      "position_j": "つくり"
+    },
+    "⽏": {
+      "strokes": 4,
+      "meaning": "not, mother",
+      "reading_j": "なかれ",
+      "reading_r": "nakare",
+      "position_j": ""
+    },
+    "⽐": {
+      "strokes": 4,
+      "meaning": "to compare",
+      "reading_j": "くらべる",
+      "reading_r": "kuraberu",
+      "position_j": ""
+    },
+    "⽑": {
+      "strokes": 4,
+      "meaning": "hair",
+      "reading_j": "け",
+      "reading_r": "ke",
+      "position_j": ""
+    },
+    "⽒": {
+      "strokes": 4,
+      "meaning": "family, clan",
+      "reading_j": "うじ",
+      "reading_r": "uji",
+      "position_j": ""
+    },
+    "⽓": {
+      "strokes": 4,
+      "meaning": "steam, air",
+      "reading_j": "きがまえ",
+      "reading_r": "kigamae",
+      "position_j": "かまえ, きがまえ"
+    },
+    "⽔": {
+      "strokes": 4,
+      "meaning": "water",
+      "reading_j": "みず",
+      "reading_r": "mizu",
+      "position_j": ""
+    },
+    "⽕": {
+      "strokes": 4,
+      "meaning": "fire",
+      "reading_j": "ひ",
+      "reading_r": "hi",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 4,
+      "meaning": "fire",
+      "reading_j": "ひへん",
+      "reading_r": "hihen",
+      "position_j": "へん"
+    },
+    "⺣": {
+      "strokes": 4,
+      "meaning": "fire",
+      "reading_j": "れっか",
+      "reading_r": "rekka",
+      "position_j": "あし"
+    },
+    "⽖": {
+      "strokes": 4,
+      "meaning": "claw, nail",
+      "reading_j": "つめ",
+      "reading_r": "tsume",
+      "position_j": ""
+    },
+    "⺤": {
+      "strokes": 4,
+      "meaning": "claw, nail",
+      "reading_j": "つめかんむり",
+      "reading_r": "tsumekanmuri",
+      "position_j": "かんむり"
+    },
+    "爫": {
+      "strokes": 4,
+      "meaning": "claw, nail",
+      "reading_j": "つめかんむり",
+      "reading_r": "tsumekanmuri",
+      "position_j": "かんむり"
+    },
+    "⽗": {
+      "strokes": 4,
+      "meaning": "father",
+      "reading_j": "ちち",
+      "reading_r": "chichi",
+      "position_j": ""
+    },
+    "⽘": {
+      "strokes": 4,
+      "meaning": "to mix",
+      "reading_j": "こう",
+      "reading_r": "kou",
+      "position_j": ""
+    },
+    "⽙": {
+      "strokes": 4,
+      "meaning": "split wood",
+      "reading_j": "しょうへん",
+      "reading_r": "shouhen",
+      "position_j": "へん"
+    },
+    "⽚": {
+      "strokes": 4,
+      "meaning": "split wood",
+      "reading_j": "かた",
+      "reading_r": "kata",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 4,
+      "meaning": "split wood",
+      "reading_j": "かたへん",
+      "reading_r": "katahen",
+      "position_j": "へん"
+    },
+    "": {
+      "strokes": 4,
+      "meaning": "fang, canine tooth",
+      "reading_j": "きば",
+      "reading_r": "kiba",
+      "position_j": ""
+    },
+    "⽜": {
+      "strokes": 4,
+      "meaning": "cow",
+      "reading_j": "うし",
+      "reading_r": "ushi",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 4,
+      "meaning": "cow",
+      "reading_j": "うしへん",
+      "reading_r": "ushihen",
+      "position_j": "へん"
+    },
+    "⽝": {
+      "strokes": 4,
+      "meaning": "dog",
+      "reading_j": "いぬ",
+      "reading_r": "inu",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 4,
+      "meaning": "jewelry, jeweled king",
+      "reading_j": "おうへん",
+      "reading_r": "ouhen",
+      "position_j": "へん"
+    },
+    "⺭": {
+      "strokes": 4,
+      "meaning": "altar, festival, religious service",
+      "reading_j": "しめすへん",
+      "reading_r": "shimesuhen",
+      "position_j": "へん"
+    },
+    "㓁": {
+      "strokes": 4,
+      "meaning": "net",
+      "reading_j": "あみがしら",
+      "reading_r": "amigashira",
+      "position_j": ""
+    },
+    "⺹": {
+      "strokes": 4,
+      "meaning": "old, old-age",
+      "reading_j": "おいかんむり",
+      "reading_r": "oikanmuri",
+      "position_j": "かんむり"
+    },
+    "⽞": {
+      "strokes": 5,
+      "meaning": "darkness",
+      "reading_j": "げん",
+      "reading_r": "gen",
+      "position_j": ""
+    },
+    "⽟": {
+      "strokes": 5,
+      "meaning": "jewelry",
+      "reading_j": "たま",
+      "reading_r": "tama",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 5,
+      "meaning": "melon",
+      "reading_j": "うり",
+      "reading_r": "uri",
+      "position_j": ""
+    },
+    "⽡": {
+      "strokes": 5,
+      "meaning": "tile",
+      "reading_j": "かわら",
+      "reading_r": "kawara",
+      "position_j": ""
+    },
+    "⽢": {
+      "strokes": 5,
+      "meaning": "sweet",
+      "reading_j": "あまい",
+      "reading_r": "amai",
+      "position_j": ""
+    },
+    "⽣": {
+      "strokes": 5,
+      "meaning": "birth, to be born, live",
+      "reading_j": "うまれる",
+      "reading_r": "umareru",
+      "position_j": ""
+    },
+    "⽤": {
+      "strokes": 5,
+      "meaning": "to use",
+      "reading_j": "もちいる",
+      "reading_r": "mochiiru",
+      "position_j": ""
+    },
+    "⽥": {
+      "strokes": 5,
+      "meaning": "rice paddy",
+      "reading_j": "た",
+      "reading_r": "ta",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 5,
+      "meaning": "rice paddy",
+      "reading_j": "たへん",
+      "reading_r": "tahen",
+      "position_j": "へん"
+    },
+    "⽦": {
+      "strokes": 5,
+      "meaning": "bolt of cloth",
+      "reading_j": "ひき",
+      "reading_r": "hiki",
+      "position_j": ""
+    },
+    "⺪": {
+      "strokes": 5,
+      "meaning": "bolt of cloth",
+      "reading_j": "ひきへん",
+      "reading_r": "hikihen",
+      "position_j": "へん"
+    },
+    "⽧": {
+      "strokes": 5,
+      "meaning": "sickness",
+      "reading_j": "やまいだれ",
+      "reading_r": "yamaidare",
+      "position_j": "たれ"
+    },
+    "⽨": {
+      "strokes": 5,
+      "meaning": "outspread legs, departure",
+      "reading_j": "はつがしら",
+      "reading_r": "hatsugashira",
+      "position_j": "かんむり"
+    },
+    "⽩": {
+      "strokes": 5,
+      "meaning": "white",
+      "reading_j": "しろ",
+      "reading_r": "shiro",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 5,
+      "meaning": "white",
+      "reading_j": "はくへん",
+      "reading_r": "hakuhen",
+      "position_j": "へん"
+    },
+    "⽪": {
+      "strokes": 5,
+      "meaning": "skin, hide",
+      "reading_j": "けがわ",
+      "reading_r": "kegawa",
+      "position_j": ""
+    },
+    "⽫": {
+      "strokes": 5,
+      "meaning": "plate, bowl",
+      "reading_j": "さら",
+      "reading_r": "sara",
+      "position_j": ""
+    },
+    "⽬": {
+      "strokes": 5,
+      "meaning": "eye",
+      "reading_j": "め",
+      "reading_r": "me",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 5,
+      "meaning": "eye",
+      "reading_j": "めへん",
+      "reading_r": "mehen",
+      "position_j": "へん"
+    },
+    "": {
+      "strokes": 5,
+      "meaning": "eye",
+      "reading_j": "よこめ",
+      "reading_r": "yokome",
+      "position_j": "かんむり"
+    },
+    "⽭": {
+      "strokes": 5,
+      "meaning": "halberd",
+      "reading_j": "ほこ",
+      "reading_r": "hoko",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 5,
+      "meaning": "halberd",
+      "reading_j": "ほこへん",
+      "reading_r": "hokohen",
+      "position_j": "へん"
+    },
+    "⽮": {
+      "strokes": 5,
+      "meaning": "arrow",
+      "reading_j": "や",
+      "reading_r": "ya",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 5,
+      "meaning": "arrow",
+      "reading_j": "やへん",
+      "reading_r": "yahen",
+      "position_j": "へん"
+    },
+    "⽯": {
+      "strokes": 5,
+      "meaning": "stone",
+      "reading_j": "いし",
+      "reading_r": "ishi",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 5,
+      "meaning": "stone",
+      "reading_j": "いしへん",
+      "reading_r": "ishihen",
+      "position_j": "へん"
+    },
+    "⽰": {
+      "strokes": 5,
+      "meaning": "altar, festival, religious service",
+      "reading_j": "しめす",
+      "reading_r": "shimesu",
+      "position_j": ""
+    },
+    "⽱": {
+      "strokes": 5,
+      "meaning": "footprint",
+      "reading_j": "じゅうのあし",
+      "reading_r": "juunoashi",
+      "position_j": ""
+    },
+    "⽲": {
+      "strokes": 5,
+      "meaning": "grain",
+      "reading_j": "のぎへん",
+      "reading_r": "nogihen",
+      "position_j": "へん"
+    },
+    "⽳": {
+      "strokes": 5,
+      "meaning": "hole, cave",
+      "reading_j": "あな",
+      "reading_r": "ana",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 5,
+      "meaning": "hole, cave",
+      "reading_j": "あなかんむり",
+      "reading_r": "anakanmuri",
+      "position_j": "かんむり"
+    },
+    "⽴": {
+      "strokes": 5,
+      "meaning": "to stand",
+      "reading_j": "たつ",
+      "reading_r": "tatsu",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 5,
+      "meaning": "to stand",
+      "reading_j": "たつへん",
+      "reading_r": "tatsuhen",
+      "position_j": "へん"
+    },
+    "": {
+      "strokes": 5,
+      "meaning": "fang, canine tooth",
+      "reading_j": "きば",
+      "reading_r": "kiba",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 5,
+      "meaning": "fang, canine tooth",
+      "reading_j": "きばへん",
+      "reading_r": "kibahen",
+      "position_j": "へん"
+    },
+    "氺": {
+      "strokes": 5,
+      "meaning": "water",
+      "reading_j": "したみず",
+      "reading_r": "shitamizu",
+      "position_j": ""
+    },
+    "⺫": {
+      "strokes": 5,
+      "meaning": "net",
+      "reading_j": "あみがしら",
+      "reading_r": "amigashira",
+      "position_j": "かんむり"
+    },
+    "𦉰": {
+      "strokes": 5,
+      "meaning": "net",
+      "reading_j": "あみがしら",
+      "reading_r": "amigashira",
+      "position_j": ""
+    },
+    "⻂": {
+      "strokes": 5,
+      "meaning": "clothing",
+      "reading_j": "ころもへん",
+      "reading_r": "koromohen",
+      "position_j": "へん"
+    },
+    "⺛": {
+      "strokes": 5,
+      "meaning": "not",
+      "reading_j": "むにょう",
+      "reading_r": "munyou",
+      "position_j": ""
+    },
+    "⽵": {
+      "strokes": 6,
+      "meaning": "bamboo",
+      "reading_j": "たけ",
+      "reading_r": "take",
+      "position_j": ""
+    },
+    "⺮": {
+      "strokes": 6,
+      "meaning": "bamboo",
+      "reading_j": "たけかんむり",
+      "reading_r": "takekanmuri",
+      "position_j": "かんむり"
+    },
+    "⽶": {
+      "strokes": 6,
+      "meaning": "rice",
+      "reading_j": "こめ",
+      "reading_r": "kome",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 6,
+      "meaning": "rice",
+      "reading_j": "こめへん",
+      "reading_r": "komehen",
+      "position_j": "へん"
+    },
+    "⽷": {
+      "strokes": 6,
+      "meaning": "thread",
+      "reading_j": "いと",
+      "reading_r": "ito",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 6,
+      "meaning": "thread",
+      "reading_j": "いとへん",
+      "reading_r": "itohen",
+      "position_j": "へん"
+    },
+    "⽸": {
+      "strokes": 6,
+      "meaning": "earthen jar",
+      "reading_j": "みずがめ",
+      "reading_r": "mizugame",
+      "position_j": ""
+    },
+    "⽹": {
+      "strokes": 6,
+      "meaning": "net",
+      "reading_j": "あみめ",
+      "reading_r": "amime",
+      "position_j": ""
+    },
+    "⽺": {
+      "strokes": 6,
+      "meaning": "sheep",
+      "reading_j": "ひつじ",
+      "reading_r": "hitsuji",
+      "position_j": ""
+    },
+    "⺷": {
+      "strokes": 6,
+      "meaning": "sheep",
+      "reading_j": "ひつじ",
+      "reading_r": "hitsuji",
+      "position_j": ""
+    },
+    "羽": {
+      "strokes": 6,
+      "meaning": "feather, wing",
+      "reading_j": "はね",
+      "reading_r": "hane",
+      "position_j": ""
+    },
+    "⽻": {
+      "strokes": 6,
+      "meaning": "feather, wing",
+      "reading_j": "はね",
+      "reading_r": "hane",
+      "position_j": ""
+    },
+    "⽼": {
+      "strokes": 6,
+      "meaning": "old, old-age",
+      "reading_j": "おいかんむり",
+      "reading_r": "oikanmuri",
+      "position_j": ""
+    },
+    "⽽": {
+      "strokes": 6,
+      "meaning": "and also",
+      "reading_j": "しこうして",
+      "reading_r": "shikoushite",
+      "position_j": ""
+    },
+    "⽾": {
+      "strokes": 6,
+      "meaning": "plow",
+      "reading_j": "らいすき",
+      "reading_r": "raisuki",
+      "position_j": "へん"
+    },
+    "⽿": {
+      "strokes": 6,
+      "meaning": "ear",
+      "reading_j": "みみ",
+      "reading_r": "mimi",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 6,
+      "meaning": "ear",
+      "reading_j": "みみへん",
+      "reading_r": "mimihen",
+      "position_j": "へん"
+    },
+    "⾀": {
+      "strokes": 6,
+      "meaning": "writing brush",
+      "reading_j": "ふでづくり",
+      "reading_r": "fudezukuri",
+      "position_j": ""
+    },
+    "⾁": {
+      "strokes": 6,
+      "meaning": "flesh, meat",
+      "reading_j": "にく",
+      "reading_r": "niku",
+      "position_j": ""
+    },
+    "⾂": {
+      "strokes": 7,
+      "meaning": "retainer, minister",
+      "reading_j": "しん",
+      "reading_r": "shin",
+      "position_j": ""
+    },
+    "⾃": {
+      "strokes": 6,
+      "meaning": "self",
+      "reading_j": "みずから",
+      "reading_r": "mizukara",
+      "position_j": ""
+    },
+    "⾄": {
+      "strokes": 6,
+      "meaning": "to arrive, reach",
+      "reading_j": "いたる",
+      "reading_r": "itaru",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 6,
+      "meaning": "to arrive, reach",
+      "reading_j": "いたるへん",
+      "reading_r": "itaruhen",
+      "position_j": "へん"
+    },
+    "⾅": {
+      "strokes": 6,
+      "meaning": "mortar, quern",
+      "reading_j": "うす",
+      "reading_r": "usu",
+      "position_j": ""
+    },
+    "⾆": {
+      "strokes": 6,
+      "meaning": "tongue",
+      "reading_j": "した",
+      "reading_r": "shita",
+      "position_j": ""
+    },
+    "⾇": {
+      "strokes": 6,
+      "meaning": "contrary, to err",
+      "reading_j": "まいあし",
+      "reading_r": "maiashi",
+      "position_j": ""
+    },
+    "⾈": {
+      "strokes": 6,
+      "meaning": "ship, boat",
+      "reading_j": "ふね",
+      "reading_r": "fune",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 6,
+      "meaning": "ship, boat",
+      "reading_j": "ふねへん",
+      "reading_r": "funehen",
+      "position_j": "へん"
+    },
+    "⾉": {
+      "strokes": 6,
+      "meaning": "boundary",
+      "reading_j": "こん",
+      "reading_r": "kon",
+      "position_j": ""
+    },
+    "⾊": {
+      "strokes": 6,
+      "meaning": "color",
+      "reading_j": "いろ",
+      "reading_r": "iro",
+      "position_j": ""
+    },
+    "⾋": {
+      "strokes": 6,
+      "meaning": "grass, plant",
+      "reading_j": "くさ",
+      "reading_r": "kusa",
+      "position_j": ""
+    },
+    "⾌": {
+      "strokes": 6,
+      "meaning": "tiger",
+      "reading_j": "とらがしら",
+      "reading_r": "toragashira",
+      "position_j": "かんむり"
+    },
+    "⾍": {
+      "strokes": 6,
+      "meaning": "worm, insect, bug",
+      "reading_j": "むし",
+      "reading_r": "mushi",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 6,
+      "meaning": "worm, insect, bug",
+      "reading_j": "むしへん",
+      "reading_r": "mushihen",
+      "position_j": "へん"
+    },
+    "⾎": {
+      "strokes": 6,
+      "meaning": "blood",
+      "reading_j": "ち",
+      "reading_r": "chi",
+      "position_j": ""
+    },
+    "⾏": {
+      "strokes": 6,
+      "meaning": "to go",
+      "reading_j": "ぎょうがまえ",
+      "reading_r": "gyougamae",
+      "position_j": "かまえ, ぎょうがまえ"
+    },
+    "⾐": {
+      "strokes": 6,
+      "meaning": "clothing",
+      "reading_j": "ころも",
+      "reading_r": "koromo",
+      "position_j": ""
+    },
+    "⾑": {
+      "strokes": 6,
+      "meaning": "cover, west",
+      "reading_j": "にし",
+      "reading_r": "nishi",
+      "position_j": ""
+    },
+    "⻃": {
+      "strokes": 6,
+      "meaning": "cover, west",
+      "reading_j": "にし",
+      "reading_r": "nishi",
+      "position_j": ""
+    },
+    "⽠": {
+      "strokes": 6,
+      "meaning": "melon",
+      "reading_j": "うり",
+      "reading_r": "uri",
+      "position_j": ""
+    },
+    "⾒": {
+      "strokes": 7,
+      "meaning": "to see",
+      "reading_j": "みる",
+      "reading_r": "miru",
+      "position_j": ""
+    },
+    "⾓": {
+      "strokes": 7,
+      "meaning": "horn, corner",
+      "reading_j": "つの",
+      "reading_r": "tsuno",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 7,
+      "meaning": "horn, corner",
+      "reading_j": "つのへん",
+      "reading_r": "tsunohen",
+      "position_j": "へん"
+    },
+    "⾔": {
+      "strokes": 7,
+      "meaning": "words, to speak, say",
+      "reading_j": "げん",
+      "reading_r": "gen",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 7,
+      "meaning": "words, to speak, say",
+      "reading_j": "ごんべん",
+      "reading_r": "gonben",
+      "position_j": "へん"
+    },
+    "⾕": {
+      "strokes": 7,
+      "meaning": "valley",
+      "reading_j": "たに",
+      "reading_r": "tani",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 7,
+      "meaning": "valley",
+      "reading_j": "たにへん",
+      "reading_r": "tanihen",
+      "position_j": "へん"
+    },
+    "⾖": {
+      "strokes": 7,
+      "meaning": "bean",
+      "reading_j": "まめ",
+      "reading_r": "mame",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 7,
+      "meaning": "bean",
+      "reading_j": "まめへん",
+      "reading_r": "mamehen",
+      "position_j": "へん"
+    },
+    "⾗": {
+      "strokes": 7,
+      "meaning": "pig",
+      "reading_j": "いのこ",
+      "reading_r": "inoko",
+      "position_j": ""
+    },
+    "⾘": {
+      "strokes": 7,
+      "meaning": "badger",
+      "reading_j": "むじなへん",
+      "reading_r": "mujinahen",
+      "position_j": "へん"
+    },
+    "⾙": {
+      "strokes": 7,
+      "meaning": "shell, property, wealth",
+      "reading_j": "かい",
+      "reading_r": "kai",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 7,
+      "meaning": "shell, property, wealth",
+      "reading_j": "かいへん",
+      "reading_r": "kaihen",
+      "position_j": "へん"
+    },
+    "⾚": {
+      "strokes": 7,
+      "meaning": "red",
+      "reading_j": "あか",
+      "reading_r": "aka",
+      "position_j": ""
+    },
+    "⾛": {
+      "strokes": 7,
+      "meaning": "to run",
+      "reading_j": "はしる",
+      "reading_r": "hashiru",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 7,
+      "meaning": "to run",
+      "reading_j": "そうにょう",
+      "reading_r": "sounyou",
+      "position_j": "にょう"
+    },
+    "⾜": {
+      "strokes": 7,
+      "meaning": "foot, leg",
+      "reading_j": "あし",
+      "reading_r": "ashi",
+      "position_j": ""
+    },
+    "⻊": {
+      "strokes": 7,
+      "meaning": "foot, leg",
+      "reading_j": "あしへん",
+      "reading_r": "ashihen",
+      "position_j": "へん"
+    },
+    "⾝": {
+      "strokes": 7,
+      "meaning": "body",
+      "reading_j": "み",
+      "reading_r": "mi",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 7,
+      "meaning": "body",
+      "reading_j": "みへん",
+      "reading_r": "mihen",
+      "position_j": "へん"
+    },
+    "⾞": {
+      "strokes": 7,
+      "meaning": "vehicle, wheel, car",
+      "reading_j": "くるま",
+      "reading_r": "kuruma",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 7,
+      "meaning": "vehicle, wheel, car",
+      "reading_j": "くるまへん",
+      "reading_r": "kurumahen",
+      "position_j": "へん"
+    },
+    "⾟": {
+      "strokes": 7,
+      "meaning": "bitter",
+      "reading_j": "からい",
+      "reading_r": "karai",
+      "position_j": ""
+    },
+    "⾠": {
+      "strokes": 7,
+      "meaning": "Fifth zodiac sign, 7–9 A.M.",
+      "reading_j": "しんのたつ",
+      "reading_r": "shinnotatsu",
+      "position_j": ""
+    },
+    "⾡": {
+      "strokes": 7,
+      "meaning": "to advance, move ahead",
+      "reading_j": "しんにょう",
+      "reading_r": "shinnyou",
+      "position_j": ""
+    },
+    "⾢": {
+      "strokes": 7,
+      "meaning": "community",
+      "reading_j": "むら",
+      "reading_r": "mura",
+      "position_j": ""
+    },
+    "⾣": {
+      "strokes": 7,
+      "meaning": "sake jar, bird",
+      "reading_j": "ひよみのとり",
+      "reading_r": "hiyominotori",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 7,
+      "meaning": "sake jar, bird",
+      "reading_j": "とりへん",
+      "reading_r": "torihen",
+      "position_j": "へん"
+    },
+    "⾤": {
+      "strokes": 7,
+      "meaning": "to separate",
+      "reading_j": "のごめ",
+      "reading_r": "nogome",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 7,
+      "meaning": "to separate",
+      "reading_j": "のごめへん",
+      "reading_r": "nogomehen",
+      "position_j": "へん"
+    },
+    "⾥": {
+      "strokes": 7,
+      "meaning": "village, (3.93 km)",
+      "reading_j": "さと",
+      "reading_r": "sato",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 7,
+      "meaning": "village, (3.93 km)",
+      "reading_j": "さとへん",
+      "reading_r": "satohen",
+      "position_j": "へん"
+    },
+    "": {
+      "strokes": 7,
+      "meaning": "contrary, to err",
+      "reading_j": "まいあし",
+      "reading_r": "maiashi",
+      "position_j": ""
+    },
+    "⻨": {
+      "strokes": 7,
+      "meaning": "wheat",
+      "reading_j": "むぎ",
+      "reading_r": "mugi",
+      "position_j": ""
+    },
+    "⾦": {
+      "strokes": 8,
+      "meaning": "metal, gold, mineral",
+      "reading_j": "かね",
+      "reading_r": "kane",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 8,
+      "meaning": "metal, gold, mineral",
+      "reading_j": "かねへん",
+      "reading_r": "kanehen",
+      "position_j": "へん"
+    },
+    "⻑": {
+      "strokes": 8,
+      "meaning": "long",
+      "reading_j": "ながい",
+      "reading_r": "nagai",
+      "position_j": ""
+    },
+    "⾨": {
+      "strokes": 8,
+      "meaning": "gate, door",
+      "reading_j": "もんがまえ",
+      "reading_r": "mongamae",
+      "position_j": "かまえ, もんがまえ"
+    },
+    "⾩": {
+      "strokes": 8,
+      "meaning": "hill",
+      "reading_j": "こざと",
+      "reading_r": "kozato",
+      "position_j": ""
+    },
+    "⾪": {
+      "strokes": 8,
+      "meaning": "to capture",
+      "reading_j": "れいづくり",
+      "reading_r": "reizukuri",
+      "position_j": "つくり"
+    },
+    "⾫": {
+      "strokes": 8,
+      "meaning": "small bird",
+      "reading_j": "ふるとり",
+      "reading_r": "furutori",
+      "position_j": ""
+    },
+    "⾬": {
+      "strokes": 8,
+      "meaning": "rain",
+      "reading_j": "あめ",
+      "reading_r": "ame",
+      "position_j": ""
+    },
+    "⻗": {
+      "strokes": 8,
+      "meaning": "rain",
+      "reading_j": "あめかんむり",
+      "reading_r": "amekanmuri",
+      "position_j": "かんむり"
+    },
+    "⾭": {
+      "strokes": 8,
+      "meaning": "blue, green",
+      "reading_j": "あお",
+      "reading_r": "ao",
+      "position_j": ""
+    },
+    "⻘": {
+      "strokes": 8,
+      "meaning": "blue, green",
+      "reading_j": "あお",
+      "reading_r": "ao",
+      "position_j": ""
+    },
+    "⾮": {
+      "strokes": 8,
+      "meaning": "wrong, non-",
+      "reading_j": "あらず",
+      "reading_r": "arazu",
+      "position_j": ""
+    },
+    "⻟": {
+      "strokes": 8,
+      "meaning": "food, to eat",
+      "reading_j": "しょくへん",
+      "reading_r": "shokuhen",
+      "position_j": "へん"
+    },
+    "⻫": {
+      "strokes": 8,
+      "meaning": "alike",
+      "reading_j": "せい",
+      "reading_r": "sei",
+      "position_j": ""
+    },
+    "⾯": {
+      "strokes": 9,
+      "meaning": "face, surface",
+      "reading_j": "めん",
+      "reading_r": "men",
+      "position_j": ""
+    },
+    "⾰": {
+      "strokes": 9,
+      "meaning": "leather",
+      "reading_j": "つくりがわ",
+      "reading_r": "tsukurigawa",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 9,
+      "meaning": "leather",
+      "reading_j": "なめしがわ",
+      "reading_r": "nameshigawa",
+      "position_j": ""
+    },
+    "⾲": {
+      "strokes": 9,
+      "meaning": "leek",
+      "reading_j": "にら",
+      "reading_r": "nira",
+      "position_j": ""
+    },
+    "⾳": {
+      "strokes": 9,
+      "meaning": "sound, noise",
+      "reading_j": "おと",
+      "reading_r": "oto",
+      "position_j": ""
+    },
+    "⾴": {
+      "strokes": 9,
+      "meaning": "head, page",
+      "reading_j": "おおがい",
+      "reading_r": "oogai",
+      "position_j": "つくり"
+    },
+    "⾵": {
+      "strokes": 9,
+      "meaning": "wind",
+      "reading_j": "かぜ",
+      "reading_r": "kaze",
+      "position_j": ""
+    },
+    "⾶": {
+      "strokes": 9,
+      "meaning": "to fly",
+      "reading_j": "とぶ",
+      "reading_r": "tobu",
+      "position_j": ""
+    },
+    "⾷": {
+      "strokes": 9,
+      "meaning": "food, to eat",
+      "reading_j": "しょく",
+      "reading_r": "shoku",
+      "position_j": ""
+    },
+    "⾸": {
+      "strokes": 9,
+      "meaning": "head",
+      "reading_j": "くび",
+      "reading_r": "kubi",
+      "position_j": ""
+    },
+    "⾹": {
+      "strokes": 9,
+      "meaning": "scent",
+      "reading_j": "かおり",
+      "reading_r": "kaori",
+      "position_j": ""
+    },
+    "⾺": {
+      "strokes": 10,
+      "meaning": "horse",
+      "reading_j": "うま",
+      "reading_r": "uma",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 10,
+      "meaning": "horse",
+      "reading_j": "うまへん",
+      "reading_r": "umahen",
+      "position_j": "へん"
+    },
+    "⾻": {
+      "strokes": 10,
+      "meaning": "bone",
+      "reading_j": "ほね",
+      "reading_r": "hone",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 10,
+      "meaning": "bone",
+      "reading_j": "ほねへん",
+      "reading_r": "honehen",
+      "position_j": "へん"
+    },
+    "⾼": {
+      "strokes": 10,
+      "meaning": "high",
+      "reading_j": "たかい",
+      "reading_r": "takai",
+      "position_j": ""
+    },
+    "⾽": {
+      "strokes": 10,
+      "meaning": "long hair",
+      "reading_j": "かみかんむり",
+      "reading_r": "kamikanmuri",
+      "position_j": "かんむり"
+    },
+    "⾾": {
+      "strokes": 10,
+      "meaning": "fighting",
+      "reading_j": "たたかいがまえ",
+      "reading_r": "tatakaigamae",
+      "position_j": "かまえ"
+    },
+    "⾿": {
+      "strokes": 10,
+      "meaning": "herbs",
+      "reading_j": "においざけ",
+      "reading_r": "nioizake",
+      "position_j": ""
+    },
+    "⿀": {
+      "strokes": 10,
+      "meaning": "tripod",
+      "reading_j": "れき",
+      "reading_r": "reki",
+      "position_j": ""
+    },
+    "⿁": {
+      "strokes": 10,
+      "meaning": "demon",
+      "reading_j": "おに",
+      "reading_r": "oni",
+      "position_j": ""
+    },
+    "⾱": {
+      "strokes": 10,
+      "meaning": "leather",
+      "reading_j": "なめしがわ",
+      "reading_r": "nameshigawa",
+      "position_j": ""
+    },
+    "⿂": {
+      "strokes": 11,
+      "meaning": "fish",
+      "reading_j": "うお",
+      "reading_r": "uo",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 11,
+      "meaning": "fish",
+      "reading_j": "うおへん",
+      "reading_r": "uohen",
+      "position_j": "へん"
+    },
+    "⿃": {
+      "strokes": 11,
+      "meaning": "bird",
+      "reading_j": "とり",
+      "reading_r": "tori",
+      "position_j": ""
+    },
+    "⿄": {
+      "strokes": 11,
+      "meaning": "salt",
+      "reading_j": "しお",
+      "reading_r": "shio",
+      "position_j": ""
+    },
+    "⿅": {
+      "strokes": 11,
+      "meaning": "deer",
+      "reading_j": "しか",
+      "reading_r": "shika",
+      "position_j": ""
+    },
+    "⿆": {
+      "strokes": 11,
+      "meaning": "wheat",
+      "reading_j": "むぎ",
+      "reading_r": "mugi",
+      "position_j": ""
+    },
+    "⿇": {
+      "strokes": 11,
+      "meaning": "hemp",
+      "reading_j": "あさ",
+      "reading_r": "asa",
+      "position_j": ""
+    },
+    "": {
+      "strokes": 11,
+      "meaning": "hemp",
+      "reading_j": "あさかんむり",
+      "reading_r": "asakanmuri",
+      "position_j": "かんむり"
+    },
+    "⻩": {
+      "strokes": 11,
+      "meaning": "yellow",
+      "reading_j": "き",
+      "reading_r": "ki",
+      "position_j": ""
+    },
+    "黒": {
+      "strokes": 11,
+      "meaning": "black",
+      "reading_j": "くろ",
+      "reading_r": "kuro",
+      "position_j": ""
+    },
+    "⻲": {
+      "strokes": 11,
+      "meaning": "turtle",
+      "reading_j": "かめ",
+      "reading_r": "kame",
+      "position_j": ""
+    },
+    "⿈": {
+      "strokes": 12,
+      "meaning": "yellow",
+      "reading_j": "き",
+      "reading_r": "ki",
+      "position_j": ""
+    },
+    "⿉": {
+      "strokes": 12,
+      "meaning": "millet",
+      "reading_j": "きび",
+      "reading_r": "kibi",
+      "position_j": ""
+    },
+    "⿊": {
+      "strokes": 12,
+      "meaning": "black",
+      "reading_j": "くろ",
+      "reading_r": "kuro",
+      "position_j": ""
+    },
+    "⿋": {
+      "strokes": 12,
+      "meaning": "embroider",
+      "reading_j": "ぬいとり",
+      "reading_r": "nuitori",
+      "position_j": ""
+    },
+    "⻭": {
+      "strokes": 12,
+      "meaning": "tooth",
+      "reading_j": "は",
+      "reading_r": "ha",
+      "position_j": ""
+    },
+    "⿌": {
+      "strokes": 13,
+      "meaning": "frog",
+      "reading_j": "かえる",
+      "reading_r": "kaeru",
+      "position_j": ""
+    },
+    "⿍": {
+      "strokes": 13,
+      "meaning": "tripod",
+      "reading_j": "かなえ",
+      "reading_r": "kanae",
+      "position_j": ""
+    },
+    "⿎": {
+      "strokes": 13,
+      "meaning": "drum",
+      "reading_j": "つづみ",
+      "reading_r": "tuzumi",
+      "position_j": ""
+    },
+    "⿏": {
+      "strokes": 13,
+      "meaning": "rat, mouse",
+      "reading_j": "ねずみ",
+      "reading_r": "nezumi",
+      "position_j": ""
+    },
+    "⿐": {
+      "strokes": 14,
+      "meaning": "nose",
+      "reading_j": "はな",
+      "reading_r": "hana",
+      "position_j": ""
+    },
+    "⿑": {
+      "strokes": 14,
+      "meaning": "alike",
+      "reading_j": "せい",
+      "reading_r": "sei",
+      "position_j": ""
+    },
+    "⿒": {
+      "strokes": 15,
+      "meaning": "tooth",
+      "reading_j": "は",
+      "reading_r": "ha",
+      "position_j": ""
+    },
+    "⿓": {
+      "strokes": 16,
+      "meaning": "dragon",
+      "reading_j": "りゅう",
+      "reading_r": "ryuu",
+      "position_j": ""
+    },
+    "⿔": {
+      "strokes": 16,
+      "meaning": "turtle",
+      "reading_j": "かめ",
+      "reading_r": "kame",
+      "position_j": ""
+    },
+    "⿕": {
+      "strokes": 17,
+      "meaning": "flute",
+      "reading_j": "やく",
+      "reading_r": "yaku",
+      "position_j": ""
+    },
+    "々": {
+      "strokes": null,
+      "meaning": "",
+      "reading_j": "",
+      "reading_r": "",
+      "position_j": ""
+    }
+  }
+}
