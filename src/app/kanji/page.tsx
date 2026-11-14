@@ -1,307 +1,316 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { localDb, UnifiedKanjiRecord, JLPTLevelNormalized } from '@/lib/db';
-import { CascadingKanjiTree } from '@/components/custom-components/CascadingKanjiTree';
-import { KanjiCanvasComponent } from '@/components/custom-components/KanjiCanvasComponent';
-import { FuriganaText } from '@/components/custom-components/FuriganaText';
-import { BookOpen, Play, Network, PenTool, Sparkles, Search, Filter, Hash, Layers } from 'lucide-react';
+import { useUser } from '@clerk/nextjs';
+import { localDb, JLPTLevelNormalized, UnifiedKanjiRecord } from '@/lib/db';
+import { enqueueSyncAction } from '@/lib/sync';
+import {
+  KanjiFilterBar,
+  StrokeFilter,
+  FrequencySort,
+  RadicalEntry,
+} from '@/components/kanji/KanjiFilterBar';
+import { KanjiResultsStrip } from '@/components/kanji/KanjiResultsStrip';
+import { KanjiDetailSidebar } from '@/components/kanji/KanjiDetailSidebar';
+import { BookOpen, Type } from 'lucide-react';
 
-const JLPT_LEVELS: JLPTLevelNormalized[] = ['N5', 'N4', 'N3', 'N2', 'N1', 'N0'];
+type KanjiTypography = 'mincho' | 'gothic' | 'calligraphic';
 
-export default function KanjiStudyPage() {
-  const [selectedKanjiChar, setSelectedKanjiChar] = useState<string>('語');
-  const [searchQuery, setSearchQuery] = useState<string>('');
+function matchesStrokeRange(strokes: number | null, range: StrokeFilter): boolean {
+  if (range === 'ALL') return true;
+  if (strokes === null || strokes === undefined) return false;
+  if (range === '1-5') return strokes >= 1 && strokes <= 5;
+  if (range === '6-10') return strokes >= 6 && strokes <= 10;
+  if (range === '11-15') return strokes >= 11 && strokes <= 15;
+  return strokes >= 16;
+}
+
+function KanjiStudyContent() {
+  const searchParams = useSearchParams();
+  const qParam = searchParams.get('q') || '';
+  const { isSignedIn } = useUser();
+
+  const [selectedKanjiChar, setSelectedKanjiChar] = useState<string>(
+    qParam && [...qParam].length === 1 ? qParam : '語'
+  );
+  const [searchQuery, setSearchQuery] = useState<string>(qParam);
   const [selectedJlpt, setSelectedJlpt] = useState<string>('ALL');
+  const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
+  const [selectedRadical, setSelectedRadical] = useState<string>('ALL');
+  const [selectedStrokes, setSelectedStrokes] = useState<StrokeFilter>('ALL');
+  const [sortBy, setSortBy] = useState<FrequencySort>('default');
+  const [typography, setTypography] = useState<KanjiTypography>('mincho');
   const [isAnimatingStrokes, setIsAnimatingStrokes] = useState<boolean>(false);
+  const [radicalsMap, setRadicalsMap] = useState<Record<string, RadicalEntry>>({});
+  const [compositionMap, setCompositionMap] = useState<
+    Record<string, { in?: string[]; out?: string[] }>
+  >({});
 
-  // Live Query to search kanjis from Dexie.js
+  useEffect(() => {
+    if (!qParam) return;
+    queueMicrotask(() => {
+      setSearchQuery(qParam);
+      if ([...qParam].length === 1) {
+        setSelectedKanjiChar(qParam);
+      }
+    });
+  }, [qParam]);
+
+  useEffect(() => {
+    let active = true;
+    fetch('/data/radicaux_liste.json')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((payload) => {
+        if (!active || !payload?.data) return;
+        setRadicalsMap(payload.data as Record<string, RadicalEntry>);
+      })
+      .catch(() => {
+        // Offline / fallback cleanly
+      });
+
+    fetch('/data/composition.json')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((payload) => {
+        if (!active || !payload) return;
+        setCompositionMap(payload as Record<string, { in?: string[]; out?: string[] }>);
+      })
+      .catch(() => {
+        // Offline / fallback cleanly
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const categories = useLiveQuery(async () => {
+    const all = await localDb.kanjis.toArray();
+    const set = new Set<string>();
+    for (const k of all) {
+      if (k.category && k.category !== '-') {
+        set.add(k.category);
+      }
+    }
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, []);
+
   const kanjiList = useLiveQuery(async () => {
-    let collection = localDb.kanjis.toCollection();
+    const collection =
+      selectedJlpt !== 'ALL'
+        ? localDb.kanjis.where('jlpt').equals(selectedJlpt as JLPTLevelNormalized)
+        : localDb.kanjis.toCollection();
 
-    if (selectedJlpt !== 'ALL') {
-      collection = localDb.kanjis.where('jlpt').equals(selectedJlpt as JLPTLevelNormalized);
+    const q = searchQuery.trim().toLowerCase();
+    const hasFilter =
+      Boolean(q) ||
+      selectedCategory !== 'ALL' ||
+      selectedRadical !== 'ALL' ||
+      selectedStrokes !== 'ALL';
+
+    let items: UnifiedKanjiRecord[];
+    if (!hasFilter && sortBy === 'default') {
+      items = await collection.limit(120).toArray();
+      return items;
     }
 
-    let items = await collection.limit(100).toArray();
-
-    if (searchQuery.trim()) {
-      const q = searchQuery.trim().toLowerCase();
-      items = items.filter(
-        (k) =>
+    items = await collection
+      .filter((k) => {
+        if (selectedCategory !== 'ALL' && k.category !== selectedCategory) return false;
+        if (selectedRadical !== 'ALL' && k.radical !== selectedRadical) return false;
+        if (!matchesStrokeRange(k.strokes, selectedStrokes)) return false;
+        if (!q) return true;
+        return (
           k.kanji.includes(q) ||
           k.on_readings.some((r) => r.toLowerCase().includes(q)) ||
           k.kun_readings.some((r) => r.toLowerCase().includes(q)) ||
+          (k.nanori && k.nanori.some((r) => r.toLowerCase().includes(q))) ||
           k.meanings_fr.some((m) => m.toLowerCase().includes(q)) ||
           k.meanings_en.some((m) => m.toLowerCase().includes(q)) ||
-          (k.rtk_keyword_6th && k.rtk_keyword_6th.toLowerCase().includes(q))
-      );
+          Boolean(k.rtk_keyword_6th && k.rtk_keyword_6th.toLowerCase().includes(q))
+        );
+      })
+      .toArray();
+
+    if (sortBy !== 'default') {
+      items.sort((a, b) => {
+        const ra = a.frequencies?.[sortBy] ?? Number.MAX_SAFE_INTEGER;
+        const rb = b.frequencies?.[sortBy] ?? Number.MAX_SAFE_INTEGER;
+        return ra - rb;
+      });
     }
 
-    return items;
-  }, [searchQuery, selectedJlpt]);
+    return items.slice(0, 120);
+  }, [searchQuery, selectedJlpt, selectedCategory, selectedRadical, selectedStrokes, sortBy]);
 
-  // Query selected kanji details
   const currentKanji = useLiveQuery(
     () => localDb.kanjis.get(selectedKanjiChar),
     [selectedKanjiChar]
   );
+
+  const existingBookmark = useLiveQuery(
+    () => localDb.bookmarks.where('bookmarkId').equals(`kanji-${selectedKanjiChar}`).first(),
+    [selectedKanjiChar]
+  );
+
+  const radicalOptions = useMemo(() => {
+    return Object.entries(radicalsMap).sort((a, b) => {
+      const sa = a[1].strokes ?? 99;
+      const sb = b[1].strokes ?? 99;
+      return sa - sb;
+    });
+  }, [radicalsMap]);
 
   const triggerStrokeAnimation = () => {
     setIsAnimatingStrokes(true);
     setTimeout(() => setIsAnimatingStrokes(false), 2500);
   };
 
+  const handleToggleBookmark = async () => {
+    if (!currentKanji) return;
+    const bookmarkId = `kanji-${currentKanji.kanji}`;
+    if (existingBookmark) {
+      await localDb.bookmarks.where('bookmarkId').equals(bookmarkId).delete();
+      await enqueueSyncAction('DELETE_BOOKMARK', { bookmarkId }, Boolean(isSignedIn));
+      return;
+    }
+
+    const meaningSummary =
+      currentKanji.meanings_fr?.filter((m) => m && m !== '-').slice(0, 3).join(', ') ||
+      currentKanji.meanings_en?.slice(0, 3).join(', ') ||
+      'Kanji';
+
+    const readingSummary = [
+      ...currentKanji.on_readings.slice(0, 3),
+      ...currentKanji.kun_readings.slice(0, 3),
+    ].join(' / ');
+
+    const payload = {
+      bookmarkId,
+      type: 'KANJI' as const,
+      kanjiOrWord: currentKanji.kanji,
+      reading: readingSummary || undefined,
+      meaning: meaningSummary,
+      level: currentKanji.jlpt,
+      notes: currentKanji.rtk_keyword_6th ? `RTK: ${currentKanji.rtk_keyword_6th}` : undefined,
+      createdAt: new Date().toISOString(),
+      isSynced: 0 as const,
+    };
+    await localDb.bookmarks.add(payload);
+    await enqueueSyncAction('SAVE_BOOKMARK', payload, Boolean(isSignedIn));
+  };
+
+  const handleResetFilters = () => {
+    setSearchQuery('');
+    setSelectedJlpt('ALL');
+    setSelectedCategory('ALL');
+    setSelectedRadical('ALL');
+    setSelectedStrokes('ALL');
+    setSortBy('default');
+  };
+
+  const meanings = currentKanji?.meanings_fr?.filter((m) => m && m !== '-').length
+    ? currentKanji.meanings_fr.filter((m) => m && m !== '-')
+    : currentKanji?.meanings_en?.filter((m) => m && m !== '-') || [];
+
+  const fontClass = `kanji-font--${typography}`;
+
   return (
-    <div className="flex flex-col gap-8">
-      {/* Header */}
-      <div>
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-950/80 border border-sky-800/80 text-sky-400 text-xs font-bold mb-2">
-          <BookOpen className="w-4 h-4" />
-          <span>Module d&apos;Étude des Kanjis & Données Unifiées Local-First</span>
-        </div>
-        <h1 className="text-3xl font-extrabold text-slate-100">Centre d&apos;Apprentissage des Kanjis (漢字)</h1>
-        <p className="text-sm text-slate-400 mt-1">
-          Explorez les 3 039 Kanjis (Jōyō + RTK Heisig + WaniKani) avec décomposition vectorielle, fréquences multi-corpus et filiation.
-        </p>
-      </div>
-
-      {/* Filter & Search Toolbar */}
-      <div className="flex flex-col sm:flex-row items-center gap-3 p-3 bg-slate-900 border border-slate-800 rounded-2xl shadow-lg">
-        {/* Search Input */}
-        <div className="relative flex-1 w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Rechercher par Kanji, lecture (ON/KUN), sens (FR/EN) ou keyword Heisig..."
-            className="w-full pl-9 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-colors"
-          />
+    <div className="kanji-page">
+      <div className="kanji-page__header">
+        <div className="kanji-page__title-row">
+          <h1 className="kanji-page__title">
+            <BookOpen className="kanji-page__title-icon" />
+            Kanjis (漢字)
+          </h1>
+          <span className="kanji-page__badge">3 042 Jōyō · RTK · WaniKani</span>
         </div>
 
-        {/* JLPT Selector */}
-        <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 shrink-0">
-          <button
-            onClick={() => setSelectedJlpt('ALL')}
-            className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all ${
-              selectedJlpt === 'ALL' ? 'bg-sky-600 text-white' : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            Tous
-          </button>
-          {JLPT_LEVELS.map((lvl) => (
+        <div
+          role="group"
+          aria-label="Police d'affichage du Kanji"
+          className="kanji-page__font-group"
+        >
+          <span className="kanji-page__font-label">
+            <Type className="kanji-page__font-icon" />
+            Police :
+          </span>
+          {(
+            [
+              { id: 'mincho', label: 'Mincho' },
+              { id: 'gothic', label: 'Gothic' },
+              { id: 'calligraphic', label: 'Manuscrite' },
+            ] as const
+          ).map((fontOpt) => (
             <button
-              key={lvl}
-              onClick={() => setSelectedJlpt(lvl)}
-              className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all ${
-                selectedJlpt === lvl ? 'bg-sky-600 text-white' : 'text-slate-400 hover:text-slate-200'
-              }`}
+              key={fontOpt.id}
+              type="button"
+              onClick={() => setTypography(fontOpt.id)}
+              className={`kanji-page__font-btn ${typography === fontOpt.id ? 'kanji-page__font-btn--active' : ''
+                }`}
             >
-              {lvl}
+              {fontOpt.label}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Quick Selector Strip */}
-      <div className="flex items-center gap-2 p-2 bg-slate-900 border border-slate-800 rounded-2xl overflow-x-auto min-h-[64px]">
-        <span className="text-xs font-semibold text-slate-400 px-2 shrink-0">
-          Résultats ({kanjiList?.length || 0}) :
-        </span>
-        {kanjiList && kanjiList.length > 0 ? (
-          kanjiList.map((k) => (
-            <button
-              key={k.kanji}
-              onClick={() => setSelectedKanjiChar(k.kanji)}
-              className={`w-11 h-11 rounded-xl text-lg font-bold font-serif transition-all shrink-0 flex flex-col items-center justify-center ${
-                selectedKanjiChar === k.kanji
-                  ? 'bg-sky-600 text-white shadow-lg shadow-sky-600/40 scale-105 ring-2 ring-sky-400'
-                  : 'bg-slate-950 text-slate-300 hover:bg-slate-800 border border-slate-800'
-              }`}
-            >
-              <span>{k.kanji}</span>
-            </button>
-          ))
-        ) : (
-          <span className="text-xs text-slate-500 italic">Chargement ou aucun résultat...</span>
-        )}
-      </div>
+      <KanjiFilterBar
+        searchQuery={searchQuery}
+        selectedJlpt={selectedJlpt}
+        selectedCategory={selectedCategory}
+        selectedRadical={selectedRadical}
+        selectedStrokes={selectedStrokes}
+        sortBy={sortBy}
+        categories={categories || []}
+        radicalOptions={radicalOptions}
+        onSearchChange={setSearchQuery}
+        onJlptChange={setSelectedJlpt}
+        onCategoryChange={setSelectedCategory}
+        onRadicalChange={setSelectedRadical}
+        onStrokesChange={setSelectedStrokes}
+        onSortChange={setSortBy}
+        onReset={handleResetFilters}
+      />
 
-      {/* Main Kanji Detail Layout */}
+      <KanjiResultsStrip
+        kanjiList={kanjiList}
+        selectedKanjiChar={selectedKanjiChar}
+        fontClass={fontClass}
+        onSelectKanji={setSelectedKanjiChar}
+      />
+
       {currentKanji ? (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column: Kanji Visual Card & Metadata */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col gap-6 items-center text-center">
-            {/* Visual Canvas Card */}
-            <div className="relative w-48 h-48 bg-slate-950 border-2 border-sky-500/40 rounded-2xl flex items-center justify-center shadow-inner overflow-hidden group">
-              <div className="absolute inset-0 border-r border-b border-dashed border-slate-800/80 pointer-events-none"></div>
-
-              <span
-                className={`text-8xl font-serif font-extrabold text-sky-300 transition-all duration-700 ${
-                  isAnimatingStrokes ? 'scale-110 opacity-70 text-indigo-400 animate-pulse' : ''
-                }`}
-              >
-                {currentKanji.kanji}
-              </span>
-
-              <span className="absolute bottom-2 right-2 text-[10px] font-mono text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
-                Traits: {currentKanji.strokes || '?'}
-              </span>
-
-              <span className="absolute top-2 left-2 text-[10px] font-serif text-sky-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
-                Radical: {currentKanji.radical} ({currentKanji.radical_name_en})
-              </span>
-            </div>
-
-            <button
-              onClick={triggerStrokeAnimation}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs shadow-lg shadow-sky-600/30 transition-all"
-            >
-              <Play className="w-4 h-4 fill-current" />
-              Lancer l&apos;Animation des Traits (KanjiVG)
-            </button>
-
-            {/* Badges Grid */}
-            <div className="w-full grid grid-cols-2 gap-3 text-left">
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
-                <span className="text-[10px] text-slate-500 uppercase font-semibold">Niveau JLPT</span>
-                <div className="text-sm font-bold text-sky-400">{currentKanji.jlpt}</div>
-              </div>
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
-                <span className="text-[10px] text-slate-500 uppercase font-semibold">Code SKIP</span>
-                <div className="text-sm font-mono font-bold text-slate-200">{currentKanji.skipCode}</div>
-              </div>
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
-                <span className="text-[10px] text-slate-500 uppercase font-semibold">Frame RTK</span>
-                <div className="text-sm font-mono font-bold text-emerald-400">
-                  #{currentKanji.rtk_6th || currentKanji.rtk_5th || 'N/A'}
-                </div>
-              </div>
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
-                <span className="text-[10px] text-slate-500 uppercase font-semibold">WaniKani</span>
-                <div className="text-sm font-mono font-bold text-purple-400">
-                  Lvl {currentKanji.wanikani_level || 'N/A'}
-                </div>
-              </div>
-            </div>
-
-            {/* Category */}
-            <div className="w-full p-3 bg-slate-950 rounded-xl border border-slate-800 text-left">
-              <span className="text-[10px] text-slate-500 uppercase font-semibold">Catégorie Sémantique</span>
-              <div className="text-xs font-bold text-slate-200 mt-0.5">
-                {currentKanji.category} → {currentKanji.subCategory}
-              </div>
-            </div>
-
-            {/* Readings */}
-            <div className="w-full flex flex-col gap-2 text-left pt-2 border-t border-slate-800">
-              <div>
-                <span className="text-xs font-semibold text-sky-400">Lecture On (音読み) :</span>
-                <div className="text-sm font-bold text-slate-200">
-                  {currentKanji.on_readings.join(', ') || 'Aucune'}
-                </div>
-              </div>
-              <div>
-                <span className="text-xs font-semibold text-emerald-400">Lecture Kun (訓読み) :</span>
-                <div className="text-sm font-bold text-slate-200">
-                  {currentKanji.kun_readings.join(', ') || 'Aucune'}
-                </div>
-              </div>
-              {currentKanji.rtk_keyword_6th && (
-                <div>
-                  <span className="text-xs font-semibold text-purple-400">Keyword RTK Heisig :</span>
-                  <div className="text-xs font-bold text-slate-300">{currentKanji.rtk_keyword_6th}</div>
-                </div>
-              )}
-            </div>
-
-            {/* Multi-corpus Frequencies */}
-            {currentKanji.frequencies && (
-              <div className="w-full p-3 bg-slate-950 rounded-xl border border-slate-800 text-left flex flex-col gap-1 text-[11px]">
-                <span className="text-[10px] text-slate-500 uppercase font-semibold mb-1">
-                  Fréquences (Rangs multi-corpus)
-                </span>
-                <div className="flex justify-between text-slate-300">
-                  <span>Aozora: #{currentKanji.frequencies.aozora || '-'}</span>
-                  <span>News: #{currentKanji.frequencies.news || '-'}</span>
-                </div>
-                <div className="flex justify-between text-slate-300">
-                  <span>Twitter: #{currentKanji.frequencies.twitter || '-'}</span>
-                  <span>Wikipedia: #{currentKanji.frequencies.wikipedia || '-'}</span>
-                </div>
-                {currentKanji.frequencies.innocent_rank && (
-                  <div className="text-emerald-400 font-semibold mt-0.5">
-                    Fiction (Innocent): #{currentKanji.frequencies.innocent_rank} ({currentKanji.frequencies.innocent_count?.toLocaleString()} occurrences)
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Right Column: Cascading Tree, Canvas, & Jukugo */}
-          <div className="lg:col-span-2 flex flex-col gap-6">
-            {/* Radical Tree Component */}
-            <CascadingKanjiTree targetKanji={currentKanji.kanji} />
-
-            {/* Handwriting Practice */}
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col gap-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-sky-400 flex items-center gap-1.5">
-                  <PenTool className="w-4 h-4" />
-                  Pratique d&apos;Écriture Manuscrite
-                </span>
-                <span className="text-xs text-slate-400">Tracez &quot;{currentKanji.kanji}&quot; ci-dessous</span>
-              </div>
-
-              <div className="flex justify-center">
-                <KanjiCanvasComponent expectedKanji={currentKanji.kanji} />
-              </div>
-            </div>
-
-            {/* Starting & Ending Jukugo Compound Words */}
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col gap-4">
-              <h3 className="text-sm font-bold text-slate-200 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-sky-400" />
-                Mots Composés Associés (Jukugo)
-              </h3>
-
-              <div className="flex flex-col gap-3">
-                {currentKanji.startingW && currentKanji.startingW.length > 0 && (
-                  <div>
-                    <span className="text-xs font-semibold text-slate-400">Commencant par &quot;{currentKanji.kanji}&quot; :</span>
-                    <div className="flex flex-wrap gap-2 mt-1.5">
-                      {currentKanji.startingW.map((w, idx) => (
-                        <span key={idx} className="px-3 py-1 bg-slate-950 border border-slate-800 rounded-lg text-sm font-serif font-bold text-sky-300">
-                          {w}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {currentKanji.endingW && currentKanji.endingW.length > 0 && (
-                  <div>
-                    <span className="text-xs font-semibold text-slate-400">Se terminant par &quot;{currentKanji.kanji}&quot; :</span>
-                    <div className="flex flex-wrap gap-2 mt-1.5">
-                      {currentKanji.endingW.map((w, idx) => (
-                        <span key={idx} className="px-3 py-1 bg-slate-950 border border-slate-800 rounded-lg text-sm font-serif font-bold text-emerald-300">
-                          {w}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+        <div className="kanji-page__layout">
+          <KanjiDetailSidebar
+            kanji={currentKanji}
+            radicalInfo={radicalsMap[currentKanji.radical]}
+            componentKeys={compositionMap[currentKanji.kanji]?.in || []}
+            fontClass={fontClass}
+            isAnimatingStrokes={isAnimatingStrokes}
+            isBookmarked={Boolean(existingBookmark)}
+            meanings={meanings}
+            onPlayAnimation={triggerStrokeAnimation}
+            onToggleBookmark={() => void handleToggleBookmark()}
+            onSelectKanji={setSelectedKanjiChar}
+            onFilterByRadical={setSelectedRadical}
+          />
         </div>
       ) : (
-        <div className="p-8 text-center bg-slate-900 border border-slate-800 rounded-2xl text-slate-400">
+        <div className="kanji-page__loading">
           Chargement des données du Kanji &quot;{selectedKanjiChar}&quot;...
         </div>
       )}
     </div>
+  );
+}
+
+export default function KanjiStudyPage() {
+  return (
+    <Suspense
+      fallback={<div className="kanji-page__suspense">Chargement du centre Kanji...</div>}
+    >
+      <KanjiStudyContent />
+    </Suspense>
   );
 }

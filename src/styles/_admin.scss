@@ -1,0 +1,187 @@
+.admin-page {
+  @apply flex flex-col gap-8;
+
+  &__loading {
+    @apply p-8 text-center text-xs text-slate-400;
+  }
+
+  &__header {
+    @apply flex items-center justify-between;
+  }
+
+  &__badge {
+    @apply inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-950/80 border border-amber-800/80 text-amber-400 text-xs font-bold mb-2;
+  }
+
+  &__badge-icon {
+    @apply w-4 h-4;
+  }
+
+  &__title {
+    @apply text-3xl font-extrabold text-slate-100;
+  }
+
+  &__subtitle {
+    @apply text-sm text-slate-400 mt-1;
+  }
+
+  &__refresh-btn {
+    @apply flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition-colors;
+  }
+
+  &__refresh-icon {
+    @apply w-4 h-4;
+
+    &--spin {
+      @apply animate-spin;
+    }
+  }
+
+  &__error {
+    @apply p-4 bg-rose-950/60 border border-rose-800 text-rose-300 text-xs rounded-xl flex items-center gap-2;
+  }
+
+  &__error-icon {
+    @apply w-4 h-4 shrink-0;
+  }
+}
+
+.admin-denied {
+  @apply max-w-xl mx-auto my-12 bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl text-center flex flex-col items-center gap-4;
+
+  &__icon-wrap {
+    @apply w-16 h-16 rounded-full bg-rose-950/80 border border-rose-800 text-rose-400 flex items-center justify-center;
+  }
+
+  &__icon {
+    @apply w-8 h-8;
+  }
+
+  &__title {
+    @apply text-xl font-bold text-slate-100;
+  }
+
+  &__description {
+    @apply text-xs text-slate-400 leading-relaxed;
+  }
+
+  &__code {
+    @apply text-sky-400 bg-slate-950 px-2 py-0.5 rounded;
+  }
+
+  &__email {
+    @apply text-[11px] text-slate-500 bg-slate-950 p-3 rounded-xl border border-slate-800 w-full font-mono;
+  }
+}
+
+.admin-kpis {
+  @apply grid grid-cols-1 sm:grid-cols-3 gap-6;
+
+  &__card {
+    @apply p-6 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl flex items-center gap-4;
+  }
+
+  &__icon-box {
+    @apply p-3 rounded-xl border;
+
+    &--total {
+      @apply bg-sky-950 border-sky-800 text-sky-400;
+    }
+
+    &--passed {
+      @apply bg-emerald-950 border-emerald-800 text-emerald-400;
+    }
+
+    &--rate {
+      @apply bg-indigo-950 border-indigo-800 text-indigo-400;
+    }
+  }
+
+  &__icon {
+    @apply w-6 h-6;
+  }
+
+  &__label {
+    @apply text-xs text-slate-400 font-medium;
+  }
+
+  &__value {
+    @apply text-2xl font-extrabold text-slate-100;
+
+    &--passed {
+      @apply text-emerald-400;
+    }
+
+    &--rate {
+      @apply text-indigo-400;
+    }
+  }
+}
+
+.admin-table {
+  @apply bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col gap-4;
+
+  &__title {
+    @apply text-base font-bold text-slate-200;
+  }
+
+  &__scroll {
+    @apply overflow-x-auto;
+  }
+
+  &__table {
+    @apply w-full text-left text-xs text-slate-300;
+  }
+
+  &__thead {
+    @apply bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800;
+  }
+
+  &__th {
+    @apply p-3;
+  }
+
+  &__tbody {
+    @apply divide-y divide-slate-800;
+  }
+
+  &__row {
+    @apply hover:bg-slate-950/50;
+  }
+
+  &__td {
+    @apply p-3;
+
+    &--email {
+      @apply font-mono text-[11px];
+    }
+
+    &--title {
+      @apply font-medium;
+    }
+
+    &--score {
+      @apply font-bold;
+    }
+
+    &--date {
+      @apply font-mono text-[10px] text-slate-400;
+    }
+  }
+
+  &__level-pill {
+    @apply px-2 py-0.5 rounded bg-sky-950 border border-sky-800 text-sky-400 font-bold;
+  }
+
+  &__verdict-pill {
+    @apply px-2 py-0.5 rounded text-[10px] font-bold;
+
+    &--passed {
+      @apply bg-emerald-950 text-emerald-400;
+    }
+
+    &--failed {
+      @apply bg-rose-950 text-rose-400;
+    }
+  }
+}

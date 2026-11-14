@@ -1,0 +1,387 @@
+.history-page {
+  @apply flex flex-col gap-8;
+
+  &__header {
+    @apply flex flex-col sm:flex-row sm:items-center justify-between gap-4;
+  }
+
+  &__badge {
+    @apply inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-800/80 text-emerald-400 text-xs font-bold mb-2;
+  }
+
+  &__badge-icon {
+    @apply w-4 h-4;
+  }
+
+  &__title {
+    @apply text-3xl font-extrabold text-slate-100;
+  }
+
+  &__subtitle {
+    @apply text-sm text-slate-400 mt-1;
+  }
+
+  &__actions {
+    @apply flex items-center gap-3;
+  }
+
+  &__sync-btn {
+    @apply flex items-center gap-2 px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold shadow-lg shadow-sky-600/30 transition-all disabled:opacity-50;
+  }
+
+  &__clear-btn {
+    @apply p-2.5 rounded-xl bg-slate-900 hover:bg-rose-950 text-slate-400 hover:text-rose-400 border border-slate-800 transition-colors;
+  }
+
+  &__btn-icon {
+    @apply w-4 h-4;
+
+    &--spin {
+      @apply animate-spin;
+    }
+  }
+}
+
+.analytics-panel {
+  @apply flex flex-col gap-6 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl;
+
+  &__header {
+    @apply flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4;
+  }
+
+  &__kicker {
+    @apply inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-amber-400 mb-1;
+  }
+
+  &__kicker-icon {
+    @apply w-4 h-4;
+  }
+
+  &__title {
+    @apply text-xl font-extrabold text-slate-100;
+  }
+
+  &__subtitle {
+    @apply text-xs text-slate-400 mt-0.5;
+  }
+
+  &__levels {
+    @apply flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 self-start;
+  }
+
+  &__level-btn {
+    @apply px-3 py-1 rounded-lg text-xs font-bold transition-colors text-slate-400 hover:text-slate-200;
+
+    &--active {
+      @apply bg-amber-600 text-white hover:text-white;
+    }
+  }
+
+  &__coverage-grid {
+    @apply grid grid-cols-2 sm:grid-cols-5 gap-3;
+  }
+
+  &__coverage-card {
+    @apply p-3 rounded-xl border bg-slate-950/60 border-slate-800;
+
+    &--active {
+      @apply bg-slate-950 border-amber-500/50;
+    }
+  }
+
+  &__coverage-head {
+    @apply flex items-center justify-between text-xs font-bold;
+  }
+
+  &__coverage-level {
+    @apply text-slate-200;
+  }
+
+  &__coverage-ratio {
+    @apply text-slate-400;
+  }
+
+  &__progress-track {
+    @apply w-full h-1.5 rounded-full bg-slate-800 mt-2 overflow-hidden;
+  }
+
+  &__progress-fill {
+    @apply h-full bg-emerald-500;
+  }
+
+  &__coverage-meta {
+    @apply text-[10px] text-slate-400 mt-1.5 flex justify-between;
+  }
+
+  &__heatmap-section {
+    @apply flex flex-col gap-3;
+  }
+
+  &__heatmap-head {
+    @apply flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400;
+  }
+
+  &__heatmap-label {
+    @apply font-semibold flex items-center gap-1.5;
+  }
+
+  &__heatmap-icon {
+    @apply w-4 h-4 text-sky-400;
+  }
+
+  &__legend {
+    @apply flex items-center gap-3 text-[11px];
+  }
+
+  &__legend-item {
+    @apply flex items-center gap-1;
+  }
+
+  &__legend-dot {
+    @apply w-2.5 h-2.5 rounded inline-block;
+
+    &--unseen {
+      @apply bg-slate-800;
+    }
+
+    &--weak {
+      @apply bg-rose-700;
+    }
+
+    &--learning {
+      @apply bg-amber-600;
+    }
+
+    &--mastered {
+      @apply bg-emerald-600;
+    }
+  }
+
+  &__tiles-grid {
+    @apply grid grid-cols-8 sm:grid-cols-10 md:grid-cols-16 gap-1.5;
+  }
+
+  &__tile {
+    @apply h-9 rounded-lg border flex items-center justify-center font-serif font-bold text-sm transition-transform hover:scale-105;
+
+    &--unseen {
+      @apply bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-600;
+    }
+
+    &--weak {
+      @apply bg-rose-950/70 border-rose-700 text-rose-200;
+    }
+
+    &--learning {
+      @apply bg-amber-950/70 border-amber-700 text-amber-200;
+    }
+
+    &--mastered {
+      @apply bg-emerald-950/70 border-emerald-600 text-emerald-200;
+    }
+  }
+
+  &__goals-section {
+    @apply flex flex-col gap-3 pt-4 border-t border-slate-800;
+  }
+
+  &__goals-kicker {
+    @apply text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5;
+  }
+
+  &__goals-icon {
+    @apply w-4 h-4;
+  }
+
+  &__goals-grid {
+    @apply grid grid-cols-1 md:grid-cols-3 gap-3;
+  }
+
+  &__goal-card {
+    @apply p-4 rounded-xl bg-slate-950 border border-slate-800 flex flex-col justify-between gap-3;
+  }
+
+  &__goal-title {
+    @apply flex items-center gap-1.5 text-xs font-bold text-slate-100;
+  }
+
+  &__goal-icon {
+    @apply w-4 h-4 shrink-0;
+
+    &--high {
+      @apply text-rose-400;
+    }
+
+    &--medium {
+      @apply text-amber-400;
+    }
+
+    &--normal {
+      @apply text-sky-400;
+    }
+  }
+
+  &__goal-metric {
+    @apply text-[11px] text-slate-400 mt-1.5;
+  }
+
+  &__goal-cta {
+    @apply inline-flex items-center gap-1 text-xs font-bold text-sky-400 hover:text-sky-300;
+  }
+
+  &__goal-arrow {
+    @apply w-3.5 h-3.5;
+  }
+}
+
+.history-attempts {
+  @apply flex flex-col gap-4;
+
+  &--cloud {
+    @apply pt-6 border-t border-slate-800;
+  }
+
+  &__heading {
+    @apply text-lg font-bold text-slate-200 flex items-center gap-2;
+  }
+
+  &__heading-icon {
+    @apply w-5 h-5;
+
+    &--local {
+      @apply text-sky-400;
+    }
+
+    &--cloud {
+      @apply text-emerald-400;
+    }
+  }
+
+  &__state {
+    @apply p-8 text-center text-xs text-slate-400;
+
+    &--empty {
+      @apply bg-slate-900 border border-slate-800 rounded-2xl;
+    }
+  }
+
+  &__grid {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-4;
+  }
+
+  &__card {
+    @apply bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col gap-4;
+  }
+
+  &__card-head {
+    @apply flex items-start justify-between;
+  }
+
+  &__card-identity {
+    @apply flex items-center gap-3;
+  }
+
+  &__level-badge {
+    @apply w-12 h-12 rounded-xl flex items-center justify-center font-extrabold text-sm border;
+
+    &--passed {
+      @apply bg-emerald-950 text-emerald-400 border-emerald-800 shadow-emerald-900/40;
+    }
+
+    &--failed {
+      @apply bg-rose-950 text-rose-400 border-rose-800 shadow-rose-900/40;
+    }
+  }
+
+  &__card-title {
+    @apply text-sm font-bold text-slate-100;
+  }
+
+  &__card-date {
+    @apply text-[10px] text-slate-400 font-mono;
+  }
+
+  &__verdict-pill {
+    @apply text-[10px] uppercase font-extrabold px-2.5 py-1 rounded-full border;
+
+    &--passed {
+      @apply bg-emerald-950 text-emerald-400 border-emerald-800;
+    }
+
+    &--failed {
+      @apply bg-rose-950 text-rose-400 border-rose-800;
+    }
+  }
+
+  &__breakdown {
+    @apply grid grid-cols-3 gap-2 p-3 bg-slate-950 rounded-xl border border-slate-800/80 text-center text-xs;
+  }
+
+  &__part-label {
+    @apply text-[10px] text-slate-500 uppercase;
+  }
+
+  &__part-score {
+    @apply font-bold text-slate-200;
+  }
+
+  &__card-foot {
+    @apply flex items-center justify-between pt-1 text-xs;
+  }
+
+  &__total-label {
+    @apply text-slate-400;
+  }
+
+  &__total-value {
+    @apply text-slate-100;
+  }
+
+  &__sync-status {
+    @apply text-[11px] font-semibold flex items-center gap-1;
+
+    &--synced {
+      @apply text-emerald-400;
+    }
+
+    &--pending {
+      @apply text-amber-400;
+    }
+  }
+
+  &__sync-icon {
+    @apply w-3 h-3;
+  }
+
+  &__cloud-card {
+    @apply p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-xs flex items-center justify-between;
+  }
+
+  &__cloud-title {
+    @apply font-bold text-slate-200;
+  }
+
+  &__cloud-date {
+    @apply text-slate-400 text-[10px] font-mono;
+  }
+
+  &__cloud-right {
+    @apply text-right;
+  }
+
+  &__cloud-score {
+    @apply font-bold text-sky-400;
+  }
+
+  &__cloud-verdict {
+    @apply text-[10px] font-bold;
+
+    &--passed {
+      @apply text-emerald-400;
+    }
+
+    &--failed {
+      @apply text-rose-400;
+    }
+  }
+}

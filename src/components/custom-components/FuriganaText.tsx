@@ -23,13 +23,13 @@ export const FuriganaText: React.FC<FuriganaTextProps> = ({
   const isHoverMode = furiganaMode === 'HOVER';
 
   return (
-    <ruby className={`group relative inline-flex flex-col items-center leading-none cursor-pointer ${className}`}>
-      <span className="text-current font-medium group-hover:text-sky-300 transition-colors">{text}</span>
+    <ruby
+      className={`furi-word ${isHoverMode ? 'furi-word--hover' : ''} ${className}`.trim()}
+    >
+      <span className="furi-word__base">{text}</span>
       <rt
-        className={`text-[0.65em] font-normal text-sky-400 select-none leading-none -mt-0.5 transition-all duration-200 ${
-          isHoverMode
-            ? 'opacity-0 group-hover:opacity-100 group-hover:-translate-y-0.5'
-            : 'opacity-100'
+        className={`furi-word__reading ${
+          isHoverMode ? 'furi-word__reading--hidden-until-hover' : ''
         }`}
       >
         {reading}

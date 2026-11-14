@@ -1,0 +1,136 @@
+.slang-page {
+  @apply flex flex-col gap-6;
+
+  &__badge {
+    @apply inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-950/80 border border-rose-800/80 text-rose-300 text-xs font-bold mb-2;
+  }
+
+  &__badge-icon {
+    @apply w-4 h-4;
+  }
+
+  &__title {
+    @apply text-3xl font-extrabold text-slate-100;
+  }
+
+  &__subtitle {
+    @apply text-sm text-slate-400 mt-1;
+  }
+
+  &__toast {
+    @apply p-3 bg-emerald-950 border border-emerald-800 text-emerald-300 text-xs font-semibold rounded-xl;
+  }
+
+  &__grid {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-4;
+  }
+
+  &__more-wrap {
+    @apply flex justify-center;
+  }
+
+  &__more-btn {
+    @apply px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700;
+  }
+
+  &__suspense {
+    @apply p-8 text-center text-sm text-slate-400;
+  }
+}
+
+.slang-filters {
+  @apply bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row gap-3 items-center shadow-lg;
+
+  &__search-wrap {
+    @apply relative flex-1 w-full;
+  }
+
+  &__search-icon {
+    @apply absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400;
+  }
+
+  &__search-input {
+    @apply w-full pl-9 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500;
+  }
+
+  &__tabs {
+    @apply flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 shrink-0;
+  }
+
+  &__tab {
+    @apply px-3 py-1.5 rounded-lg text-xs font-bold transition-colors text-slate-400 hover:text-slate-200;
+
+    &--active {
+      @apply bg-rose-600 text-white hover:text-white;
+    }
+  }
+}
+
+.slang-card {
+  @apply bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-3 shadow-lg;
+
+  &__head {
+    @apply flex items-start justify-between gap-2;
+  }
+
+  &__title-row {
+    @apply flex items-center gap-2 flex-wrap;
+  }
+
+  &__term {
+    @apply text-xl font-bold text-slate-100 font-serif;
+  }
+
+  &__badge {
+    @apply px-2 py-0.5 rounded text-[10px] font-bold border flex items-center gap-1;
+
+    &--slang {
+      @apply bg-rose-950 border-rose-800 text-rose-300;
+    }
+
+    &--ono {
+      @apply bg-amber-950 border-amber-800 text-amber-300;
+    }
+  }
+
+  &__sparkle-icon {
+    @apply w-3 h-3;
+  }
+
+  &__readings {
+    @apply text-xs text-slate-400 mt-0.5;
+  }
+
+  &__bookmark-btn {
+    @apply p-2 rounded-xl bg-slate-950 hover:bg-sky-950 text-slate-400 hover:text-sky-300 border border-slate-800 shrink-0;
+  }
+
+  &__bookmark-icon {
+    @apply w-4 h-4;
+  }
+
+  &__meaning {
+    @apply text-xs text-slate-200 leading-relaxed;
+  }
+
+  &__note {
+    @apply text-[11px] text-amber-300/90 bg-amber-950/30 border border-amber-800/40 rounded-lg p-2;
+  }
+
+  &__extended {
+    @apply text-[11px] text-slate-400 leading-relaxed;
+  }
+
+  &__example {
+    @apply text-xs text-slate-400 bg-slate-950 rounded-lg p-2.5 border border-slate-800/80;
+  }
+
+  &__examples {
+    @apply flex flex-col gap-1 pt-2 border-t border-slate-800;
+  }
+
+  &__ono-example {
+    @apply text-xs text-sky-300 bg-slate-950 rounded-lg p-2 border border-slate-800/80;
+  }
+}
+

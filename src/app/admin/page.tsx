@@ -3,176 +3,144 @@
 import React, { useEffect, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { isAdminEmail } from '@/lib/admin';
-import { ShieldCheck, Database, Award, Users, AlertTriangle, RefreshCw, BarChart3, CheckCircle } from 'lucide-react';
+import { AdminAccessDenied } from '@/components/admin/AdminAccessDenied';
+import { AdminKpiGrid } from '@/components/admin/AdminKpiGrid';
+import {
+  AdminAttemptsTable,
+  type AdminAttemptRow,
+} from '@/components/admin/AdminAttemptsTable';
+import { ShieldCheck, AlertTriangle, RefreshCw } from 'lucide-react';
+
+interface AdminStatsData {
+  totalAttempts: number;
+  passedAttempts: number;
+  passRate: number;
+  recentAttempts: AdminAttemptRow[];
+  levelDistribution?: Array<{ _id: string; count: number; avgScore?: number }>;
+}
 
 export default function AdminPage() {
   const { user, isLoaded } = useUser();
-  const [statsData, setStatsData] = useState<any>(null);
+
+  const [statsData, setStatsData] = useState<AdminStatsData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const userEmail = user?.primaryEmailAddress?.emailAddress;
   const isAdmin = isAdminEmail(userEmail);
 
-  const fetchAdminStats = async () => {
-    setIsLoading(true);
-    setErrorMsg(null);
+  const fetchAdminStats = async (showLoader = true) => {
+    if (showLoader) {
+      setIsLoading(true);
+      setErrorMsg(null);
+    }
     try {
       const res = await fetch('/api/admin/stats');
       const data = await res.json();
-      if (!data.success) {
+      if (!res.ok || !data.success) {
         setErrorMsg(data.error || 'Erreur d’accès admin');
       } else {
+        setErrorMsg(null);
         setStatsData(data.stats);
       }
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Erreur lors du chargement des statistiques admin');
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : 'Erreur lors du chargement des statistiques admin';
+      setErrorMsg(message);
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    if (isLoaded && isAdmin) {
-      fetchAdminStats();
-    }
+    if (!isLoaded || !isAdmin) return;
+    let cancelled = false;
+
+    const loadInitialStats = async () => {
+      try {
+        const res = await fetch('/api/admin/stats');
+        const data = await res.json();
+        if (cancelled) return;
+        if (!res.ok || !data.success) {
+          setErrorMsg(data.error || 'Erreur d’accès admin');
+        } else {
+          setErrorMsg(null);
+          setStatsData(data.stats);
+        }
+      } catch (err: unknown) {
+        if (cancelled) return;
+        const message =
+          err instanceof Error ? err.message : 'Erreur lors du chargement des statistiques admin';
+        setErrorMsg(message);
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    void loadInitialStats();
+    return () => {
+      cancelled = true;
+    };
   }, [isLoaded, isAdmin]);
 
   if (!isLoaded) {
-    return <div className="p-8 text-center text-xs text-slate-400">Vérification des droits Clerk Auth...</div>;
-  }
-
-  if (!isAdmin) {
     return (
-      <div className="max-w-xl mx-auto my-12 bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl text-center flex flex-col items-center gap-4">
-        <div className="w-16 h-16 rounded-full bg-rose-950/80 border border-rose-800 text-rose-400 flex items-center justify-center">
-          <AlertTriangle className="w-8 h-8" />
-        </div>
-        <h2 className="text-xl font-bold text-slate-100">Accès Administrateur Restreint</h2>
-        <p className="text-xs text-slate-400 leading-relaxed">
-          Seuls les comptes administrateurs figurant dans <code className="text-sky-400 bg-slate-950 px-2 py-0.5 rounded">EMAIL_ADMIN</code> ont accès au panneau de gestion MongoDB Atlas.
-        </p>
-        <div className="text-[11px] text-slate-500 bg-slate-950 p-3 rounded-xl border border-slate-800 w-full font-mono">
-          Votre email actuel : {userEmail || 'Non connecté'}
-        </div>
-      </div>
+      <div className="admin-page__loading">Vérification des droits Clerk Auth...</div>
     );
   }
 
+  if (!isAdmin) {
+    return <AdminAccessDenied userEmail={userEmail} />;
+  }
+
   return (
-    <div className="flex flex-col gap-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+    <div className="admin-page">
+      <div className="admin-page__header">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-950/80 border border-amber-800/80 text-amber-400 text-xs font-bold mb-2">
-            <ShieldCheck className="w-4 h-4" />
+          <div className="admin-page__badge">
+            <ShieldCheck className="admin-page__badge-icon" />
             <span>Panneau de Contrôle Administrateur (EMAIL_ADMIN)</span>
           </div>
-          <h1 className="text-3xl font-extrabold text-slate-100">Administration MongoDB Atlas & Stats</h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Supervisez les passages d&apos;examens des utilisateurs et gérez la base de données centrale.
+          <h1 className="admin-page__title">Administration MongoDB Atlas &amp; Stats</h1>
+          <p className="admin-page__subtitle">
+            Supervisez les passages d&apos;examens des utilisateurs et gérez la base de données
+            centrale.
           </p>
         </div>
 
         <button
-          onClick={fetchAdminStats}
+          type="button"
+          onClick={() => void fetchAdminStats()}
           disabled={isLoading}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition-colors"
+          className="admin-page__refresh-btn"
         >
-          <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+          <RefreshCw
+            className={`admin-page__refresh-icon ${
+              isLoading ? 'admin-page__refresh-icon--spin' : ''
+            }`}
+          />
           <span>Actualiser Stats</span>
         </button>
       </div>
 
       {errorMsg && (
-        <div className="p-4 bg-rose-950/60 border border-rose-800 text-rose-300 text-xs rounded-xl flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4 shrink-0" />
+        <div className="admin-page__error">
+          <AlertTriangle className="admin-page__error-icon" />
           <span>{errorMsg}</span>
         </div>
       )}
 
-      {/* Admin KPI Cards */}
       {statsData && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-sky-950 border border-sky-800 text-sky-400">
-              <Database className="w-6 h-6" />
-            </div>
-            <div>
-              <span className="text-xs text-slate-400 font-medium">Total Tentatives (Atlas)</span>
-              <h3 className="text-2xl font-extrabold text-slate-100">{statsData.totalAttempts}</h3>
-            </div>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-emerald-950 border border-emerald-800 text-emerald-400">
-              <CheckCircle className="w-6 h-6" />
-            </div>
-            <div>
-              <span className="text-xs text-slate-400 font-medium">Tentatives Réussies</span>
-              <h3 className="text-2xl font-extrabold text-emerald-400">{statsData.passedAttempts}</h3>
-            </div>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-indigo-950 border border-indigo-800 text-indigo-400">
-              <BarChart3 className="w-6 h-6" />
-            </div>
-            <div>
-              <span className="text-xs text-slate-400 font-medium">Taux de Réussite Global</span>
-              <h3 className="text-2xl font-extrabold text-indigo-400">{statsData.passRate}</h3>
-            </div>
-          </div>
-        </div>
+        <AdminKpiGrid
+          totalAttempts={statsData.totalAttempts}
+          passedAttempts={statsData.passedAttempts}
+          passRate={statsData.passRate}
+        />
       )}
 
-      {/* Recent Submissions Table */}
-      {statsData?.recentAttempts && (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col gap-4">
-          <h2 className="text-base font-bold text-slate-200">10 Dernières Soumissions Utilisateurs (MongoDB Atlas)</h2>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
-                <tr>
-                  <th className="p-3">Utilisateur / Email</th>
-                  <th className="p-3">Niveau</th>
-                  <th className="p-3">Examen / Titre</th>
-                  <th className="p-3">Score Total</th>
-                  <th className="p-3">Résultat</th>
-                  <th className="p-3">Date</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800">
-                {statsData.recentAttempts.map((att: any) => (
-                  <tr key={att._id} className="hover:bg-slate-950/50">
-                    <td className="p-3 font-mono text-[11px]">{att.userEmail}</td>
-                    <td className="p-3">
-                      <span className="px-2 py-0.5 rounded bg-sky-950 border border-sky-800 text-sky-400 font-bold">
-                        {att.level}
-                      </span>
-                    </td>
-                    <td className="p-3 font-medium">{att.title}</td>
-                    <td className="p-3 font-bold">{att.scoreTotal} / {att.maxScoreTotal} pts</td>
-                    <td className="p-3">
-                      <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                          att.passed ? 'bg-emerald-950 text-emerald-400' : 'bg-rose-950 text-rose-400'
-                        }`}
-                      >
-                        {att.passed ? 'PASSED' : 'FAILED'}
-                      </span>
-                    </td>
-                    <td className="p-3 font-mono text-[10px] text-slate-400">
-                      {new Date(att.createdAt).toLocaleString('fr-FR')}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+      {statsData?.recentAttempts && <AdminAttemptsTable attempts={statsData.recentAttempts} />}
     </div>
   );
 }

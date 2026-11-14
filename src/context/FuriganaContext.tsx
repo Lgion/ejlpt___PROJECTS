@@ -19,10 +19,12 @@ export const FuriganaProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [furiganaMode, setFuriganaModeState] = useState<FuriganaMode>('AUTO');
 
   useEffect(() => {
-    const prefs = getStoredPreferences();
-    if (prefs.furiganaMode) {
-      setFuriganaModeState(prefs.furiganaMode);
-    }
+    queueMicrotask(() => {
+      const prefs = getStoredPreferences();
+      if (prefs.furiganaMode) {
+        setFuriganaModeState(prefs.furiganaMode);
+      }
+    });
   }, []);
 
   const setFuriganaMode = (mode: FuriganaMode) => {

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.app-html--dark, .app-html--dark *));
 
 :root {
   --background: #ffffff;
@@ -23,4 +24,14 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Top-layer modal scroll containment (Progressive enhancement) */
+dialog:modal {
+  overscroll-behavior: contain;
+}
+
+dialog::backdrop {
+  overflow: hidden;
+  overscroll-behavior: contain;
 }

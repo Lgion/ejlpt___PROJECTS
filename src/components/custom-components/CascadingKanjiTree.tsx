@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Network, Loader2 } from 'lucide-react';
-import { localDb, UnifiedKanjiRecord } from '@/lib/db';
+import { localDb } from '@/lib/db';
 
 interface RadicalNode {
   kanji: string;
@@ -20,9 +20,13 @@ interface CompositionGraph {
 
 interface CascadingKanjiTreeProps {
   targetKanji?: string;
+  embeddedInModal?: boolean;
 }
 
-export const CascadingKanjiTree: React.FC<CascadingKanjiTreeProps> = ({ targetKanji = '語' }) => {
+export const CascadingKanjiTree: React.FC<CascadingKanjiTreeProps> = ({
+  targetKanji = '語',
+  embeddedInModal = false,
+}) => {
   const [compositionData, setCompositionData] = useState<CompositionGraph | null>(null);
   const [treeNode, setTreeNode] = useState<RadicalNode | null>(null);
   const [selectedNode, setSelectedNode] = useState<RadicalNode | null>(null);
@@ -43,7 +47,9 @@ export const CascadingKanjiTree: React.FC<CascadingKanjiTreeProps> = ({ targetKa
     if (!compositionData) return;
 
     let isMounted = true;
-    setLoading(true);
+    queueMicrotask(() => {
+      if (isMounted) setLoading(true);
+    });
 
     async function buildTree(kanjiChar: string, depth = 0, maxDepth = 2): Promise<RadicalNode> {
       // Query IndexedDB for detailed metadata
@@ -85,24 +91,22 @@ export const CascadingKanjiTree: React.FC<CascadingKanjiTreeProps> = ({ targetKa
   }, [targetKanji, compositionData]);
 
   const renderNode = (node: RadicalNode, level = 0) => (
-    <div key={`${node.kanji}-${level}`} className="flex flex-col items-center">
+    <div key={`${node.kanji}-${level}`} className="kanji-tree__node-wrap">
       <button
+        type="button"
         onClick={() => setSelectedNode(node)}
-        className={`flex flex-col items-center p-3 rounded-xl border transition-all shadow-md ${
-          selectedNode?.kanji === node.kanji
-            ? 'bg-sky-950 border-sky-500 text-sky-200 ring-2 ring-sky-500/40 shadow-sky-900/50 scale-105'
-            : 'bg-slate-800 border-slate-700 text-slate-200 hover:border-slate-500'
-        }`}
+        className={`kanji-tree__node-btn ${selectedNode?.kanji === node.kanji ? 'kanji-tree__node-btn--active' : ''
+          }`}
       >
-        <span className="text-2xl font-bold font-serif">{node.kanji}</span>
-        {node.reading && <span className="text-[10px] text-sky-400 font-semibold mt-1">{node.reading}</span>}
-        <span className="text-[11px] text-slate-400 max-w-[110px] text-center truncate mt-0.5">{node.meaning}</span>
+        <span className="kanji-tree__node-glyph">{node.kanji}</span>
+        {node.reading && <span className="kanji-tree__node-reading">{node.reading}</span>}
+        <span className="kanji-tree__node-meaning">{node.meaning}</span>
       </button>
 
       {node.components && node.components.length > 0 && (
-        <div className="flex flex-col items-center mt-2 w-full">
-          <div className="w-0.5 h-4 bg-slate-700"></div>
-          <div className="flex items-start justify-center gap-4 border-t border-slate-700 pt-2 w-full">
+        <div className="kanji-tree__children-wrap">
+          <div className="kanji-tree__stem" />
+          <div className="kanji-tree__children-row">
             {node.components.map((child) => renderNode(child, level + 1))}
           </div>
         </div>
@@ -111,36 +115,42 @@ export const CascadingKanjiTree: React.FC<CascadingKanjiTreeProps> = ({ targetKa
   );
 
   return (
-    <div className="w-full p-4 bg-slate-900 border border-slate-800 rounded-xl shadow-xl flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-bold uppercase tracking-wider text-sky-400 flex items-center gap-1.5">
-          <Network className="w-4 h-4" />
-          Arbre de Filiation & Décomposition Dynamique (KanjiTree)
-        </span>
-        <span className="text-xs text-slate-400">Graphe des Composants (`composition.json`)</span>
-      </div>
+    <div className={`kanji-tree ${embeddedInModal ? 'kanji-tree--modal' : ''}`}>
+      {!embeddedInModal && (
+        <div className="kanji-tree__head">
+          <span className="kanji-tree__title">
+            <Network className="kanji-tree__title-icon" />
+            Arbre de Filiation &amp; Décomposition Dynamique (KanjiTree)
+          </span>
+          <span className="kanji-tree__source">Graphe des Composants (`composition.json`)</span>
+        </div>
+      )}
 
-      <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 overflow-x-auto flex justify-center py-6 min-h-[160px] items-center">
+      <div className="kanji-tree__canvas">
         {loading ? (
-          <div className="flex items-center gap-2 text-slate-400 text-sm">
-            <Loader2 className="w-5 h-5 animate-spin text-sky-500" />
+          <div className="kanji-tree__loading">
+            <Loader2 className="kanji-tree__spinner" />
             <span>Génération de l&apos;arbre de décomposition...</span>
           </div>
         ) : treeNode ? (
           renderNode(treeNode)
         ) : (
-          <span className="text-xs text-slate-500">Aucune donnée de composition pour {targetKanji}</span>
+          <span className="kanji-tree__empty">
+            Aucune donnée de composition pour {targetKanji}
+          </span>
         )}
       </div>
 
       {selectedNode && (
-        <div className="p-3 bg-slate-800/80 border border-slate-700 rounded-lg flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-sky-950 border border-sky-600 text-sky-300 flex items-center justify-center text-xl font-bold font-serif shrink-0">
-            {selectedNode.kanji}
-          </div>
-          <div className="flex-1 text-xs">
-            <div className="font-bold text-slate-200">{selectedNode.meaning}</div>
-            {selectedNode.reading && <div className="text-slate-400">Lecture : {selectedNode.reading}</div>}
+        <div className="kanji-tree__inspector">
+          <div className="kanji-tree__inspector-glyph">{selectedNode.kanji}</div>
+          <div className="kanji-tree__inspector-info">
+            <div className="kanji-tree__inspector-meaning">{selectedNode.meaning}</div>
+            {selectedNode.reading && (
+              <div className="kanji-tree__inspector-reading">
+                Lecture : {selectedNode.reading}
+              </div>
+            )}
           </div>
         </div>
       )}

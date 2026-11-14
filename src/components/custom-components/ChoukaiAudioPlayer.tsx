@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
-import { Volume2, Play, Pause, RotateCcw, AlertTriangle, FileText } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Volume2, Play, Pause, Square, FileText } from 'lucide-react';
 
 interface ChoukaiAudioPlayerProps {
   audioUrl?: string;
@@ -17,147 +17,276 @@ export const ChoukaiAudioPlayer: React.FC<ChoukaiAudioPlayerProps> = ({
   const [isPlaying, setIsPlaying] = useState(false);
   const [playCount, setPlayCount] = useState(0);
   const [showScript, setShowScript] = useState(false);
-  const [volume, setVolume] = useState(0.8);
+  const [volume, setVolume] = useState(0.85);
+  const [rate, setRate] = useState<0.75 | 1 | 1.25>(1);
+  const [activeLine, setActiveLine] = useState<number | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const cancelledRef = useRef(false);
 
-  // Simulated web synthesizer audio for JLPT Choukai tone if no direct MP3
-  const playSimulatedChoukaiAudio = () => {
-    if (isFullMockMode && playCount >= 1) {
-      alert('En mode Examen Blanc Officiel, l’écoute ne peut être jouée qu’une seule fois.');
+  useEffect(() => {
+    return () => {
+      cancelledRef.current = true;
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
+  const stopPlayback = () => {
+    cancelledRef.current = true;
+    setIsPlaying(false);
+    setActiveLine(null);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+  };
+
+  const playChime = async () => {
+    if (typeof window === 'undefined') return;
+    try {
+      const AudioCtx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      gain.gain.setValueAtTime(0.2 * volume, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.45);
+      await new Promise((r) => setTimeout(r, 480));
+      void ctx.close();
+    } catch {
+      // Ignore Web Audio restriction if unavailable
+    }
+  };
+
+  const handleTogglePlay = async () => {
+    if (isFullMockMode && playCount >= 1 && !isPlaying) {
       return;
     }
 
     if (isPlaying) {
-      setIsPlaying(false);
-      if (audioRef.current) audioRef.current.pause();
+      stopPlayback();
       return;
     }
 
+    cancelledRef.current = false;
     setIsPlaying(true);
-    setPlayCount(prev => prev + 1);
+    setPlayCount((prev) => prev + 1);
 
-    // Audio chime simulation via Web Audio API if HTML audio fails or empty
-    if (typeof window !== 'undefined') {
+    // 1. Direct MP3/OGG playback when audioUrl exists
+    if (audioUrl && audioRef.current) {
       try {
-        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-        const ctx = new AudioCtx();
-        
-        // 2-tone JLPT chime (Ding-Dong)
-        const osc1 = ctx.createOscillator();
-        const gain1 = ctx.createGain();
-        osc1.type = 'sine';
-        osc1.frequency.setValueAtTime(880, ctx.currentTime); // A5
-        gain1.gain.setValueAtTime(0.3 * volume, ctx.currentTime);
-        gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
-        osc1.connect(gain1);
-        gain1.connect(ctx.destination);
-        osc1.start(ctx.currentTime);
-        osc1.stop(ctx.currentTime + 1.2);
-
-        setTimeout(() => {
-          const osc2 = ctx.createOscillator();
-          const gain2 = ctx.createGain();
-          osc2.type = 'sine';
-          osc2.frequency.setValueAtTime(659.25, ctx.currentTime); // E5
-          gain2.gain.setValueAtTime(0.3 * volume, ctx.currentTime);
-          gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.5);
-          osc2.connect(gain2);
-          gain2.connect(ctx.destination);
-          osc2.start(ctx.currentTime);
-          osc2.stop(ctx.currentTime + 1.5);
-        }, 500);
-
-        setTimeout(() => {
-          setIsPlaying(false);
-        }, 3000);
+        audioRef.current.volume = volume;
+        audioRef.current.playbackRate = rate;
+        await audioRef.current.play();
+        return;
       } catch (err) {
-        console.error('Web audio API error', err);
-        setIsPlaying(false);
+        console.warn('Direct audio playback failed, falling back to TTS:', err);
       }
     }
+
+    // 2. Web Speech API ja-JP line-by-line synthesis from audioScript
+    if (audioScript && typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      await playChime();
+      if (cancelledRef.current) return;
+
+      const lines = audioScript
+        .split(/\r?\n/)
+        .map((l) => l.trim())
+        .filter(Boolean);
+
+      const voices = window.speechSynthesis.getVoices();
+      const jaVoice = voices.find((v) => v.lang.toLowerCase().startsWith('ja')) || null;
+
+      for (let i = 0; i < lines.length; i += 1) {
+        if (cancelledRef.current) break;
+        setActiveLine(i);
+        const cleanSpoken = lines[i].replace(/^[A-Za-zぁ-んァ-ヶ一-龠]{1,8}[：:]\s*/, '');
+
+        await new Promise<void>((resolve) => {
+          const utt = new SpeechSynthesisUtterance(cleanSpoken || lines[i]);
+          utt.lang = 'ja-JP';
+          if (jaVoice) utt.voice = jaVoice;
+          utt.rate = rate;
+          utt.volume = volume;
+          utt.onend = () => resolve();
+          utt.onerror = () => resolve();
+          window.speechSynthesis.speak(utt);
+        });
+      }
+
+      if (!cancelledRef.current) {
+        setIsPlaying(false);
+        setActiveLine(null);
+      }
+      return;
+    }
+
+    // 3. Fallback chime timer if no script & no URL
+    await playChime();
+    setTimeout(() => {
+      if (!cancelledRef.current) {
+        setIsPlaying(false);
+      }
+    }, 1200);
   };
 
+  const scriptLines = audioScript ? audioScript.split(/\r?\n/).filter((l) => l.trim()) : [];
+
   return (
-    <div className="w-full bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-xl flex flex-col gap-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="p-2 rounded-lg bg-indigo-950/80 text-indigo-400 border border-indigo-800/60">
-            <Volume2 className="w-5 h-5" />
+    <div className="choukai-player">
+      {audioUrl && (
+        <audio
+          ref={audioRef}
+          src={audioUrl}
+          onEnded={() => setIsPlaying(false)}
+          className="choukai-player__audio-el"
+        />
+      )}
+
+      <div className="choukai-player__head">
+        <div className="choukai-player__brand">
+          <div className="choukai-player__icon-box">
+            <Volume2 className="choukai-player__icon-lg" />
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-slate-200">Épreuve de Compréhension Orale (聴解)</h4>
-            <p className="text-xs text-slate-400">
-              {isFullMockMode ? 'Mode Officiel : 1 seule écoute autorisée' : 'Mode Entraînement : Réécoute & Transcript disponibles'}
+            <h4 className="choukai-player__title">
+              Épreuve de Compréhension Orale (聴解 • TTS ja-JP)
+            </h4>
+            <p className="choukai-player__subtitle">
+              {isFullMockMode
+                ? 'Mode Officiel : 1 seule écoute autorisée'
+                : 'Mode Entraînement : Vitesse ajustable & Transcript interactif'}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5 text-xs text-slate-400 bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700">
+        <div className="choukai-player__count-pill">
           <span>Lectures :</span>
-          <span className={`font-bold ${playCount > 0 && isFullMockMode ? 'text-amber-400' : 'text-emerald-400'}`}>
+          <span
+            className={`choukai-player__count-value ${playCount > 0 && isFullMockMode ? 'choukai-player__count-value--used' : ''
+              }`}
+          >
             {playCount} {isFullMockMode ? '/ 1' : ''}
           </span>
         </div>
       </div>
 
-      {/* Audio Wave Visualizer representation */}
-      <div className="flex items-center justify-between gap-1 h-10 px-4 bg-slate-950 rounded-lg border border-slate-800/80">
-        {[40, 70, 35, 90, 60, 20, 80, 50, 100, 30, 65, 85, 45, 95, 30, 60, 40, 75, 20, 90].map((height, i) => (
-          <div
-            key={i}
-            className={`w-1 rounded-full transition-all duration-300 ${
-              isPlaying ? 'bg-indigo-400 animate-pulse' : 'bg-slate-700'
-            }`}
-            style={{
-              height: isPlaying ? `${Math.max(20, Math.floor(height * Math.random()))}%` : `${height / 3}%`,
-              animationDelay: `${i * 70}ms`,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Controls */}
-      <div className="flex items-center justify-between gap-3 pt-1">
-        <button
-          onClick={playSimulatedChoukaiAudio}
-          disabled={isFullMockMode && playCount >= 1 && !isPlaying}
-          className={`flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-xs font-semibold transition-all shadow-md ${
-            isFullMockMode && playCount >= 1 && !isPlaying
-              ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
-              : isPlaying
-              ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-amber-600/30'
-              : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-600/30'
-          }`}
-        >
-          {isPlaying ? (
-            <>
-              <Pause className="w-4 h-4 fill-current" /> Pause
-            </>
-          ) : (
-            <>
-              <Play className="w-4 h-4 fill-current" /> Lancer l&apos;écoute Audio
-            </>
-          )}
-        </button>
-
-        {!isFullMockMode && audioScript && (
-          <button
-            onClick={() => setShowScript(!showScript)}
-            className="flex items-center gap-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-lg border border-slate-700 transition-colors"
-          >
-            <FileText className="w-3.5 h-3.5" />
-            {showScript ? 'Masquer Transcript' : 'Afficher Transcript'}
-          </button>
+      <div className="choukai-player__waveform">
+        {[40, 70, 35, 90, 60, 20, 80, 50, 100, 30, 65, 85, 45, 95, 30, 60, 40, 75, 20, 90].map(
+          (height, i) => (
+            <div
+              key={i}
+              className={`choukai-player__bar ${isPlaying ? 'choukai-player__bar--playing' : ''}`}
+              style={{
+                height: isPlaying ? `${Math.max(20, Math.floor(height * 0.85))}%` : `${height / 3}%`,
+                animationDelay: `${i * 70}ms`,
+              }}
+            />
+          )
         )}
       </div>
 
-      {/* Transcript view if training mode */}
-      {showScript && audioScript && (
-        <div className="mt-2 p-3 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-300 whitespace-pre-line leading-relaxed font-sans">
-          <div className="font-semibold text-indigo-400 mb-1 flex items-center gap-1">
-            <span>Transcription Japonaise (スクリプト) :</span>
+      <div className="choukai-player__controls">
+        <div className="choukai-player__play-group">
+          <button
+            type="button"
+            onClick={() => void handleTogglePlay()}
+            disabled={isFullMockMode && playCount >= 1 && !isPlaying}
+            className={`choukai-player__play-btn ${isFullMockMode && playCount >= 1 && !isPlaying
+              ? 'choukai-player__play-btn--locked'
+              : isPlaying
+                ? 'choukai-player__play-btn--playing'
+                : ''
+              }`}
+          >
+            {isPlaying ? (
+              <>
+                <Pause className="choukai-player__play-icon" /> Arrêter
+              </>
+            ) : (
+              <>
+                <Play className="choukai-player__play-icon" /> Écouter l&apos;audio
+              </>
+            )}
+          </button>
+
+          {isPlaying && (
+            <button
+              type="button"
+              onClick={stopPlayback}
+              aria-label="Arrêter la lecture"
+              className="choukai-player__stop-btn"
+            >
+              <Square className="choukai-player__stop-icon" />
+            </button>
+          )}
+        </div>
+
+        <div className="choukai-player__tuning-group">
+          <div className="choukai-player__rates">
+            {([0.75, 1, 1.25] as const).map((r) => (
+              <button
+                key={r}
+                type="button"
+                onClick={() => setRate(r)}
+                className={`choukai-player__rate-btn ${rate === r ? 'choukai-player__rate-btn--active' : ''
+                  }`}
+              >
+                {r}x
+              </button>
+            ))}
           </div>
-          {audioScript}
+
+          <label className="choukai-player__volume-label">
+            <Volume2 className="choukai-player__small-icon" />
+            <input
+              type="range"
+              min={0.1}
+              max={1}
+              step={0.05}
+              value={volume}
+              onChange={(e) => setVolume(Number(e.target.value))}
+              aria-label="Volume audio"
+              className="choukai-player__volume-range"
+            />
+          </label>
+
+          {!isFullMockMode && audioScript && (
+            <button
+              type="button"
+              onClick={() => setShowScript(!showScript)}
+              className="choukai-player__script-btn"
+            >
+              <FileText className="choukai-player__small-icon" />
+              {showScript ? 'Masquer Transcript' : 'Transcript'}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {showScript && scriptLines.length > 0 && (
+        <div className="choukai-player__script-panel">
+          <div className="choukai-player__script-title">Transcription Japonaise (スクリプト) :</div>
+          {scriptLines.map((line, i) => (
+            <div
+              key={i}
+              className={`choukai-player__script-line ${activeLine === i ? 'choukai-player__script-line--active' : ''
+                }`}
+            >
+              {line}
+            </div>
+          ))}
         </div>
       )}
     </div>

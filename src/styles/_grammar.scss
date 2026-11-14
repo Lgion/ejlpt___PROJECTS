@@ -1,0 +1,184 @@
+.grammar-page {
+  @apply flex flex-col gap-6;
+
+  &__header {
+    @apply flex flex-col sm:flex-row sm:items-center justify-between gap-4;
+  }
+
+  &__badge {
+    @apply inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-950/80 border border-indigo-800/80 text-indigo-300 text-xs font-bold mb-2;
+  }
+
+  &__badge-icon {
+    @apply w-4 h-4;
+  }
+
+  &__title {
+    @apply text-3xl font-extrabold text-slate-100;
+  }
+
+  &__subtitle {
+    @apply text-sm text-slate-400 mt-1;
+  }
+
+  &__conn-toggle {
+    @apply flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border transition-colors self-start bg-slate-900 border-slate-700 text-slate-400;
+
+    &--active {
+      @apply bg-sky-950 border-sky-700 text-sky-300;
+    }
+  }
+
+  &__conn-icon {
+    @apply w-4 h-4;
+  }
+
+  &__toast {
+    @apply p-3 bg-emerald-950 border border-emerald-800 text-emerald-300 text-xs font-semibold rounded-xl;
+  }
+
+  &__empty {
+    @apply p-10 text-center bg-slate-900 border border-slate-800 rounded-2xl text-slate-400 text-sm flex flex-col items-center gap-2;
+  }
+
+  &__empty-icon {
+    @apply w-8 h-8 text-slate-600;
+  }
+
+  &__grid {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-4;
+  }
+
+  &__more-wrap {
+    @apply flex justify-center;
+  }
+
+  &__more-btn {
+    @apply px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700;
+  }
+
+  &__suspense {
+    @apply p-8 text-center text-sm text-slate-400;
+  }
+}
+
+.grammar-filters {
+  @apply bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col gap-3 shadow-lg;
+
+  &__row {
+    @apply flex flex-col md:flex-row gap-3;
+  }
+
+  &__search-wrap {
+    @apply relative flex-1;
+  }
+
+  &__search-icon {
+    @apply absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400;
+  }
+
+  &__search-input {
+    @apply w-full pl-9 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500;
+  }
+
+  &__selects {
+    @apply flex items-center gap-2 flex-wrap;
+  }
+
+  &__select {
+    @apply px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-sky-500;
+  }
+
+  &__levels {
+    @apply flex items-center gap-1.5 flex-wrap;
+  }
+
+  &__level-btn {
+    @apply px-3 py-1 rounded-lg text-xs font-bold transition-colors bg-slate-950 text-slate-400 hover:text-slate-200 border border-slate-800;
+
+    &--active {
+      @apply bg-indigo-600 text-white border-indigo-600 hover:text-white;
+    }
+  }
+}
+
+.grammar-card {
+  @apply bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-3 shadow-lg;
+
+  &__head {
+    @apply flex items-start justify-between gap-3;
+  }
+
+  &__title-row {
+    @apply flex items-center gap-2 flex-wrap;
+  }
+
+  &__term {
+    @apply text-xl font-bold text-slate-100 font-serif;
+  }
+
+  &__reading {
+    @apply text-xs text-slate-400;
+  }
+
+  &__level-badge {
+    @apply px-2 py-0.5 rounded bg-indigo-950 border border-indigo-800 text-indigo-300 text-[10px] font-bold;
+  }
+
+  &__source-badge {
+    @apply px-2 py-0.5 rounded bg-slate-950 border border-slate-800 text-slate-400 text-[10px] font-semibold;
+  }
+
+  &__bookmark-btn {
+    @apply p-2 rounded-xl bg-slate-950 hover:bg-sky-950 text-slate-400 hover:text-sky-300 border border-slate-800 transition-colors shrink-0;
+  }
+
+  &__bookmark-icon {
+    @apply w-4 h-4;
+  }
+
+  &__connections {
+    @apply p-2.5 rounded-xl bg-sky-950/40 border border-sky-800/60 flex flex-col gap-1;
+  }
+
+  &__conn-label {
+    @apply text-[10px] font-bold uppercase tracking-wider text-sky-400;
+  }
+
+  &__conn-chips {
+    @apply flex flex-wrap gap-1.5;
+  }
+
+  &__conn-chip {
+    @apply px-2 py-0.5 rounded bg-slate-950 border border-sky-800/60 text-xs font-mono text-sky-200;
+  }
+
+  &__meaning {
+    @apply text-xs text-slate-200 leading-relaxed whitespace-pre-line;
+  }
+
+  &__explanation {
+    @apply text-xs text-slate-400 leading-relaxed whitespace-pre-line border-t border-slate-800 pt-2;
+  }
+
+  &__examples {
+    @apply flex flex-col gap-1.5 pt-2 border-t border-slate-800;
+  }
+
+  &__examples-label {
+    @apply text-[10px] font-bold uppercase text-emerald-400;
+  }
+
+  &__example {
+    @apply text-xs bg-slate-950 rounded-lg p-2 border border-slate-800/80;
+  }
+
+  &__example-jp {
+    @apply text-slate-100;
+  }
+
+  &__example-tr {
+    @apply text-slate-400 text-[11px] mt-0.5;
+  }
+}
+

@@ -1,0 +1,17 @@
+@use './base';
+@use './navbar';
+@use './home';
+@use './exam-runner';
+@use './kanji';
+@use './grammar';
+@use './slang';
+@use './practice';
+@use './reader';
+@use './bookmarks';
+@use './history';
+@use './tools';
+@use './admin';
+@use './jlpt-booklet';
+
+@reference "tailwindcss";
+

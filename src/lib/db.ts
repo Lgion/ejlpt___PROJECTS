@@ -56,7 +56,14 @@ export interface UnifiedKanjiRecord {
     euc?: string;
     sjis?: string;
   };
-  kanjidb_extra: Record<string, any>;
+  kanjidb_extra: Record<string, unknown>;
+  similar: string[];
+  variants: string[];
+}
+
+export interface GrammarExample {
+  jp: string;
+  translation: string;
 }
 
 export interface GrammarRecord {
@@ -65,9 +72,10 @@ export interface GrammarRecord {
   reading: string;
   category: string;
   jlpt_level: string;
+  connections: string[];
   meaning: string;
   explanation: string;
-  examples: { jp: string; en: string }[];
+  examples: GrammarExample[];
   source?: string;
 }
 
@@ -78,9 +86,36 @@ export interface SlangRecord {
   type: string[];
   meaning: string[];
   example: string[];
-  note?: string;
+  note: string[];
   link?: string;
+  category?: string;
 }
+
+export interface OnomatopoeiaRecord {
+  id?: number;
+  term: string;
+  shortDefinitions: string[];
+  extendedDefinition: string;
+  examples: string[];
+  sourceUrl?: string;
+  category: string;
+}
+
+export interface JukugoRecord {
+  id?: number;
+  word: string;
+  reading: string;
+  meaning_en: string;
+  frequency: number;
+  grammaticalFeature: string;
+}
+
+export interface MetaRecord {
+  key: string;
+  value: string;
+}
+
+export type SyncFlag = 0 | 1;
 
 export interface LocalExamAttempt {
   id?: number;
@@ -100,7 +135,7 @@ export interface LocalExamAttempt {
   userAnswers: Record<string, string>;
   timeSpentSeconds: number;
   createdAt: string;
-  isSynced: boolean;
+  isSynced: SyncFlag;
 }
 
 export interface LocalBookmark {
@@ -114,115 +149,179 @@ export interface LocalBookmark {
   level: string;
   notes?: string;
   createdAt: string;
-  isSynced: boolean;
+  isSynced: SyncFlag;
 }
 
 export interface LocalSyncItem {
   id?: number;
-  action: 'SAVE_ATTEMPT' | 'SAVE_BOOKMARK';
-  payload: any;
+  action: 'SAVE_ATTEMPT' | 'SAVE_BOOKMARK' | 'DELETE_BOOKMARK';
+  payload: Record<string, unknown>;
   createdAt: string;
 }
+
+export interface SRSCardRecord {
+  cardId: string;
+  itemType: 'KANJI' | 'GRAMMAR' | 'JUKUGO' | 'QUESTION';
+  itemKey: string;
+  level: string;
+  prompt: string;
+  reading?: string;
+  answer: string;
+  easeFactor: number;
+  intervalDays: number;
+  repetitions: number;
+  lapses: number;
+  errorCount: number;
+  dueAt: string;
+  lastReviewedAt?: string;
+}
+
+interface RawSchemaDataset {
+  schema: string[] | Record<string, string>;
+  data: unknown[][];
+}
+
+const CURRENT_DATASET_VERSION = '2026-11-lot3-v2';
 
 export class EJLPTDatabase extends Dexie {
   kanjis!: Table<UnifiedKanjiRecord, string>;
   grammar!: Table<GrammarRecord, number>;
   slang!: Table<SlangRecord, number>;
+  onomatopoeia!: Table<OnomatopoeiaRecord, number>;
+  jukugo!: Table<JukugoRecord, number>;
+  meta!: Table<MetaRecord, string>;
   attempts!: Table<LocalExamAttempt>;
   bookmarks!: Table<LocalBookmark>;
   syncQueue!: Table<LocalSyncItem>;
+  srsCards!: Table<SRSCardRecord, string>;
 
   constructor() {
     super('eJLPT_LocalDB');
-    this.version(2).stores({
+    const storesSchemaV2V3 = {
       kanjis: '&kanji, jlpt, radical, category, subCategory, rtk_6th, wanikani_level',
       grammar: '++id, term, jlpt_level, category',
       slang: '++id, term',
       attempts: '++id, attemptId, userId, level, mode, passed, isSynced, createdAt',
       bookmarks: '++id, bookmarkId, userId, type, level, kanjiOrWord, isSynced, createdAt',
       syncQueue: '++id, action, createdAt',
-    });
+    };
+
+    const storesSchemaV4 = {
+      ...storesSchemaV2V3,
+      grammar: '++id, term, jlpt_level, category, source',
+      onomatopoeia: '++id, term',
+      jukugo: '++id, &word, frequency',
+      meta: '&key',
+    };
+
+    const storesSchemaV5 = {
+      ...storesSchemaV4,
+      srsCards: '&cardId, itemType, itemKey, level, dueAt, errorCount',
+    };
+
+    this.version(2).stores(storesSchemaV2V3);
+
+    // IndexedDB cannot index booleans; normalize legacy boolean isSynced flags to 0 | 1.
+    this.version(3)
+      .stores(storesSchemaV2V3)
+      .upgrade(async (tx) => {
+        const normalizeSyncFlag = (item: { isSynced?: boolean | number }) => {
+          item.isSynced = item.isSynced === true || item.isSynced === 1 ? 1 : 0;
+        };
+        await tx.table('attempts').toCollection().modify(normalizeSyncFlag);
+        await tx.table('bookmarks').toCollection().modify(normalizeSyncFlag);
+      });
+
+    this.version(4).stores(storesSchemaV4);
+    this.version(5).stores(storesSchemaV5);
   }
 }
 
 export const localDb = new EJLPTDatabase();
 
+async function seedTableFromUrl<T, TKey>(
+  table: Table<T, TKey>,
+  url: string,
+  label: string,
+  forceRefresh = false
+): Promise<boolean> {
+  if (!forceRefresh) {
+    const existingCount = await table.count();
+    if (existingCount > 0) return true;
+  }
+
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return false;
+
+    const json = (await res.json()) as RawSchemaDataset;
+    const schemaKeys: string[] = Array.isArray(json.schema)
+      ? json.schema
+      : Object.keys(json.schema);
+
+    const schemaTypes = Array.isArray(json.schema) ? null : json.schema;
+
+    const records = json.data.map((row) => {
+      const obj: Record<string, unknown> = {};
+      schemaKeys.forEach((key, idx) => {
+        const raw = row[idx];
+        if (schemaTypes?.[key] === 'array') {
+          obj[key] = Array.isArray(raw) ? raw : raw ? [String(raw)] : [];
+        } else {
+          obj[key] = raw;
+        }
+      });
+      return obj as T;
+    });
+
+    if (forceRefresh) {
+      await table.clear();
+    }
+    await table.bulkPut(records);
+    console.log(`[Dexie] Successfully seeded ${records.length} ${label} entries.`);
+    return true;
+  } catch (err) {
+    console.error(`[Dexie] Failed to seed ${label} database:`, err);
+    return false;
+  }
+}
+
+let activeSeedPromise: Promise<void> | null = null;
+
 /**
  * Hydrates IndexedDB with unified local datasets on app initialization.
+ * Refreshes reference tables automatically when CURRENT_DATASET_VERSION changes,
+ * without touching user attempts, bookmarks, or syncQueue.
  */
 export async function seedLocalDatabase(): Promise<void> {
   if (typeof window === 'undefined') return;
+  if (activeSeedPromise) return activeSeedPromise;
 
-  const countKanjis = await localDb.kanjis.count();
-  if (countKanjis === 0) {
+  activeSeedPromise = (async () => {
     try {
-      const res = await fetch('/data/kanjiDatabase_unified.json');
-      if (res.ok) {
-        const json = await res.json();
-        const schemaKeys: string[] = Array.isArray(json.schema) ? json.schema : Object.keys(json.schema);
-        const dataRows: any[][] = json.data;
+      const currentMeta = await localDb.meta.get('datasetVersion');
+      const needsRefresh = currentMeta?.value !== CURRENT_DATASET_VERSION;
 
-        const kanjiObjects: UnifiedKanjiRecord[] = dataRows.map((row) => {
-          const obj: any = {};
-          schemaKeys.forEach((key, idx) => {
-            obj[key] = row[idx];
-          });
-          return obj as UnifiedKanjiRecord;
-        });
+      const results = await Promise.all([
+        seedTableFromUrl(localDb.kanjis, '/data/kanjiDatabase_unified.json', 'Kanji', needsRefresh),
+        seedTableFromUrl(localDb.grammar, '/data/grammar_unified.json', 'Grammar', needsRefresh),
+        seedTableFromUrl(localDb.slang, '/data/slang_unified.json', 'Slang', needsRefresh),
+        seedTableFromUrl(
+          localDb.onomatopoeia,
+          '/data/onomatopoeia_unified.json',
+          'Onomatopoeia',
+          needsRefresh
+        ),
+        seedTableFromUrl(localDb.jukugo, '/data/jukugo_unified.json', 'Jukugo', needsRefresh),
+      ]);
 
-        await localDb.kanjis.bulkPut(kanjiObjects);
-        console.log(`[Dexie] Successfully seeded ${kanjiObjects.length} Kanjis to IndexedDB.`);
+      if (needsRefresh && results.every(Boolean)) {
+        await localDb.meta.put({ key: 'datasetVersion', value: CURRENT_DATASET_VERSION });
       }
-    } catch (err) {
-      console.error('[Dexie] Failed to seed Kanji database:', err);
+    } finally {
+      activeSeedPromise = null;
     }
-  }
+  })();
 
-  const countGrammar = await localDb.grammar.count();
-  if (countGrammar === 0) {
-    try {
-      const res = await fetch('/data/grammar_unified.json');
-      if (res.ok) {
-        const json = await res.json();
-        const schemaKeys: string[] = Array.isArray(json.schema) ? json.schema : Object.keys(json.schema);
-        const dataRows: any[][] = json.data;
-        const grammarObjects: GrammarRecord[] = dataRows.map((row) => {
-          const obj: any = {};
-          schemaKeys.forEach((key, idx) => {
-            obj[key] = row[idx];
-          });
-          return obj as GrammarRecord;
-        });
-
-        await localDb.grammar.bulkPut(grammarObjects);
-        console.log(`[Dexie] Successfully seeded ${grammarObjects.length} Grammar entries.`);
-      }
-    } catch (err) {
-      console.error('[Dexie] Failed to seed Grammar database:', err);
-    }
-  }
-
-  const countSlang = await localDb.slang.count();
-  if (countSlang === 0) {
-    try {
-      const res = await fetch('/data/slang_unified.json');
-      if (res.ok) {
-        const json = await res.json();
-        const schemaKeys: string[] = Array.isArray(json.schema) ? json.schema : Object.keys(json.schema);
-        const dataRows: any[][] = json.data;
-        const slangObjects: SlangRecord[] = dataRows.map((row) => {
-          const obj: any = {};
-          schemaKeys.forEach((key, idx) => {
-            obj[key] = row[idx];
-          });
-          return obj as SlangRecord;
-        });
-
-        await localDb.slang.bulkPut(slangObjects);
-        console.log(`[Dexie] Successfully seeded ${slangObjects.length} Slang terms.`);
-      }
-    } catch (err) {
-      console.error('[Dexie] Failed to seed Slang database:', err);
-    }
-  }
+  return activeSeedPromise;
 }

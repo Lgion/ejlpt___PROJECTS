@@ -1,70 +1,112 @@
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
-import { Eraser, Play, RefreshCw, CheckCircle2 } from 'lucide-react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
+import { Eraser, Play, Undo2, Eye, CheckCircle2 } from 'lucide-react';
+
+interface Point {
+  x: number;
+  y: number;
+}
 
 interface KanjiCanvasProps {
   expectedKanji?: string;
-  onRecognized?: (text: string) => void;
+  expectedStrokeCount?: number | null;
+  onRecognized?: (kanji: string) => void;
 }
 
-export const KanjiCanvasComponent: React.FC<KanjiCanvasProps> = ({ expectedKanji = '金', onRecognized }) => {
+function drawGrid(ctx: CanvasRenderingContext2D, width: number, height: number) {
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = '#0f172a';
+  ctx.fillRect(0, 0, width, height);
+
+  ctx.strokeStyle = '#334155';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([6, 6]);
+
+  ctx.beginPath();
+  ctx.moveTo(0, height / 2);
+  ctx.lineTo(width, height / 2);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(width / 2, 0);
+  ctx.lineTo(width / 2, height);
+  ctx.stroke();
+
+  ctx.setLineDash([]);
+}
+
+function renderStrokes(ctx: CanvasRenderingContext2D, width: number, height: number, strokes: Point[][]) {
+  drawGrid(ctx, width, height);
+  ctx.strokeStyle = '#38bdf8';
+  ctx.lineWidth = 8;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  for (const stroke of strokes) {
+    if (stroke.length === 0) continue;
+    ctx.beginPath();
+    ctx.moveTo(stroke[0].x, stroke[0].y);
+    for (let i = 1; i < stroke.length; i += 1) {
+      ctx.lineTo(stroke[i].x, stroke[i].y);
+    }
+    ctx.stroke();
+  }
+}
+
+export const KanjiCanvasComponent: React.FC<KanjiCanvasProps> = ({
+  expectedKanji = '語',
+  expectedStrokeCount,
+  onRecognized,
+}) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const strokesRef = useRef<Point[][]>([]);
+  const currentStrokeRef = useRef<Point[]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [strokeCount, setStrokeCount] = useState(0);
-  const [feedback, setFeedback] = useState<string | null>(null);
+  const [showGuide, setShowGuide] = useState(true);
+  const [feedback, setFeedback] = useState<{ ok: boolean; text: string } | null>(null);
 
-  useEffect(() => {
+  const redraw = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-
-    // Draw background guide grid
-    drawGrid(ctx, canvas.width, canvas.height);
+    renderStrokes(ctx, canvas.width, canvas.height, strokesRef.current);
   }, []);
 
-  const drawGrid = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
-    ctx.clearRect(0, 0, width, height);
-    ctx.fillStyle = '#1e293b';
-    ctx.fillRect(0, 0, width, height);
+  useEffect(() => {
+    strokesRef.current = [];
+    currentStrokeRef.current = [];
+    queueMicrotask(() => {
+      setStrokeCount(0);
+      setFeedback(null);
+    });
+    redraw();
+  }, [expectedKanji, redraw]);
 
-    // Dotted crosshair lines
-    ctx.strokeStyle = '#334155';
-    ctx.lineWidth = 1;
-    ctx.setLineDash([6, 6]);
-
-    // Horizontal center line
-    ctx.beginPath();
-    ctx.moveTo(0, height / 2);
-    ctx.lineTo(width, height / 2);
-    ctx.stroke();
-
-    // Vertical center line
-    ctx.beginPath();
-    ctx.moveTo(width / 2, 0);
-    ctx.lineTo(width / 2, height);
-    ctx.stroke();
-
-    ctx.setLineDash([]); // reset
-  };
-
-  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-    setIsDrawing(true);
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
+  const getRelativePoint = (
+    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>,
+    canvas: HTMLCanvasElement
+  ): Point => {
     const rect = canvas.getBoundingClientRect();
     const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
     const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    return { x: clientX - rect.left, y: clientY - rect.top };
+  };
 
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
+  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const pt = getRelativePoint(e, canvas);
+    setIsDrawing(true);
+    currentStrokeRef.current = [pt];
 
     ctx.beginPath();
-    ctx.moveTo(x, y);
+    ctx.moveTo(pt.x, pt.y);
     ctx.strokeStyle = '#38bdf8';
     ctx.lineWidth = 8;
     ctx.lineCap = 'round';
@@ -78,56 +120,117 @@ export const KanjiCanvasComponent: React.FC<KanjiCanvasProps> = ({ expectedKanji
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const rect = canvas.getBoundingClientRect();
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
-
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
-
-    ctx.lineTo(x, y);
+    const pt = getRelativePoint(e, canvas);
+    currentStrokeRef.current.push(pt);
+    ctx.lineTo(pt.x, pt.y);
     ctx.stroke();
   };
 
   const stopDrawing = () => {
-    if (isDrawing) {
-      setIsDrawing(false);
-      setStrokeCount(prev => prev + 1);
+    if (!isDrawing) return;
+    setIsDrawing(false);
+    if (currentStrokeRef.current.length > 0) {
+      strokesRef.current = [...strokesRef.current, currentStrokeRef.current];
+      currentStrokeRef.current = [];
+      setStrokeCount(strokesRef.current.length);
     }
+  };
+
+  const undoLastStroke = () => {
+    if (strokesRef.current.length === 0) return;
+    strokesRef.current = strokesRef.current.slice(0, -1);
+    setStrokeCount(strokesRef.current.length);
+    setFeedback(null);
+    redraw();
   };
 
   const clearCanvas = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    drawGrid(ctx, canvas.width, canvas.height);
+    strokesRef.current = [];
+    currentStrokeRef.current = [];
     setStrokeCount(0);
     setFeedback(null);
+    redraw();
   };
 
   const verifyDrawing = () => {
-    if (strokeCount === 0) {
-      setFeedback('Veuillez tracer le kanji sur la grille.');
+    const strokes = strokesRef.current;
+    if (strokes.length === 0) {
+      setFeedback({ ok: false, text: 'Veuillez tracer le kanji sur la grille avant de valider.' });
       return;
     }
-    setFeedback(`Tracé enregistré (${strokeCount} traits). Validation du kanji "${expectedKanji}" reussie!`);
-    if (onRecognized) onRecognized(expectedKanji);
+
+    const allPoints = strokes.flat();
+    const xs = allPoints.map((p) => p.x);
+    const ys = allPoints.map((p) => p.y);
+    const spanX = Math.max(...xs) - Math.min(...xs);
+    const spanY = Math.max(...ys) - Math.min(...ys);
+
+    if (spanX < 25 && spanY < 25) {
+      setFeedback({
+        ok: false,
+        text: 'Le tracé est trop petit : occupez davantage la grille pour valider la forme.',
+      });
+      return;
+    }
+
+    if (expectedStrokeCount && expectedStrokeCount > 0) {
+      const diff = Math.abs(strokes.length - expectedStrokeCount);
+      if (diff === 0) {
+        setFeedback({
+          ok: true,
+          text: `Parfait ! ${strokes.length}/${expectedStrokeCount} traits exacts pour « ${expectedKanji} ».`,
+        });
+        onRecognized?.(expectedKanji);
+        return;
+      }
+      if (diff <= 2) {
+        setFeedback({
+          ok: true,
+          text: `Tracé enregistré (${strokes.length} traits tracés vs ${expectedStrokeCount} attendus pour « ${expectedKanji} »).`,
+        });
+        onRecognized?.(expectedKanji);
+        return;
+      }
+      setFeedback({
+        ok: false,
+        text: `Nombre de traits éloigné : ${strokes.length} tracés pour ${expectedStrokeCount} attendus (« ${expectedKanji} »).`,
+      });
+      return;
+    }
+
+    setFeedback({
+      ok: true,
+      text: `Tracé enregistré (${strokes.length} traits) pour « ${expectedKanji} ».`,
+    });
+    onRecognized?.(expectedKanji);
   };
 
   return (
-    <div className="flex flex-col items-center gap-3 p-4 bg-slate-900/90 border border-slate-800 rounded-xl shadow-2xl backdrop-blur-md max-w-sm w-full">
-      <div className="flex items-center justify-between w-full">
-        <span className="text-xs font-semibold uppercase tracking-wider text-sky-400 flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
-          Canvas d&apos;écriture (IME Vectoriel)
+    <div className="kanji-canvas">
+      <div className="kanji-canvas__head">
+        <span className="kanji-canvas__title">
+          <span className="kanji-canvas__dot" />
+          Canvas d&apos;écriture
         </span>
-        <span className="text-xs font-medium text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full">
-          Traits: {strokeCount}
-        </span>
+        <div className="kanji-canvas__badges">
+          <button
+            type="button"
+            onClick={() => setShowGuide((g) => !g)}
+            className={`kanji-canvas__guide-btn ${
+              showGuide ? 'kanji-canvas__guide-btn--active' : ''
+            }`}
+          >
+            <Eye className="kanji-canvas__guide-icon" />
+            Guide
+          </button>
+          <span className="kanji-canvas__strokes-pill">
+            Traits: {strokeCount}
+            {expectedStrokeCount ? ` / ${expectedStrokeCount}` : ''}
+          </span>
+        </div>
       </div>
 
-      <div className="relative group cursor-crosshair rounded-lg overflow-hidden border border-slate-700 shadow-inner">
+      <div className="kanji-canvas__stage">
         <canvas
           ref={canvasRef}
           width={280}
@@ -139,35 +242,41 @@ export const KanjiCanvasComponent: React.FC<KanjiCanvasProps> = ({ expectedKanji
           onTouchStart={startDrawing}
           onTouchMove={draw}
           onTouchEnd={stopDrawing}
-          className="bg-slate-950 touch-none"
+          className="kanji-canvas__surface"
         />
-        {expectedKanji && strokeCount === 0 && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20 text-7xl font-serif text-slate-400">
-            {expectedKanji}
-          </div>
+        {expectedKanji && showGuide && (
+          <div className="kanji-canvas__ghost">{expectedKanji}</div>
         )}
       </div>
 
       {feedback && (
-        <div className="text-xs text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 rounded-lg p-2.5 w-full flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 shrink-0" />
-          <span>{feedback}</span>
+        <div
+          aria-live="polite"
+          className={`kanji-canvas__feedback ${
+            feedback.ok ? 'kanji-canvas__feedback--ok' : 'kanji-canvas__feedback--warn'
+          }`}
+        >
+          <CheckCircle2 className="kanji-canvas__feedback-icon" />
+          <span>{feedback.text}</span>
         </div>
       )}
 
-      <div className="flex items-center gap-2 w-full">
+      <div className="kanji-canvas__actions">
         <button
-          onClick={clearCanvas}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-lg transition-colors border border-slate-700"
+          type="button"
+          onClick={undoLastStroke}
+          disabled={strokeCount === 0}
+          className="kanji-canvas__undo-btn"
         >
-          <Eraser className="w-3.5 h-3.5" />
+          <Undo2 className="kanji-canvas__btn-icon" />
+          Annuler
+        </button>
+        <button type="button" onClick={clearCanvas} className="kanji-canvas__clear-btn">
+          <Eraser className="kanji-canvas__btn-icon" />
           Effacer
         </button>
-        <button
-          onClick={verifyDrawing}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 bg-sky-600 hover:bg-sky-500 text-white text-xs font-medium rounded-lg transition-colors shadow-lg shadow-sky-600/30"
-        >
-          <Play className="w-3.5 h-3.5 fill-current" />
+        <button type="button" onClick={verifyDrawing} className="kanji-canvas__validate-btn">
+          <Play className="kanji-canvas__btn-icon kanji-canvas__btn-icon--fill" />
           Valider
         </button>
       </div>

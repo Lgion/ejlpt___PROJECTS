@@ -8,22 +8,22 @@ interface EzoeGrammarViewerProps {
 }
 
 export const EzoeGrammarViewer: React.FC<EzoeGrammarViewerProps> = ({ segments }) => {
-  const getTypeBadgeStyle = (type: EzoeGrammarSegment['type']) => {
+  const getTypeModifier = (type: EzoeGrammarSegment['type']) => {
     switch (type) {
       case 'subject':
-        return 'bg-blue-950/80 border-blue-600/60 text-blue-300';
+        return 'ezoe-viewer__segment--subject';
       case 'particle':
-        return 'bg-purple-950/80 border-purple-600/60 text-purple-300';
+        return 'ezoe-viewer__segment--particle';
       case 'verb':
-        return 'bg-rose-950/80 border-rose-600/60 text-rose-300';
+        return 'ezoe-viewer__segment--verb';
       case 'adjective':
-        return 'bg-emerald-950/80 border-emerald-600/60 text-emerald-300';
+        return 'ezoe-viewer__segment--adjective';
       case 'noun':
-        return 'bg-amber-950/80 border-amber-600/60 text-amber-300';
+        return 'ezoe-viewer__segment--noun';
       case 'time':
-        return 'bg-cyan-950/80 border-cyan-600/60 text-cyan-300';
+        return 'ezoe-viewer__segment--time';
       default:
-        return 'bg-slate-800 border-slate-700 text-slate-300';
+        return 'ezoe-viewer__segment--other';
     }
   };
 
@@ -47,28 +47,21 @@ export const EzoeGrammarViewer: React.FC<EzoeGrammarViewerProps> = ({ segments }
   };
 
   return (
-    <div className="w-full p-4 bg-slate-900/90 border border-slate-800 rounded-xl shadow-lg flex flex-col gap-3">
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-bold uppercase tracking-wider text-purple-400 flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-purple-400"></span>
+    <div className="ezoe-viewer">
+      <div className="ezoe-viewer__head">
+        <span className="ezoe-viewer__title">
+          <span className="ezoe-viewer__dot" />
           Structure Grammaticale Méthode Ezoe (江副文法)
         </span>
-        <span className="text-[10px] text-slate-400 bg-slate-800 px-2 py-0.5 rounded">
-          Blocs par rôle grammatical
-        </span>
+        <span className="ezoe-viewer__hint">Blocs par rôle grammatical</span>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2 pt-1">
+      <div className="ezoe-viewer__segments">
         {segments.map((seg, idx) => (
-          <div
-            key={idx}
-            className={`flex flex-col items-center px-3 py-2 rounded-lg border shadow-sm transition-all hover:scale-105 ${getTypeBadgeStyle(
-              seg.type
-            )}`}
-          >
-            {seg.reading && <span className="text-[10px] opacity-80 font-normal">{seg.reading}</span>}
-            <span className="text-base font-bold tracking-wide">{seg.text}</span>
-            <span className="text-[10px] uppercase tracking-wider font-semibold opacity-70 mt-0.5">
+          <div key={idx} className={`ezoe-viewer__segment ${getTypeModifier(seg.type)}`}>
+            {seg.reading && <span className="ezoe-viewer__seg-reading">{seg.reading}</span>}
+            <span className="ezoe-viewer__seg-text">{seg.text}</span>
+            <span className="ezoe-viewer__seg-role">
               {seg.frenchMeaning || getTypeNameFr(seg.type)}
             </span>
           </div>

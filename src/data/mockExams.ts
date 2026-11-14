@@ -1,6 +1,8 @@
 import { JLPTExam } from '@/types/jlpt';
+import { JLPT_N3_OFFICIAL_2018 } from './jlptN3Official2018';
 
 export const MOCK_EXAMS: JLPTExam[] = [
+  JLPT_N3_OFFICIAL_2018,
   {
     id: 'exam-n5-01',
     level: 'N5',

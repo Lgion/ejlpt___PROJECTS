@@ -1,0 +1,599 @@
+.tools-page {
+  @apply flex flex-col gap-8;
+
+  &__badge {
+    @apply inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-950/80 border border-sky-800/80 text-sky-400 text-xs font-bold mb-2;
+  }
+
+  &__badge-icon {
+    @apply w-4 h-4;
+  }
+
+  &__title {
+    @apply text-3xl font-extrabold text-slate-100;
+  }
+
+  &__subtitle {
+    @apply text-sm text-slate-400 mt-1;
+  }
+
+  &__tabs {
+    @apply flex items-center gap-2 border-b border-slate-800 pb-3 overflow-x-auto;
+  }
+
+  &__tab {
+    @apply flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800 shrink-0;
+
+    &--active {
+      @apply bg-sky-600 text-white shadow-lg shadow-sky-600/30 border-sky-600 hover:text-white;
+    }
+  }
+
+  &__tab-icon {
+    @apply w-4 h-4;
+  }
+
+  &__stage {
+    @apply flex justify-center;
+  }
+
+  &__panel-canvas {
+    @apply w-full flex flex-col items-center gap-4;
+  }
+
+  &__panel-desc {
+    @apply text-xs text-slate-400;
+
+    &--centered {
+      @apply text-center max-w-md;
+    }
+  }
+
+  &__panel-wide {
+    @apply w-full max-w-3xl flex flex-col gap-4;
+  }
+
+  &__panel-audio {
+    @apply w-full max-w-2xl;
+  }
+
+  &__panel-full {
+    @apply w-full;
+  }
+
+  &__webgl-loading {
+    @apply w-full p-10 text-center bg-slate-900 border border-slate-800 rounded-2xl text-xs text-slate-400;
+  }
+}
+
+.furi-word {
+  @apply relative inline-flex flex-col items-center leading-none cursor-pointer;
+
+  &:hover .furi-word__base {
+    @apply text-sky-300;
+  }
+
+  &--hover:hover .furi-word__reading {
+    @apply opacity-100 -translate-y-0.5;
+  }
+
+  &__base {
+    @apply text-current font-medium transition-colors;
+  }
+
+  &__reading {
+    @apply text-[0.65em] font-normal text-sky-400 select-none leading-none -mt-0.5 transition-all duration-200 opacity-100;
+
+    &--hidden-until-hover {
+      @apply opacity-0;
+    }
+  }
+}
+
+.kanji-tree {
+  @apply w-full p-4 bg-slate-900 border border-slate-800 rounded-xl shadow-xl flex flex-col gap-4;
+
+  &--modal {
+    @apply p-0 bg-transparent border-0 shadow-none gap-3;
+  }
+
+  &__head {
+    @apply flex items-center justify-between;
+  }
+
+  &__title {
+    @apply text-xs font-bold uppercase tracking-wider text-sky-400 flex items-center gap-1.5;
+  }
+
+  &__title-icon {
+    @apply w-4 h-4;
+  }
+
+  &__source {
+    @apply text-xs text-slate-400;
+  }
+
+  &__canvas {
+    @apply p-4 bg-slate-950 rounded-xl border border-slate-800 overflow-x-auto flex justify-center py-6 min-h-[160px] items-center;
+  }
+
+  &__loading {
+    @apply flex items-center gap-2 text-slate-400 text-sm;
+  }
+
+  &__spinner {
+    @apply w-5 h-5 animate-spin text-sky-500;
+  }
+
+  &__empty {
+    @apply text-xs text-slate-500;
+  }
+
+  &__node-wrap {
+    @apply flex flex-col items-center;
+  }
+
+  &__node-btn {
+    @apply flex flex-col items-center p-3 rounded-xl border transition-all shadow-md bg-slate-800 border-slate-700 text-slate-200 hover:border-slate-500;
+
+    &--active {
+      @apply bg-sky-950 border-sky-500 text-sky-200 ring-2 ring-sky-500/40 shadow-sky-900/50 scale-105 hover:border-sky-500;
+    }
+  }
+
+  &__node-glyph {
+    @apply text-2xl font-bold font-serif;
+  }
+
+  &__node-reading {
+    @apply text-[10px] text-sky-400 font-semibold mt-1;
+  }
+
+  &__node-meaning {
+    @apply text-[11px] text-slate-400 max-w-[110px] text-center truncate mt-0.5;
+  }
+
+  &__children-wrap {
+    @apply flex flex-col items-center mt-2 w-full;
+  }
+
+  &__stem {
+    @apply w-0.5 h-4 bg-slate-700;
+  }
+
+  &__children-row {
+    @apply flex items-start justify-center gap-4 border-t border-slate-700 pt-2 w-full;
+  }
+
+  &__inspector {
+    @apply p-3 bg-slate-800/80 border border-slate-700 rounded-lg flex items-center gap-3;
+  }
+
+  &__inspector-glyph {
+    @apply w-10 h-10 rounded-lg bg-sky-950 border border-sky-600 text-sky-300 flex items-center justify-center text-xl font-bold font-serif shrink-0;
+  }
+
+  &__inspector-info {
+    @apply flex-1 text-xs;
+  }
+
+  &__inspector-meaning {
+    @apply font-bold text-slate-200;
+  }
+
+  &__inspector-reading {
+    @apply text-slate-400;
+  }
+}
+
+.ezoe-viewer {
+  @apply w-full p-4 bg-slate-900/90 border border-slate-800 rounded-xl shadow-lg flex flex-col gap-3;
+
+  &__head {
+    @apply flex items-center justify-between;
+  }
+
+  &__title {
+    @apply text-xs font-bold uppercase tracking-wider text-purple-400 flex items-center gap-1.5;
+  }
+
+  &__dot {
+    @apply w-2 h-2 rounded-full bg-purple-400;
+  }
+
+  &__hint {
+    @apply text-[10px] text-slate-400 bg-slate-800 px-2 py-0.5 rounded;
+  }
+
+  &__segments {
+    @apply flex flex-wrap items-center gap-2 pt-1;
+  }
+
+  &__segment {
+    @apply flex flex-col items-center px-3 py-2 rounded-lg border shadow-sm transition-all hover:scale-105;
+
+    &--subject {
+      @apply bg-blue-950/80 border-blue-600/60 text-blue-300;
+    }
+
+    &--particle {
+      @apply bg-purple-950/80 border-purple-600/60 text-purple-300;
+    }
+
+    &--verb {
+      @apply bg-rose-950/80 border-rose-600/60 text-rose-300;
+    }
+
+    &--adjective {
+      @apply bg-emerald-950/80 border-emerald-600/60 text-emerald-300;
+    }
+
+    &--noun {
+      @apply bg-amber-950/80 border-amber-600/60 text-amber-300;
+    }
+
+    &--time {
+      @apply bg-cyan-950/80 border-cyan-600/60 text-cyan-300;
+    }
+
+    &--other {
+      @apply bg-slate-800 border-slate-700 text-slate-300;
+    }
+  }
+
+  &__seg-reading {
+    @apply text-[10px] opacity-80 font-normal;
+  }
+
+  &__seg-text {
+    @apply text-base font-bold tracking-wide;
+  }
+
+  &__seg-role {
+    @apply text-[10px] uppercase tracking-wider font-semibold opacity-70 mt-0.5;
+  }
+}
+
+.choukai-player {
+  @apply w-full bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-xl flex flex-col gap-3;
+
+  &__audio-el {
+    @apply hidden;
+  }
+
+  &__head {
+    @apply flex items-center justify-between gap-2 flex-wrap;
+  }
+
+  &__brand {
+    @apply flex items-center gap-2;
+  }
+
+  &__icon-box {
+    @apply p-2 rounded-lg bg-indigo-950/80 text-indigo-400 border border-indigo-800/60;
+  }
+
+  &__icon-lg {
+    @apply w-5 h-5;
+  }
+
+  &__title {
+    @apply text-sm font-semibold text-slate-200;
+  }
+
+  &__subtitle {
+    @apply text-xs text-slate-400;
+  }
+
+  &__count-pill {
+    @apply flex items-center gap-1.5 text-xs text-slate-400 bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700;
+  }
+
+  &__count-value {
+    @apply font-bold text-emerald-400;
+
+    &--used {
+      @apply text-amber-400;
+    }
+  }
+
+  &__waveform {
+    @apply flex items-center justify-between gap-1 h-10 px-4 bg-slate-950 rounded-lg border border-slate-800/80;
+  }
+
+  &__bar {
+    @apply w-1 rounded-full transition-all duration-300 bg-slate-700;
+
+    &--playing {
+      @apply bg-indigo-400 animate-pulse;
+    }
+  }
+
+  &__controls {
+    @apply flex flex-wrap items-center justify-between gap-3 pt-1;
+  }
+
+  &__play-group {
+    @apply flex items-center gap-2;
+  }
+
+  &__play-btn {
+    @apply flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all shadow-md bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-600/30;
+
+    &--playing {
+      @apply bg-amber-600 hover:bg-amber-500 text-white shadow-amber-600/30;
+    }
+
+    &--locked {
+      @apply bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700 hover:bg-slate-800 shadow-none;
+    }
+  }
+
+  &__play-icon {
+    @apply w-4 h-4 fill-current;
+  }
+
+  &__stop-btn {
+    @apply p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700;
+  }
+
+  &__stop-icon {
+    @apply w-3.5 h-3.5 fill-current;
+  }
+
+  &__tuning-group {
+    @apply flex items-center gap-3 flex-wrap;
+  }
+
+  &__rates {
+    @apply flex items-center gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800;
+  }
+
+  &__rate-btn {
+    @apply px-2 py-0.5 rounded text-[11px] font-mono font-bold transition-colors text-slate-400 hover:text-slate-200;
+
+    &--active {
+      @apply bg-indigo-600 text-white hover:text-white;
+    }
+  }
+
+  &__volume-label {
+    @apply flex items-center gap-1.5 text-[11px] text-slate-400;
+  }
+
+  &__small-icon {
+    @apply w-3.5 h-3.5;
+  }
+
+  &__volume-range {
+    @apply w-16 accent-indigo-500;
+  }
+
+  &__script-btn {
+    @apply flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-lg border border-slate-700 transition-colors;
+  }
+
+  &__script-panel {
+    @apply mt-1 p-3 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-300 leading-relaxed flex flex-col gap-1.5;
+  }
+
+  &__script-title {
+    @apply font-semibold text-indigo-400;
+  }
+
+  &__script-line {
+    @apply px-2 py-1 rounded;
+
+    &--active {
+      @apply bg-indigo-950/70 text-indigo-200 border border-indigo-700/50;
+    }
+  }
+}
+
+.kanji-canvas {
+  @apply flex flex-col items-center gap-3 p-4 bg-slate-900/90 border border-slate-800 rounded-xl shadow-2xl backdrop-blur-md max-w-sm w-full;
+
+  &__head {
+    @apply flex items-center justify-between w-full;
+  }
+
+  &__title {
+    @apply text-xs font-semibold uppercase tracking-wider text-sky-400 flex items-center gap-1.5;
+  }
+
+  &__dot {
+    @apply w-2 h-2 rounded-full bg-sky-400 animate-pulse;
+  }
+
+  &__badges {
+    @apply flex items-center gap-2;
+  }
+
+  &__guide-btn {
+    @apply text-[11px] font-medium px-2 py-0.5 rounded-full border flex items-center gap-1 transition-colors bg-slate-800 border-slate-700 text-slate-400;
+
+    &--active {
+      @apply bg-sky-950 border-sky-700 text-sky-300;
+    }
+  }
+
+  &__guide-icon {
+    @apply w-3 h-3;
+  }
+
+  &__strokes-pill {
+    @apply text-xs font-medium text-slate-300 bg-slate-800 px-2 py-0.5 rounded-full;
+  }
+
+  &__stage {
+    @apply relative cursor-crosshair rounded-lg overflow-hidden border border-slate-700 shadow-inner;
+  }
+
+  &__surface {
+    @apply bg-slate-950 touch-none;
+  }
+
+  &__ghost {
+    @apply absolute inset-0 flex items-center justify-center pointer-events-none opacity-20 text-8xl font-serif text-slate-300 select-none;
+  }
+
+  &__feedback {
+    @apply text-xs rounded-lg p-2.5 w-full flex items-center gap-2 border;
+
+    &--ok {
+      @apply text-emerald-400 bg-emerald-950/60 border-emerald-800/60;
+    }
+
+    &--warn {
+      @apply text-amber-300 bg-amber-950/60 border-amber-800/60;
+    }
+  }
+
+  &__feedback-icon {
+    @apply w-4 h-4 shrink-0;
+  }
+
+  &__actions {
+    @apply flex items-center gap-2 w-full;
+  }
+
+  &__undo-btn {
+    @apply flex items-center justify-center gap-1 py-2 px-2.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-300 text-xs font-medium rounded-lg transition-colors border border-slate-700;
+  }
+
+  &__clear-btn {
+    @apply flex-1 flex items-center justify-center gap-1.5 py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-lg transition-colors border border-slate-700;
+  }
+
+  &__validate-btn {
+    @apply flex-1 flex items-center justify-center gap-1.5 py-2 px-3 bg-sky-600 hover:bg-sky-500 text-white text-xs font-medium rounded-lg transition-colors shadow-lg shadow-sky-600/30;
+  }
+
+  &__btn-icon {
+    @apply w-3.5 h-3.5;
+
+    &--fill {
+      @apply fill-current;
+    }
+  }
+}
+
+.kanjiverse {
+  @apply w-full flex flex-col gap-4;
+
+  &__toolbar {
+    @apply flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900 border border-slate-800 rounded-2xl p-4;
+  }
+
+  &__title {
+    @apply text-base font-bold text-slate-100 flex items-center gap-2;
+  }
+
+  &__title-icon {
+    @apply w-5 h-5 text-sky-400;
+  }
+
+  &__subtitle {
+    @apply text-xs text-slate-400;
+  }
+
+  &__form {
+    @apply flex items-center gap-2;
+  }
+
+  &__input-wrap {
+    @apply relative;
+  }
+
+  &__search-icon {
+    @apply w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2;
+  }
+
+  &__input {
+    @apply w-32 pl-8 pr-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-100;
+  }
+
+  &__submit-btn {
+    @apply px-3.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold;
+  }
+
+  &__grid {
+    @apply grid grid-cols-1 lg:grid-cols-3 gap-4;
+  }
+
+  &__viewport-wrap {
+    @apply lg:col-span-2 bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden relative min-h-[420px];
+  }
+
+  &__error {
+    @apply p-8 text-center text-xs text-amber-300;
+  }
+
+  &__mount {
+    @apply w-full h-[420px];
+  }
+
+  &__sidebar {
+    @apply bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between gap-4;
+  }
+
+  &__node-card {
+    @apply flex flex-col gap-3;
+  }
+
+  &__node-head {
+    @apply flex items-center justify-between;
+  }
+
+  &__node-glyph {
+    @apply text-5xl font-serif font-extrabold text-sky-300;
+  }
+
+  &__node-meta {
+    @apply px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 text-xs font-bold text-slate-300;
+  }
+
+  &__node-role {
+    @apply text-xs font-semibold text-indigo-300 uppercase;
+  }
+
+  &__node-meaning {
+    @apply text-xs text-slate-200 bg-slate-950 p-3 rounded-xl border border-slate-800;
+  }
+
+  &__node-actions {
+    @apply flex gap-2;
+  }
+
+  &__recenter-btn {
+    @apply flex-1 py-2 px-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold;
+  }
+
+  &__link-btn {
+    @apply px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1;
+  }
+
+  &__link-icon {
+    @apply w-3.5 h-3.5;
+  }
+
+  &__loading {
+    @apply text-xs text-slate-400;
+  }
+
+  &__nodes-label {
+    @apply text-[11px] font-bold uppercase text-slate-400 mb-2;
+  }
+
+  &__nodes-list {
+    @apply flex flex-wrap gap-1.5 max-h-40 overflow-y-auto;
+  }
+
+  &__node-chip {
+    @apply px-2 py-1 rounded-lg text-sm font-serif border transition-colors bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-600;
+
+    &--active {
+      @apply bg-sky-600 text-white border-sky-400 hover:border-sky-400;
+    }
+  }
+}

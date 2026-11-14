@@ -4,16 +4,31 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { UserButton, SignInButton, useUser } from '@clerk/nextjs';
-import { BookOpen, GraduationCap, ShieldCheck, PenTool, Wifi, WifiOff, Eye, Search } from 'lucide-react';
+import {
+  BookOpen,
+  GraduationCap,
+  ShieldCheck,
+  PenTool,
+  Wifi,
+  WifiOff,
+  Eye,
+  Bookmark,
+  Sparkles,
+  MessageSquare,
+  History,
+  Zap,
+  BookText,
+} from 'lucide-react';
 import { isAdminEmail } from '@/lib/admin';
 import { localDb } from '@/lib/db';
+import { flushSyncQueue } from '@/lib/sync';
 import { useFurigana } from '@/context/FuriganaContext';
 import { HeaderSearch } from './HeaderSearch';
 import { SelectionBookmarkToolbar } from './SelectionBookmarkToolbar';
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { user, isLoaded } = useUser();
+  const { user, isLoaded, isSignedIn } = useUser();
   const { furiganaMode, cycleFuriganaMode } = useFurigana();
   const [isOnline, setIsOnline] = useState(true);
   const [unsyncedCount, setUnsyncedCount] = useState(0);
@@ -22,148 +37,160 @@ export default function Navbar() {
   const isAdmin = isAdminEmail(userEmail);
 
   useEffect(() => {
-    setIsOnline(navigator.onLine);
-    const handleOnline = () => setIsOnline(true);
+    const syncOnline = () => setIsOnline(navigator.onLine);
+    queueMicrotask(syncOnline);
+
+    const checkDexiePending = async () => {
+      try {
+        const [attemptsPending, bookmarksPending, queueCount] = await Promise.all([
+          localDb.attempts.where('isSynced').equals(0).count(),
+          localDb.bookmarks.where('isSynced').equals(0).count(),
+          localDb.syncQueue.count(),
+        ]);
+        setUnsyncedCount(Math.max(attemptsPending + bookmarksPending, queueCount));
+      } catch {
+        // ignore
+      }
+    };
+
+    const handleOnline = () => {
+      setIsOnline(true);
+      if (isLoaded && isSignedIn) {
+        void flushSyncQueue(true).then(() => checkDexiePending());
+      }
+    };
     const handleOffline = () => setIsOnline(false);
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
-    const checkDexie = async () => {
-      try {
-        const count = await localDb.attempts.where('isSynced').equals(0).count();
-        setUnsyncedCount(count);
-      } catch (err) {
-        // ignore
-      }
-    };
-    checkDexie();
-    const interval = setInterval(checkDexie, 5000);
+    if (isLoaded && isSignedIn && navigator.onLine) {
+      void flushSyncQueue(true).then(() => checkDexiePending());
+    } else {
+      void checkDexiePending();
+    }
+
+    const interval = setInterval(() => void checkDexiePending(), 5000);
 
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
       clearInterval(interval);
     };
-  }, []);
+  }, [isLoaded, isSignedIn]);
 
   const navLinks = [
-    { href: '/', label: 'Examen Blancs', icon: GraduationCap },
-    { href: '/kanji', label: 'Étude Kanji', icon: BookOpen },
-    { href: '/tools', label: 'Outils & Canvas', icon: PenTool },
-    { href: '/history', label: 'Mes Résultats', icon: BookOpen },
-    ...(isAdmin ? [{ href: '/admin', label: 'Admin Panel', icon: ShieldCheck, adminOnly: true }] : []),
+    { href: '/', label: 'Examens', icon: GraduationCap },
+    { href: '/kanji', label: 'Kanji', icon: BookOpen },
+    { href: '/grammar', label: 'Grammaire', icon: Sparkles },
+    { href: '/slang', label: 'Slang', icon: MessageSquare },
+    { href: '/practice', label: 'Quiz & SRS', icon: Zap },
+    { href: '/reader', label: 'Lecteur', icon: BookText },
+    { href: '/bookmarks', label: 'Carnet', icon: Bookmark },
+    { href: '/tools', label: 'Outils', icon: PenTool },
+    { href: '/history', label: 'Historique', icon: History },
+    ...(isAdmin ? [{ href: '/admin', label: 'Admin', icon: ShieldCheck, adminOnly: true }] : []),
   ];
 
   const getFuriganaModeBadge = () => {
     switch (furiganaMode) {
       case 'ALWAYS':
-        return { label: 'Furigana: Toujours', color: 'bg-sky-950 text-sky-400 border-sky-800' };
+        return { label: 'Furigana: Toujours', modifier: 'site-header__furigana-btn--sky' };
       case 'HOVER':
-        return { label: 'Furigana: Au survol 👁️', color: 'bg-purple-950 text-purple-400 border-purple-800' };
+        return { label: 'Furigana: Survol', modifier: 'site-header__furigana-btn--purple' };
       case 'OFF':
-        return { label: 'Furigana: Désactivé', color: 'bg-slate-900 text-slate-500 border-slate-800' };
+        return { label: 'Furigana: Off', modifier: 'site-header__furigana-btn--off' };
       default:
-        return { label: 'Furigana: Auto', color: 'bg-sky-950 text-sky-400 border-sky-800' };
+        return { label: 'Furigana: Auto', modifier: 'site-header__furigana-btn--sky' };
     }
   };
 
   const badge = getFuriganaModeBadge();
 
   return (
-    <header className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800">
-      {/* Mouse selection bookmark trigger component */}
+    <header className="site-header">
       <SelectionBookmarkToolbar />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-        {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-3 group shrink-0">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-600 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-sky-600/30 group-hover:scale-105 transition-transform">
+      <div className="site-header__inner">
+        <Link href="/" className="site-header__brand">
+          <div className="site-header__logo-badge">
             JLPT
           </div>
-          <div>
-            <div className="flex items-center gap-1.5 font-bold text-slate-100 tracking-tight text-lg">
+          <div className="site-header__brand-text">
+            <div className="site-header__brand-title">
               <span>eJLPT</span>
-              <span className="text-xs px-1.5 py-0.5 rounded bg-sky-950 border border-sky-800 text-sky-400 font-mono font-medium">
+              <span className="site-header__brand-tag">
                 日本語
               </span>
             </div>
-            <p className="text-[10px] text-slate-400 font-sans">Simulations N5〜N1 & Apprentissage</p>
           </div>
         </Link>
 
-        {/* Navigation Links */}
-        <nav className="hidden lg:flex items-center gap-1">
-          {navLinks.map(link => {
+        <nav aria-label="Navigation principale" className="site-header__nav">
+          {navLinks.map((link) => {
             const Icon = link.icon;
             const isActive = pathname === link.href;
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
-                  isActive
-                    ? 'bg-sky-600/10 text-sky-400 border border-sky-500/30 shadow-sm'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-900 border border-transparent'
-                } ${link.adminOnly ? 'text-amber-400 hover:text-amber-300' : ''}`}
+                className={`site-header__nav-link ${
+                  isActive ? 'site-header__nav-link--active' : ''
+                } ${link.adminOnly ? 'site-header__nav-link--admin' : ''}`}
               >
-                <Icon className={`w-4 h-4 ${link.adminOnly ? 'text-amber-400' : ''}`} />
+                <Icon
+                  className={`site-header__nav-icon ${
+                    link.adminOnly ? 'site-header__nav-icon--admin' : ''
+                  }`}
+                />
                 <span>{link.label}</span>
-                {link.adminOnly && (
-                  <span className="text-[9px] uppercase px-1 py-0.2 bg-amber-950 text-amber-300 rounded border border-amber-800">
-                    Admin
-                  </span>
-                )}
               </Link>
             );
           })}
         </nav>
 
-        {/* Header Instant Search Bar */}
         <HeaderSearch />
 
-        {/* Right side: Furigana toggle, Dexie status & Clerk User button */}
-        <div className="flex items-center gap-2.5 shrink-0">
-          {/* Furigana Global Mode Button */}
+        <div className="site-header__actions">
           <button
+            type="button"
             onClick={cycleFuriganaMode}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all shadow-sm ${badge.color}`}
-            title="Cliquer pour faire défiler le mode Furigana (Toujours -> Au Survol -> Désactivé)"
+            className={`site-header__furigana-btn ${badge.modifier}`}
+            title="Cliquer pour faire défiler le mode Furigana (Toujours -> Survol -> Désactivé)"
           >
-            <Eye className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">{badge.label}</span>
+            <Eye className="site-header__nav-icon" />
+            <span className="site-header__furigana-label">{badge.label}</span>
           </button>
 
-          {/* Dexie Sync Badge */}
-          <div
+          <Link
+            href="/history"
             title={
               isOnline
-                ? `En ligne - MongoDB Atlas actif`
-                : `Hors-ligne - Dexie.js sauvegarde vos données localement`
+                ? `En ligne — ${unsyncedCount} élément(s) en attente de synchronisation`
+                : `Hors-ligne — ${unsyncedCount} élément(s) sauvegardés dans Dexie.js`
             }
-            className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${
-              isOnline
-                ? 'bg-emerald-950/60 text-emerald-400 border-emerald-800/80'
-                : 'bg-amber-950/60 text-amber-400 border-amber-800/80 animate-pulse'
+            className={`site-header__sync-link ${
+              isOnline ? 'site-header__sync-link--online' : 'site-header__sync-link--offline'
             }`}
           >
-            {isOnline ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
-            {unsyncedCount > 0 && (
-              <span className="w-4 h-4 rounded-full bg-amber-500 text-slate-950 text-[10px] font-bold flex items-center justify-center">
-                {unsyncedCount}
-              </span>
+            {isOnline ? (
+              <Wifi className="site-header__sync-icon" />
+            ) : (
+              <WifiOff className="site-header__sync-icon" />
             )}
-          </div>
+            {unsyncedCount > 0 && (
+              <span className="site-header__sync-count">{unsyncedCount}</span>
+            )}
+          </Link>
 
-          {/* User Profile via Clerk */}
           {isLoaded && (
             <div>
               {user ? (
                 <UserButton />
               ) : (
                 <SignInButton mode="modal">
-                  <button className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold shadow-md shadow-sky-600/30 transition-colors">
-                    Se Connecter
+                  <button type="button" className="site-header__login-btn">
+                    Connexion
                   </button>
                 </SignInButton>
               )}
@@ -171,6 +198,26 @@ export default function Navbar() {
           )}
         </div>
       </div>
+
+      {/* Compact Secondary Nav Bar for tablet/mobile viewports */}
+      <nav aria-label="Navigation mobile" className="site-header__mobile-nav">
+        {navLinks.map((link) => {
+          const Icon = link.icon;
+          const isActive = pathname === link.href;
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`site-header__mobile-link ${
+                isActive ? 'site-header__mobile-link--active' : ''
+              }`}
+            >
+              <Icon className="site-header__nav-icon" />
+              <span>{link.label}</span>
+            </Link>
+          );
+        })}
+      </nav>
     </header>
   );
 }
