@@ -38,13 +38,15 @@ export const BookletCoverGate: React.FC<BookletCoverGateProps> = ({
     e.preventDefault();
     onUpdateExaminee(
       nameInput.trim() || '受験者 (Candidat)',
-      numberInput.trim() || 'N3-2018-0001'
+      numberInput.trim() || `${level}-001-0001`
     );
     onOpenBooklet();
   };
 
   const englishSub =
-    stage.id === 'stage-vocab'
+    stage.id === 'stage-combined-written'
+      ? 'Language Knowledge (Vocabulary / Grammar) · Reading'
+      : stage.id === 'stage-vocab'
       ? 'Language Knowledge (Vocabulary)'
       : stage.id === 'stage-grammar-reading'
       ? 'Language Knowledge (Grammar) · Reading'
@@ -56,7 +58,9 @@ export const BookletCoverGate: React.FC<BookletCoverGateProps> = ({
       : stage.nominalMinutes && isStrictOfficial && stage.id === 'stage-listening'
       ? `（${stage.nominalMinutes}分 / piste réelle ~${effectiveMinutes}分）`
       : stage.id === 'stage-vocab'
-      ? `（${effectiveMinutes}ぷん）`
+      ? effectiveMinutes === 30
+        ? `（${effectiveMinutes}ぷん）`
+        : `（${effectiveMinutes}ふん）`
       : `（${effectiveMinutes}分）`;
 
   return (

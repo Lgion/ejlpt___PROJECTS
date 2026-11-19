@@ -64,7 +64,9 @@ export const OfficialBookletRunner: React.FC<OfficialBookletRunnerProps> = ({
   const [examineeName, setExamineeName] = useState(
     user?.fullName || user?.firstName || 'CANDIDAT EJLPT'
   );
-  const [examineeNumber, setExamineeNumber] = useState('N3-018-204');
+  const [examineeNumber, setExamineeNumber] = useState(
+    `${exam.level}-${exam.candidateCodePrefix ?? (exam.examNumber ? String(exam.examNumber).padStart(3, '0') : '001')}-204`
+  );
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [flaggedIds, setFlaggedIds] = useState<Set<string>>(new Set());
   const [timeRemainingSeconds, setTimeRemainingSeconds] = useState(
@@ -84,6 +86,27 @@ export const OfficialBookletRunner: React.FC<OfficialBookletRunnerProps> = ({
 
   const hasSubmittedRef = useRef(false);
   const confirmDialogRef = useRef<HTMLDialogElement | null>(null);
+  const shellRef = useRef<HTMLDivElement | null>(null);
+
+  // Measure actual fixed .site-header height so mobile sticky timer docks cleanly right underneath
+  useEffect(() => {
+    const shellEl = shellRef.current;
+    const headerEl = document.querySelector<HTMLElement>('.site-header');
+    if (!shellEl || !headerEl) return;
+
+    const updateHeight = () => {
+      const h = Math.round(headerEl.getBoundingClientRect().height);
+      if (h > 0) {
+        shellEl.style.setProperty('--site-header-h', `${h}px`);
+      }
+    };
+    updateHeight();
+
+    if (typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(updateHeight);
+    ro.observe(headerEl);
+    return () => ro.disconnect();
+  }, []);
 
   const currentStage = activeStages[stageIdx];
   const currentQ = currentStage?.questions[currentQuestionIdx];
@@ -152,6 +175,7 @@ export const OfficialBookletRunner: React.FC<OfficialBookletRunnerProps> = ({
     try {
       const attemptDoc = {
         attemptId: res.attemptId,
+        examId: exam.id,
         level: res.level,
         mode: res.mode,
         sectionFilter,
@@ -185,7 +209,7 @@ export const OfficialBookletRunner: React.FC<OfficialBookletRunnerProps> = ({
 
       await enqueueSyncAction(
         'SAVE_ATTEMPT',
-        { ...res, title: attemptDoc.title, sectionFilter, userAnswers: answers },
+        { ...res, examId: exam.id, title: attemptDoc.title, sectionFilter, userAnswers: answers },
         Boolean(isSignedIn)
       );
     } catch (err) {
@@ -197,6 +221,7 @@ export const OfficialBookletRunner: React.FC<OfficialBookletRunnerProps> = ({
     activeStages,
     answers,
     config,
+    exam.id,
     exam.level,
     exam.scoringScale,
     exam.title,
@@ -348,75 +373,100 @@ export const OfficialBookletRunner: React.FC<OfficialBookletRunnerProps> = ({
 
   return (
     <div
+      ref={shellRef}
       className={`jlpt-sim-shell ${
         activeTheme === 'paper_booklet' ? 'jlpt-theme-paper' : 'jlpt-theme-dark'
       }`}
     >
       {/* Top Simulator HUD */}
       <header className="jlpt-sim-hud">
-        <div className="jlpt-sim-hud__left">
+        <div className="jlpt-sim-hud__actions-row">
           <button type="button" onClick={onExit} className="jlpt-sim-hud__exit">
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
             <span>Quitter</span>
           </button>
 
-          <div className="jlpt-sim-hud__badges">
-            <span className="jlpt-sim-hud__stage-pill" lang="ja">
-              Cahier {stageIdx + 1}/{activeStages.length} · {currentStage.stageMeta.titleJp}
-            </span>
-            <span className="jlpt-sim-hud__mode-pill">{getPresetBadgeLabel(config)}</span>
+          <div className="jlpt-sim-hud__right">
+            <div
+              className={`jlpt-sim-hud__timer jlpt-sim-hud__timer--desktop ${
+                isUrgent ? 'jlpt-sim-hud__timer--urgent' : ''
+              }`}
+            >
+              <Clock className="w-4 h-4 shrink-0" aria-hidden="true" />
+              <span>{isTimed ? formatClock(timeRemainingSeconds) : 'Chrono libre'}</span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() =>
+                setActiveTheme((prev) =>
+                  prev === 'paper_booklet' ? 'dark_ejlpt' : 'paper_booklet'
+                )
+              }
+              className="jlpt-sim-hud__tool-btn"
+              aria-label="Basculer entre thème Papier officiel et thème Sombre"
+            >
+              {activeTheme === 'paper_booklet' ? (
+                <>
+                  <Moon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                  <span>Sombre</span>
+                </>
+              ) : (
+                <>
+                  <Sun className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                  <span>Papier</span>
+                </>
+              )}
+            </button>
+
+            {config.showOmrSheet && !isCoverGateOpen && (
+              <button
+                type="button"
+                onClick={() => setShowMobileOmr((prev) => !prev)}
+                className="jlpt-sim-hud__tool-btn jlpt-sim-hud__omr-toggle"
+                aria-expanded={showMobileOmr}
+              >
+                <CheckSquare className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                <span>
+                  OMR ({stageAnsweredCount}/{stageQuestions.length})
+                </span>
+              </button>
+            )}
+
+            {!isCoverGateOpen && (
+              <button
+                type="button"
+                onClick={() => setConfirmDialogOpen(true)}
+                className="jlpt-sim-hud__finish-btn"
+                disabled={isSaving}
+              >
+                <Send className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                <span className="jlpt-sim-hud__finish-label-full">
+                  {isLastStage ? 'Terminer & Noter' : 'Remettre le cahier'}
+                </span>
+                <span className="jlpt-sim-hud__finish-label-short">
+                  {isLastStage ? 'Terminer' : 'Remettre'}
+                </span>
+              </button>
+            )}
           </div>
         </div>
 
-        <div className="jlpt-sim-hud__right">
-          <div className={`jlpt-sim-hud__timer ${isUrgent ? 'jlpt-sim-hud__timer--urgent' : ''}`}>
-            <Clock className="w-4 h-4" />
-            <span>{isTimed ? formatClock(timeRemainingSeconds) : 'Chrono libre'}</span>
-          </div>
-
-          <button
-            type="button"
-            onClick={() =>
-              setActiveTheme((prev) => (prev === 'paper_booklet' ? 'dark_ejlpt' : 'paper_booklet'))
-            }
-            className="jlpt-sim-hud__tool-btn"
-            aria-label="Basculer entre thème Papier officiel et thème Sombre"
-          >
-            {activeTheme === 'paper_booklet' ? (
-              <>
-                <Moon className="w-3.5 h-3.5" /> Sombre
-              </>
-            ) : (
-              <>
-                <Sun className="w-3.5 h-3.5" /> Papier
-              </>
-            )}
-          </button>
-
-          {config.showOmrSheet && !isCoverGateOpen && (
-            <button
-              type="button"
-              onClick={() => setShowMobileOmr((prev) => !prev)}
-              className="jlpt-sim-hud__tool-btn jlpt-sim-hud__omr-toggle"
-            >
-              <CheckSquare className="w-3.5 h-3.5" />
-              OMR ({stageAnsweredCount}/{stageQuestions.length})
-            </button>
-          )}
-
-          {!isCoverGateOpen && (
-            <button
-              type="button"
-              onClick={() => setConfirmDialogOpen(true)}
-              className="jlpt-sim-hud__finish-btn"
-              disabled={isSaving}
-            >
-              <Send className="w-3.5 h-3.5 inline mr-1.5" />
-              {isLastStage ? 'Terminer & Noter' : 'Remettre le cahier'}
-            </button>
-          )}
+        <div className="jlpt-sim-hud__badges">
+          <span className="jlpt-sim-hud__stage-pill" lang="ja">
+            Cahier {stageIdx + 1}/{activeStages.length} · {currentStage.stageMeta.titleJp}
+          </span>
+          <span className="jlpt-sim-hud__mode-pill">{getPresetBadgeLabel(config)}</span>
         </div>
       </header>
+
+      {/* Sticky mobile/tablet top-right timer docking beneath .site-header on scroll */}
+      <div className="jlpt-mobile-sticky-timer">
+        <div className={`jlpt-sim-hud__timer ${isUrgent ? 'jlpt-sim-hud__timer--urgent' : ''}`}>
+          <Clock className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+          <span>{isTimed ? formatClock(timeRemainingSeconds) : 'Chrono libre'}</span>
+        </div>
+      </div>
 
       {/* Main Content: Cover Gate OR Split Booklet + OMR */}
       {isCoverGateOpen ? (
@@ -483,6 +533,7 @@ export const OfficialBookletRunner: React.FC<OfficialBookletRunnerProps> = ({
                 level={exam.level}
                 stageTitleJp={currentStage.stageMeta.titleJp}
                 questions={stageQuestions}
+                audioTracks={currentStage.audioTracks}
                 currentIndex={currentQuestionIdx}
                 answers={answers}
                 flaggedIds={flaggedIds}

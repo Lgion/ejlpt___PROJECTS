@@ -43,8 +43,13 @@ export function ExamResultsView({
             Score Total : {result.scoreTotal} / {result.maxScoreTotal} pts
           </h3>
           <p className="exam-results__meta">
-            {isOfficial180 && (
-              <span>Barème officiel JLPT N3 (seuil ≥ 95/180 et ≥ 19/60 par domaine) • </span>
+            {isOfficial180 && bd && (
+              <span>
+                Barème officiel JLPT {result.level} (seuil ≥{' '}
+                {bd.requiredTotalScore ?? 95}/{result.maxScoreTotal} et ≥{' '}
+                {bd.usesCombinedLanguageReading ? '38/120 écrit · 19/60 écoute' : '19/60 par domaine'}
+                ) •{' '}
+              </span>
             )}
             Temps écoulé : {formatTime(result.timeSpentSeconds)} • Enregistré localement dans Dexie
             {isSignedIn
@@ -76,10 +81,14 @@ export function ExamResultsView({
                 ? 'Non évalué'
                 : result.passedMojiGo
                   ? isOfficial180
-                    ? 'Validé (≥19)'
+                    ? bd?.usesCombinedLanguageReading
+                      ? 'Validé (écrit ≥38/120)'
+                      : 'Validé (≥19)'
                     : 'Validé'
                   : isOfficial180
-                    ? 'Éliminé (<19)'
+                    ? bd?.usesCombinedLanguageReading
+                      ? 'Éliminé (<38/120)'
+                      : 'Éliminé (<19)'
                     : 'Éliminé (<31%)'}
             </span>
           </div>
@@ -104,10 +113,14 @@ export function ExamResultsView({
                 ? 'Non évalué'
                 : result.passedBunpouDokkai
                   ? isOfficial180
-                    ? 'Validé (≥19)'
+                    ? bd?.usesCombinedLanguageReading
+                      ? 'Validé (écrit ≥38/120)'
+                      : 'Validé (≥19)'
                     : 'Validé'
                   : isOfficial180
-                    ? 'Éliminé (<19)'
+                    ? bd?.usesCombinedLanguageReading
+                      ? 'Éliminé (<38/120)'
+                      : 'Éliminé (<19)'
                     : 'Éliminé (<31%)'}
             </span>
           </div>

@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { ExamSessionConfig, JLPTExam, JLPTQuestion, ExamResult } from '@/types/jlpt';
-import { createDefaultSessionConfig } from '@/lib/jlptTokens';
+import { createDefaultSessionConfig, getExamModularCatalog } from '@/lib/jlptTokens';
 import { ChoukaiAudioPlayer } from './custom-components/ChoukaiAudioPlayer';
 import { EzoeGrammarViewer } from './custom-components/EzoeGrammarViewer';
 import { FuriganaText } from './custom-components/FuriganaText';
@@ -36,9 +36,31 @@ interface ExamRunnerProps {
 }
 
 function resolveDefaultConfig(
+  exam: JLPTExam,
   sectionFilter?: 'moji_go' | 'bunpou_dokkai' | 'choukai'
 ): ExamSessionConfig {
   if (!sectionFilter) return createDefaultSessionConfig('OFFICIAL_STRICT');
+
+  const hasCombinedStage = Boolean(
+    exam.stages?.some((s) => s.id === 'stage-combined-written')
+  );
+  if (hasCombinedStage && sectionFilter !== 'choukai') {
+    const catalog = getExamModularCatalog(exam);
+    const targetDomains =
+      sectionFilter === 'moji_go' ? new Set(['vocab']) : new Set(['grammar', 'reading']);
+    return {
+      presetMode: 'MODULAR_SELECTION',
+      timerMultiplier: 1,
+      audioControlMode: 'segmented_free',
+      furiganaPolicy: 'official_booklet',
+      showStarOrderingHelper: true,
+      correctionTiming: 'end_only',
+      theme: 'paper_booklet',
+      showOmrSheet: true,
+      enableBookletCoverGate: true,
+      selectedModules: catalog.filter((m) => targetDomains.has(m.domain)).map((m) => m.id),
+    };
+  }
 
   const stageId =
     sectionFilter === 'moji_go'
@@ -69,7 +91,7 @@ export const ExamRunner: React.FC<ExamRunnerProps> = ({
   onExit,
 }) => {
   if (exam.stages && exam.stages.length > 0) {
-    const resolvedConfig = sessionConfig ?? resolveDefaultConfig(sectionFilter);
+    const resolvedConfig = sessionConfig ?? resolveDefaultConfig(exam, sectionFilter);
     return (
       <OfficialBookletRunner
         exam={exam}
@@ -154,6 +176,7 @@ const LegacyExamRunner: React.FC<Omit<ExamRunnerProps, 'sessionConfig'>> = ({
     try {
       const attemptDoc = {
         attemptId: res.attemptId,
+        examId: exam.id,
         level: res.level,
         mode: res.mode,
         sectionFilter,
@@ -187,7 +210,7 @@ const LegacyExamRunner: React.FC<Omit<ExamRunnerProps, 'sessionConfig'>> = ({
 
       await enqueueSyncAction(
         'SAVE_ATTEMPT',
-        { ...res, title: exam.title, sectionFilter, userAnswers: answers },
+        { ...res, examId: exam.id, title: exam.title, sectionFilter, userAnswers: answers },
         Boolean(isSignedIn)
       );
     } catch (err) {
@@ -197,6 +220,7 @@ const LegacyExamRunner: React.FC<Omit<ExamRunnerProps, 'sessionConfig'>> = ({
     }
   }, [
     answers,
+    exam.id,
     exam.level,
     exam.scoringScale,
     exam.title,

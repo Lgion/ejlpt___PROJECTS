@@ -2,12 +2,13 @@
 
 import React from 'react';
 import { HelpCircle } from 'lucide-react';
-import type { JLPTQuestion, JLPTLevel } from '@/types/jlpt';
+import type { JLPTAudioTrackMeta, JLPTLevel, JLPTQuestion } from '@/types/jlpt';
 
 interface OmrAnswerSheetProps {
   level: JLPTLevel;
   stageTitleJp: string;
   questions: JLPTQuestion[];
+  audioTracks?: JLPTAudioTrackMeta[];
   currentIndex: number;
   answers: Record<string, string>;
   flaggedIds: Set<string>;
@@ -21,14 +22,15 @@ interface OmrAnswerSheetProps {
 }
 
 /**
- * Digital OMR mark sheet modeled directly on the official JLPT N3sheet.pdf,
- * supporting both 4-bubble rows (①②③④) and 3-bubble rows (①②③ for 聴解 問題4 & 5),
- * accessible radio fieldsets, and pre-filled れい (example) rows.
+ * Digital OMR mark sheet modeled directly on official JLPT mark sheets,
+ * supporting both 4-bubble rows (①②③④) and 3-bubble rows (①②③),
+ * accessible radio fieldsets, and pre-filled れい (example) rows derived from audioTracks.
  */
 export const OmrAnswerSheet: React.FC<OmrAnswerSheetProps> = ({
   level,
   stageTitleJp,
   questions,
+  audioTracks,
   currentIndex,
   answers,
   flaggedIds,
@@ -54,13 +56,32 @@ export const OmrAnswerSheet: React.FC<OmrAnswerSheetProps> = ({
     }
   });
 
-  const exampleAnswers: Record<number, { bubbles: number; chosen: number }> = {
+  const fallbackExamples: Record<number, { bubbles: number; chosen: number }> = {
     1: { bubbles: 4, chosen: 1 },
     2: { bubbles: 4, chosen: 4 },
     3: { bubbles: 4, chosen: 1 },
     4: { bubbles: 3, chosen: 1 },
     5: { bubbles: 3, chosen: 2 },
   };
+  const exampleByMondai = new Map<number, { bubbles: number; chosen: number }>();
+  if (audioTracks && audioTracks.length > 0) {
+    for (const tr of audioTracks) {
+      if (tr.exampleCorrectOptionId) {
+        const groupHas3 = questions.some(
+          (q) => q.mondaiNumber === tr.mondaiNumber && q.options.length === 3
+        );
+        const exOptCount = tr.exampleOptions?.length ?? (groupHas3 ? 3 : 4);
+        exampleByMondai.set(tr.mondaiNumber, {
+          bubbles: exOptCount === 3 ? 3 : 4,
+          chosen: Number(tr.exampleCorrectOptionId) || 1,
+        });
+      }
+    }
+  } else {
+    for (const [k, v] of Object.entries(fallbackExamples)) {
+      exampleByMondai.set(Number(k), v);
+    }
+  }
 
   return (
     <aside className="jlpt-omr-sheet" aria-label="Feuille de réponses officielle OMR">
@@ -94,7 +115,7 @@ export const OmrAnswerSheet: React.FC<OmrAnswerSheetProps> = ({
       <div className="jlpt-omr-sheet__groups">
         {groups.map((group) => {
           const exInfo = includeListeningExampleRows
-            ? exampleAnswers[group.mondaiNumber]
+            ? exampleByMondai.get(group.mondaiNumber)
             : undefined;
           return (
             <div key={`omr-g-${group.mondaiNumber}`} className="jlpt-omr-group">
@@ -127,6 +148,7 @@ export const OmrAnswerSheet: React.FC<OmrAnswerSheetProps> = ({
                   q.scoringDomain === 'listening'
                     ? q.audioSegment?.itemNumber ?? q.questionNumber ?? globalIndex + 1
                     : q.questionNumber ?? globalIndex + 1;
+                const rowDisplay = q.questionLabel ?? String(rowNum);
                 const chosen = answers[q.id];
                 const isActive = globalIndex === currentIndex;
                 const isFlagged = flaggedIds.has(q.id);
@@ -138,16 +160,16 @@ export const OmrAnswerSheet: React.FC<OmrAnswerSheetProps> = ({
                     className={`jlpt-omr-row ${isActive ? 'jlpt-omr-row--active' : ''}`}
                   >
                     <legend className="visually-hidden">
-                      Question {rowNum} (問題 {group.mondaiNumber})
+                      Question {rowDisplay} (問題 {group.mondaiNumber})
                     </legend>
 
                     <button
                       type="button"
                       onClick={() => onJumpToQuestion(globalIndex)}
                       className="jlpt-omr-row__num"
-                      title={`Aller à la question ${rowNum}`}
+                      title={`Aller à la question ${rowDisplay}`}
                     >
-                      {rowNum}
+                      {rowDisplay}
                     </button>
 
                     <div className="jlpt-omr-row__bubbles">

@@ -2,39 +2,129 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  Check,
   CheckSquare,
   Clock,
+  Dices,
   Headphones,
   Layers,
   ShieldAlert,
+  Shuffle,
   SlidersHorizontal,
   X,
 } from 'lucide-react';
 import type {
+  ExamMixGranularity,
   ExamPresetMode,
   ExamSessionConfig,
   ExamStageId,
   JLPTExam,
+  JLPTScoringDomain,
   ModularSubSectionId,
 } from '@/types/jlpt';
-import { createDefaultSessionConfig, MODULAR_SUBSECTION_CATALOG } from '@/lib/jlptTokens';
+import {
+  createDefaultSessionConfig,
+  getExamModularCatalog,
+  MODULAR_SUBSECTION_CATALOG,
+} from '@/lib/jlptTokens';
+import {
+  composeMixedExam,
+  describeComposableParts,
+  formatAnonymousExamLabel,
+} from '@/lib/examComposer';
+import { JLPT_180_TOTAL_PASS_BY_LEVEL } from '@/lib/examScoring';
+import type { ExamAttemptBadgeSummary } from '@/components/exam/ExamMixerModal';
 
 interface ExamLaunchModalProps {
   exam: JLPTExam | null;
+  sourceExams?: JLPTExam[];
+  initialSubjectChoice?: string; // exam.id or 'mix'
+  attemptSummaries?: Record<string, ExamAttemptBadgeSummary>;
   isOpen: boolean;
   initialPresetMode?: ExamPresetMode;
   onClose: () => void;
   onLaunch: (exam: JLPTExam, config: ExamSessionConfig) => void;
 }
 
+const DOMAIN_TITLES: { domain: JLPTScoringDomain; label: string }[] = [
+  { domain: 'vocab', label: '文字・語彙 (Vocabulaire)' },
+  { domain: 'grammar', label: '文法 (Grammaire)' },
+  { domain: 'reading', label: '読解 (Lecture)' },
+  { domain: 'listening', label: '聴解 (Compréhension orale)' },
+];
+
 export const ExamLaunchModal: React.FC<ExamLaunchModalProps> = ({
   exam,
+  sourceExams,
+  initialSubjectChoice,
+  attemptSummaries = {},
   isOpen,
   initialPresetMode,
   onClose,
   onLaunch,
 }) => {
   const dialogRef = useRef<HTMLDialogElement | null>(null);
+
+  const availableExams = useMemo(() => {
+    const list = sourceExams && sourceExams.length > 0 ? sourceExams : exam ? [exam] : [];
+    return [...list].sort((a, b) => (a.examNumber ?? 1) - (b.examNumber ?? 1));
+  }, [sourceExams, exam]);
+
+  const [subjectChoice, setSubjectChoice] = useState<string>(() => {
+    if (initialSubjectChoice) return initialSubjectChoice;
+    if (exam?.isDynamicMix) return 'mix';
+    return exam?.id ?? availableExams[0]?.id ?? 'mix';
+  });
+
+  const [granularity, setGranularity] = useState<ExamMixGranularity>('by_mondai');
+  const [partSources, setPartSources] = useState<Record<string, string>>({});
+  const [seed, setSeed] = useState<number>(() => Math.floor(Date.now() % 100000));
+
+  const composableParts = useMemo(
+    () => (availableExams.length > 0 ? describeComposableParts(availableExams) : []),
+    [availableExams]
+  );
+
+  // Determine if the user has customized per-part sources across multiple exams
+  const hasCustomPartMix = useMemo(() => {
+    if (subjectChoice === 'mix') return true;
+    const activeIds = new Set(Object.values(partSources).filter(Boolean));
+    if (activeIds.has('random')) return true;
+    if (activeIds.size > 1) return true;
+    if (activeIds.size === 1 && !activeIds.has(subjectChoice)) return true;
+    return false;
+  }, [subjectChoice, partSources]);
+
+  const effectiveExam = useMemo<JLPTExam | null>(() => {
+    if (availableExams.length === 0) return exam;
+    const baseLevel = availableExams[0].level;
+
+    if (subjectChoice === 'mix' || hasCustomPartMix) {
+      const normalizedSources: Record<string, string> = {};
+      for (const part of composableParts) {
+        normalizedSources[part.moduleId] =
+          partSources[part.moduleId] ?? (subjectChoice === 'mix' ? 'random' : subjectChoice);
+      }
+      return composeMixedExam(baseLevel, availableExams, {
+        level: baseLevel,
+        granularity,
+        partSources: normalizedSources,
+        seed,
+      });
+    }
+
+    return availableExams.find((e) => e.id === subjectChoice) ?? availableExams[0];
+  }, [
+    availableExams,
+    exam,
+    subjectChoice,
+    hasCustomPartMix,
+    composableParts,
+    partSources,
+    granularity,
+    seed,
+  ]);
+
   const [presetMode, setPresetMode] = useState<ExamPresetMode>(
     initialPresetMode ?? 'OFFICIAL_STRICT'
   );
@@ -52,23 +142,36 @@ export const ExamLaunchModal: React.FC<ExamLaunchModalProps> = ({
   const [theme, setTheme] = useState<'paper_booklet' | 'dark_ejlpt'>('paper_booklet');
   const [showOmrSheet, setShowOmrSheet] = useState(true);
   const [enableBookletCoverGate, setEnableBookletCoverGate] = useState(false);
-  const [selectedStages, setSelectedStages] = useState<ExamStageId[]>([
-    'stage-vocab',
-    'stage-grammar-reading',
-    'stage-listening',
-  ]);
-  const [selectedModules, setSelectedModules] = useState<ModularSubSectionId[]>([
-    'vocab_m1',
-    'grammar_m1',
-    'reading_m4',
-  ]);
 
-  // Synchronize native top-layer <dialog> cleanly per Modern Web Guidance
+  const stageOptions = useMemo(() => effectiveExam?.stages ?? [], [effectiveExam?.stages]);
+  const modularCatalog = useMemo(
+    () => (effectiveExam ? getExamModularCatalog(effectiveExam) : MODULAR_SUBSECTION_CATALOG),
+    [effectiveExam]
+  );
+
+  const [selectedStages, setSelectedStages] = useState<ExamStageId[]>(() =>
+    effectiveExam?.stages?.length
+      ? effectiveExam.stages.map((s) => s.id)
+      : ['stage-vocab', 'stage-grammar-reading', 'stage-listening']
+  );
+  const [selectedModules, setSelectedModules] = useState<ModularSubSectionId[]>(() => {
+    const initialList = effectiveExam
+      ? getExamModularCatalog(effectiveExam)
+      : MODULAR_SUBSECTION_CATALOG;
+    const firstVocab = initialList.find((m) => m.domain === 'vocab');
+    const firstGrammar = initialList.find((m) => m.domain === 'grammar');
+    const firstReading = initialList.find((m) => m.domain === 'reading');
+    const picks = [firstVocab, firstGrammar, firstReading]
+      .filter(Boolean)
+      .map((m) => m!.id);
+    return picks.length > 0 ? picks : initialList.slice(0, 3).map((m) => m.id);
+  });
+
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
 
-    if (isOpen && exam) {
+    if (isOpen && effectiveExam) {
       if (!dialog.open) {
         dialog.showModal();
       }
@@ -76,20 +179,55 @@ export const ExamLaunchModal: React.FC<ExamLaunchModalProps> = ({
       dialog.returnValue = '';
       dialog.close();
     }
-  }, [isOpen, exam]);
+  }, [isOpen, effectiveExam]);
 
   const modularSummary = useMemo(() => {
-    const picked = MODULAR_SUBSECTION_CATALOG.filter((m) => selectedModules.includes(m.id));
+    const picked = modularCatalog.filter((m) => selectedModules.includes(m.id));
     const questionCount = picked.reduce((sum, m) => sum + m.questionCount, 0);
     const baseMinutes = picked.reduce((sum, m) => sum + m.recommendedMinutes, 0);
     const effectiveMinutes =
       timerMultiplier === 0 ? 0 : Math.round(baseMinutes * timerMultiplier);
     return { picked, questionCount, baseMinutes, effectiveMinutes };
-  }, [selectedModules, timerMultiplier]);
+  }, [modularCatalog, selectedModules, timerMultiplier]);
 
-  if (!exam) {
+  if (!effectiveExam) {
     return <dialog ref={dialogRef} className="jlpt-launch-dialog" onClose={onClose} />;
   }
+
+  const handleSelectWholeSubject = (choice: string) => {
+    setSubjectChoice(choice);
+    if (choice === 'mix') {
+      const nextMap: Record<string, string> = {};
+      for (const p of composableParts) nextMap[p.moduleId] = 'random';
+      setPartSources(nextMap);
+      setSeed((prev) => (prev + 7919) % 999999);
+    } else {
+      const nextMap: Record<string, string> = {};
+      for (const p of composableParts) nextMap[p.moduleId] = choice;
+      setPartSources(nextMap);
+    }
+  };
+
+  const handlePartSourceChange = (moduleId: string, sourceValue: string) => {
+    setPartSources((prev) => {
+      const base: Record<string, string> = {};
+      for (const p of composableParts) {
+        base[p.moduleId] =
+          prev[p.moduleId] ?? (subjectChoice === 'mix' ? 'random' : subjectChoice);
+      }
+      base[moduleId] = sourceValue;
+      return base;
+    });
+    setSubjectChoice('mix');
+  };
+
+  const handleRerollRandomMix = () => {
+    const nextMap: Record<string, string> = {};
+    for (const p of composableParts) nextMap[p.moduleId] = 'random';
+    setPartSources(nextMap);
+    setSubjectChoice('mix');
+    setSeed((prev) => (prev + Math.floor(Math.random() * 8999) + 101) % 999999);
+  };
 
   const toggleStage = (id: ExamStageId) => {
     setSelectedStages((prev) =>
@@ -108,9 +246,7 @@ export const ExamLaunchModal: React.FC<ExamLaunchModalProps> = ({
   };
 
   const selectDomainModules = (domain: 'vocab' | 'grammar' | 'reading' | 'listening') => {
-    const domainIds = MODULAR_SUBSECTION_CATALOG.filter((m) => m.domain === domain).map(
-      (m) => m.id
-    );
+    const domainIds = modularCatalog.filter((m) => m.domain === domain).map((m) => m.id);
     const allPresent = domainIds.every((id) => selectedModules.includes(id));
     setSelectedModules((prev) =>
       allPresent
@@ -122,12 +258,12 @@ export const ExamLaunchModal: React.FC<ExamLaunchModalProps> = ({
   const handleConfirmLaunch = (e: React.FormEvent) => {
     e.preventDefault();
     if (presetMode === 'OFFICIAL_STRICT') {
-      onLaunch(exam, createDefaultSessionConfig('OFFICIAL_STRICT'));
+      onLaunch(effectiveExam, createDefaultSessionConfig('OFFICIAL_STRICT', effectiveExam));
       return;
     }
 
     if (presetMode === 'CUSTOM_CONDITIONS') {
-      onLaunch(exam, {
+      onLaunch(effectiveExam, {
         presetMode: 'CUSTOM_CONDITIONS',
         timerMultiplier,
         audioControlMode,
@@ -142,7 +278,7 @@ export const ExamLaunchModal: React.FC<ExamLaunchModalProps> = ({
       return;
     }
 
-    onLaunch(exam, {
+    onLaunch(effectiveExam, {
       presetMode: 'MODULAR_SELECTION',
       timerMultiplier,
       customMinutesOverride: modularSummary.baseMinutes,
@@ -173,12 +309,14 @@ export const ExamLaunchModal: React.FC<ExamLaunchModalProps> = ({
       <form onSubmit={handleConfirmLaunch} className="jlpt-launch-dialog__shell">
         <div className="jlpt-launch-dialog__header">
           <div>
-            <span className="jlpt-launch-dialog__level-pill">{exam.level} Officiel 2018</span>
+            <span className="jlpt-launch-dialog__level-pill">
+              {formatAnonymousExamLabel(effectiveExam)}
+            </span>
             <h2 id="launch-modal-title" className="jlpt-launch-dialog__title">
-              {exam.title}
+              {effectiveExam.title}
             </h2>
             <p className="jlpt-launch-dialog__subtitle">
-              Choisissez votre mode de simulation avant d’ouvrir le cahier d’examen.
+              Sélectionnez votre cahier (#1, #2 ou Mixte par 問題) et votre mode de simulation.
             </p>
           </div>
           <button
@@ -190,6 +328,94 @@ export const ExamLaunchModal: React.FC<ExamLaunchModalProps> = ({
             <X className="w-5 h-5" />
           </button>
         </div>
+
+        {/* Unified Subject / Exam Picker (#1, #2, or Dynamic Mix) */}
+        {availableExams.length > 1 && (
+          <div className="jlpt-mixer-controls">
+            <div className="jlpt-mixer-sources-summary">
+              <span className="jlpt-mixer-sources-summary__label">Sujet :</span>
+              {availableExams.map((src) => {
+                const stat = attemptSummaries[src.id];
+                const isSelected = subjectChoice === src.id && !hasCustomPartMix;
+                return (
+                  <button
+                    key={src.id}
+                    type="button"
+                    aria-pressed={isSelected}
+                    onClick={() => handleSelectWholeSubject(src.id)}
+                    className={`jlpt-mixer-source-chip cursor-pointer transition-all ${
+                      isSelected
+                        ? 'border-sky-400 bg-sky-500/20 text-white ring-1 ring-sky-400'
+                        : 'hover:border-slate-600'
+                    }`}
+                  >
+                    {isSelected && <Check className="w-3 h-3 inline mr-1" aria-hidden="true" />}
+                    <strong>Examen #{src.examNumber ?? 1}</strong> ({src.questions.length} Q)
+                    {stat ? (
+                      <span
+                        className={
+                          stat.passed ? 'text-emerald-400 ml-1' : 'text-amber-300 ml-1'
+                        }
+                      >
+                        · {stat.bestScore}/{stat.maxScore}
+                      </span>
+                    ) : null}
+                  </button>
+                );
+              })}
+
+              <button
+                type="button"
+                aria-pressed={subjectChoice === 'mix' || hasCustomPartMix}
+                onClick={() => handleSelectWholeSubject('mix')}
+                className={`jlpt-mixer-source-chip cursor-pointer transition-all ${
+                  subjectChoice === 'mix' || hasCustomPartMix
+                    ? 'border-indigo-400 bg-indigo-500/25 text-white ring-1 ring-indigo-400'
+                    : 'hover:border-slate-600'
+                }`}
+              >
+                <Dices className="w-3.5 h-3.5 inline mr-1" aria-hidden="true" />
+                <strong>Examen Mixte (Pioche #1–#{availableExams.length})</strong>
+              </button>
+            </div>
+
+            {(subjectChoice === 'mix' || hasCustomPartMix) && (
+              <div className="jlpt-mixer-toolbar">
+                <button
+                  type="button"
+                  onClick={handleRerollRandomMix}
+                  className="jlpt-mixer-btn-reroll"
+                >
+                  <Dices className="w-4 h-4" aria-hidden="true" />
+                  Tirage 100 % aléatoire
+                </button>
+
+                <div
+                  className="jlpt-pill-row"
+                  role="group"
+                  aria-label="Granularité du mélange"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setGranularity('by_mondai')}
+                    className={granularity === 'by_mondai' ? 'is-selected' : ''}
+                  >
+                    <Layers className="w-3.5 h-3.5 inline mr-1" aria-hidden="true" />
+                    Par 問題 entier
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setGranularity('fine_shuffle')}
+                    className={granularity === 'fine_shuffle' ? 'is-selected' : ''}
+                  >
+                    <Shuffle className="w-3.5 h-3.5 inline mr-1" aria-hidden="true" />
+                    Panachage fin
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Mode Selection Cards */}
         <fieldset className="jlpt-launch-dialog__modes">
@@ -214,8 +440,8 @@ export const ExamLaunchModal: React.FC<ExamLaunchModalProps> = ({
             <div>
               <p className="jlpt-mode-card__name">1. Examen Officiel Strict</p>
               <p className="jlpt-mode-card__desc">
-                Cahiers scellés (30m → Pause → 70m → Pause → 40m), audio continu verrouillé,
-                furigana stricts du livret, OMR &amp; score /180.
+                Cahiers scellés, audio continu verrouillé, furigana stricts du livret, OMR &amp;
+                score /180.
               </p>
             </div>
           </label>
@@ -264,8 +490,8 @@ export const ExamLaunchModal: React.FC<ExamLaunchModalProps> = ({
             <div>
               <p className="jlpt-mode-card__name">3. Choix Modulaire (Épreuves / 問題)</p>
               <p className="jlpt-mode-card__desc">
-                Composez votre séance à la carte en cochant n’importe quelle combinaison d’épreuves
-                et de 問題.
+                Cochez vos 問題 à la carte et piochez la source (#1, #2 ou Aléatoire) pour chaque
+                partie.
               </p>
             </div>
           </label>
@@ -274,26 +500,96 @@ export const ExamLaunchModal: React.FC<ExamLaunchModalProps> = ({
         {/* Detailed Panel per Mode */}
         <div className="jlpt-launch-dialog__body">
           {presetMode === 'OFFICIAL_STRICT' && (
-            <div className="jlpt-strict-summary">
-              <h3>Règles appliquées automatiquement</h3>
-              <ul>
-                <li>
-                  <strong>3 épreuves séquentielles irréversibles :</strong> 言語知識（文字・語彙）
-                  30 min (35 Q) → 言語知識（文法）・読解 70 min (39 Q) → 聴解 ~44 min (28 Q).
-                </li>
-                <li>
-                  <strong>Présentation Cahier Papier (Mincho) :</strong> fond crème `#FAF8F5`,
-                  filets noirs, feuille OMR à bulles avec rangées 3 choix sur 問題4–5 d’écoute.
-                </li>
-                <li>
-                  <strong>Aucune aide pendant l’épreuve :</strong> furigana stricts du livret
-                  officiel, bande sonore continue sans pause ni retour arrière ni script.
-                </li>
-                <li>
-                  <strong>Notation officielle JLPT N3 (/180) :</strong> Langue /60 (Vocab+Grammaire),
-                  Lecture /60, Écoute /60. Réussite si ≥ 19/60 par domaine et ≥ 95/180 au total.
-                </li>
-              </ul>
+            <div className="flex flex-col gap-4">
+              <div className="jlpt-strict-summary">
+                <h3>Règles appliquées automatiquement</h3>
+                <ul>
+                  <li>
+                    <strong>{stageOptions.length} épreuves séquentielles irréversibles :</strong>{' '}
+                    {stageOptions
+                      .map((st) => {
+                        const count = effectiveExam.questions.filter(
+                          (q) => q.stageId === st.id
+                        ).length;
+                        const minsLabel =
+                          st.id === 'stage-listening'
+                            ? `~${st.durationMinutes} min`
+                            : `${st.durationMinutes} min`;
+                        return `${st.titleJp} ${minsLabel} (${count} Q)`;
+                      })
+                      .join(' → ')}
+                    .
+                  </li>
+                  <li>
+                    <strong>Présentation Cahier Papier (Mincho) :</strong> fond crème `#FAF8F5`,
+                    filets noirs, feuille OMR à bulles fidèle (3 ou 4 choix selon la partie).
+                  </li>
+                  <li>
+                    <strong>Aucune aide pendant l’épreuve :</strong> furigana stricts du livret
+                    officiel, bande sonore continue sans pause ni retour arrière ni script.
+                  </li>
+                  <li>
+                    <strong>Notation officielle JLPT {effectiveExam.level} (/180) :</strong>{' '}
+                    {effectiveExam.level === 'N4' || effectiveExam.level === 'N5'
+                      ? `Langue+Lecture /120 (seuil ≥ 38/120), Écoute /60 (seuil ≥ 19/60). Réussite si ≥ ${JLPT_180_TOTAL_PASS_BY_LEVEL[effectiveExam.level]}/180 au total.`
+                      : `Langue /60, Lecture /60, Écoute /60. Réussite si ≥ 19/60 par domaine et ≥ ${JLPT_180_TOTAL_PASS_BY_LEVEL[effectiveExam.level]}/180 au total.`}
+                  </li>
+                </ul>
+              </div>
+
+              {/* When Mixte is active in Strict Mode, show the per-part source picker right here */}
+              {availableExams.length > 1 && (subjectChoice === 'mix' || hasCustomPartMix) && (
+                <div className="jlpt-modular-grid">
+                  {DOMAIN_TITLES.map(({ domain, label }) => {
+                    const domainParts = composableParts.filter((p) => p.domain === domain);
+                    if (domainParts.length === 0) return null;
+                    return (
+                      <div key={domain} className="jlpt-modular-domain">
+                        <h4>{label}</h4>
+                        <div className="jlpt-mixer-part-list">
+                          {domainParts.map((part) => {
+                            const selected =
+                              partSources[part.moduleId] ??
+                              (subjectChoice === 'mix' ? 'random' : subjectChoice);
+                            return (
+                              <div key={part.moduleId} className="jlpt-mixer-part-row">
+                                <div className="jlpt-mixer-part-row__info">
+                                  <span className="jlpt-modular-item__jp" lang="ja">
+                                    {part.titleJp}
+                                  </span>
+                                  <span className="jlpt-modular-item__fr">
+                                    {part.titleFr}
+                                    {granularity === 'fine_shuffle' &&
+                                      part.supportsFineShuffle &&
+                                      selected === 'random' && (
+                                        <span className="text-sky-400 ml-1">· panaché</span>
+                                      )}
+                                  </span>
+                                </div>
+                                <select
+                                  aria-label={`Source pour ${part.titleJp}`}
+                                  value={selected}
+                                  onChange={(e) =>
+                                    handlePartSourceChange(part.moduleId, e.target.value)
+                                  }
+                                  className="jlpt-mixer-select"
+                                >
+                                  <option value="random">Aléatoire</option>
+                                  {part.availableSources.map((src) => (
+                                    <option key={src.examId} value={src.examId}>
+                                      Examen #{src.examNumber} ({src.questionCount} Q)
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           )}
 
@@ -432,20 +728,21 @@ export const ExamLaunchModal: React.FC<ExamLaunchModalProps> = ({
               <div className="jlpt-custom-group">
                 <span className="jlpt-custom-group__label">Épreuves à inclure</span>
                 <div className="jlpt-check-row">
-                  {[
-                    { id: 'stage-vocab' as const, label: '1. 文字・語彙 (30m · 35 Q)' },
-                    { id: 'stage-grammar-reading' as const, label: '2. 文法・読解 (70m · 39 Q)' },
-                    { id: 'stage-listening' as const, label: '3. 聴解 (44m · 28 Q)' },
-                  ].map((st) => (
-                    <label key={st.id}>
-                      <input
-                        type="checkbox"
-                        checked={selectedStages.includes(st.id)}
-                        onChange={() => toggleStage(st.id)}
-                      />
-                      {st.label}
-                    </label>
-                  ))}
+                  {stageOptions.map((st) => {
+                    const count = effectiveExam.questions.filter(
+                      (q) => q.stageId === st.id
+                    ).length;
+                    return (
+                      <label key={st.id}>
+                        <input
+                          type="checkbox"
+                          checked={selectedStages.includes(st.id)}
+                          onChange={() => toggleStage(st.id)}
+                        />
+                        {st.order}. {st.titleJp} ({st.durationMinutes}m · {count} Q)
+                      </label>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -455,51 +752,87 @@ export const ExamLaunchModal: React.FC<ExamLaunchModalProps> = ({
             <div className="jlpt-modular-panel">
               <div className="jlpt-modular-panel__quickbar">
                 <button type="button" onClick={() => selectDomainModules('vocab')}>
-                  Tout 文字・語彙 (35 Q)
+                  Tout 文字・語彙 (
+                  {modularCatalog
+                    .filter((m) => m.domain === 'vocab')
+                    .reduce((s, m) => s + m.questionCount, 0)}{' '}
+                  Q)
                 </button>
                 <button type="button" onClick={() => selectDomainModules('grammar')}>
-                  Tout 文法 (23 Q)
+                  Tout 文法 (
+                  {modularCatalog
+                    .filter((m) => m.domain === 'grammar')
+                    .reduce((s, m) => s + m.questionCount, 0)}{' '}
+                  Q)
                 </button>
                 <button type="button" onClick={() => selectDomainModules('reading')}>
-                  Tout 読解 (16 Q)
+                  Tout 読解 (
+                  {modularCatalog
+                    .filter((m) => m.domain === 'reading')
+                    .reduce((s, m) => s + m.questionCount, 0)}{' '}
+                  Q)
                 </button>
                 <button type="button" onClick={() => selectDomainModules('listening')}>
-                  Tout 聴解 (28 Q)
+                  Tout 聴解 (
+                  {modularCatalog
+                    .filter((m) => m.domain === 'listening')
+                    .reduce((s, m) => s + m.questionCount, 0)}{' '}
+                  Q)
                 </button>
               </div>
 
               <div className="jlpt-modular-grid">
-                {(['vocab', 'grammar', 'reading', 'listening'] as const).map((domain) => {
-                  const domainLabel =
-                    domain === 'vocab'
-                      ? '文字・語彙 (Vocabulaire)'
-                      : domain === 'grammar'
-                      ? '文法 (Grammaire)'
-                      : domain === 'reading'
-                      ? '読解 (Lecture)'
-                      : '聴解 (Compréhension orale)';
-                  const items = MODULAR_SUBSECTION_CATALOG.filter((m) => m.domain === domain);
+                {DOMAIN_TITLES.map(({ domain, label: domainLabel }) => {
+                  const items = modularCatalog.filter((m) => m.domain === domain);
                   return (
                     <div key={domain} className="jlpt-modular-domain">
                       <h4>{domainLabel}</h4>
                       <div className="jlpt-modular-list">
-                        {items.map((item) => (
-                          <label key={item.id} className="jlpt-modular-item">
-                            <input
-                              type="checkbox"
-                              checked={selectedModules.includes(item.id)}
-                              onChange={() => toggleModule(item.id)}
-                            />
-                            <div>
-                              <span className="jlpt-modular-item__jp" lang="ja">
-                                {item.titleJp}
-                              </span>
-                              <span className="jlpt-modular-item__fr">
-                                {item.titleFr} · ~{item.recommendedMinutes} min
-                              </span>
+                        {items.map((item) => {
+                          const compPart = composableParts.find((p) => p.moduleId === item.id);
+                          const selectedSrc =
+                            partSources[item.id] ??
+                            (subjectChoice === 'mix' ? 'random' : subjectChoice);
+                          return (
+                            <div
+                              key={item.id}
+                              className="jlpt-modular-item flex items-center justify-between gap-2"
+                            >
+                              <label className="flex items-start gap-2 flex-1 cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedModules.includes(item.id)}
+                                  onChange={() => toggleModule(item.id)}
+                                />
+                                <div>
+                                  <span className="jlpt-modular-item__jp" lang="ja">
+                                    {item.titleJp}
+                                  </span>
+                                  <span className="jlpt-modular-item__fr">
+                                    {item.titleFr} · ~{item.recommendedMinutes} min
+                                  </span>
+                                </div>
+                              </label>
+                              {availableExams.length > 1 && compPart && (
+                                <select
+                                  aria-label={`Source pour ${item.titleJp}`}
+                                  value={selectedSrc}
+                                  onChange={(e) =>
+                                    handlePartSourceChange(item.id, e.target.value)
+                                  }
+                                  className="jlpt-mixer-select"
+                                >
+                                  <option value="random">Aléatoire</option>
+                                  {compPart.availableSources.map((src) => (
+                                    <option key={src.examId} value={src.examId}>
+                                      #{src.examNumber} ({src.questionCount}Q)
+                                    </option>
+                                  ))}
+                                </select>
+                              )}
                             </div>
-                          </label>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   );
@@ -562,10 +895,13 @@ export const ExamLaunchModal: React.FC<ExamLaunchModalProps> = ({
         <div className="jlpt-launch-dialog__footer">
           <div className="jlpt-launch-dialog__estimate">
             {presetMode === 'OFFICIAL_STRICT' ? (
-              <span>Simulation complète : 102 questions · 140 min officielles</span>
+              <span>
+                Simulation complète : {effectiveExam.questions.length} questions ·{' '}
+                {effectiveExam.totalTimeMinutes} min officielles
+              </span>
             ) : presetMode === 'CUSTOM_CONDITIONS' ? (
               <span>
-                Épreuves : {selectedStages.length}/3 · Chrono{' '}
+                Épreuves : {selectedStages.length}/{stageOptions.length} · Chrono{' '}
                 {timerMultiplier === 0 ? 'illimité' : `×${timerMultiplier}`}
               </span>
             ) : (
@@ -583,11 +919,7 @@ export const ExamLaunchModal: React.FC<ExamLaunchModalProps> = ({
             <button type="button" onClick={onClose} className="jlpt-btn-cancel">
               Annuler
             </button>
-            <button
-              type="submit"
-              disabled={isModularEmpty}
-              className="jlpt-btn-launch"
-            >
+            <button type="submit" disabled={isModularEmpty} className="jlpt-btn-launch">
               Démarrer la session
             </button>
           </div>

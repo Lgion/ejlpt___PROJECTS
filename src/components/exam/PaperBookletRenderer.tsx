@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
+import Image from 'next/image';
 import {
   CheckCircle2,
   ChevronLeft,
@@ -17,6 +18,7 @@ import type {
   JLPTPassageBlock,
   JLPTQuestion,
 } from '@/types/jlpt';
+import { QuestionJumpStrip } from './QuestionJumpStrip';
 import { RichJLPTText } from './RichJLPTText';
 
 interface PaperBookletRendererProps {
@@ -62,9 +64,12 @@ export const PaperBookletRenderer: React.FC<PaperBookletRendererProps> = ({
 
   const currentPassage = currentQ?.passageId ? passageMap.get(currentQ.passageId) : undefined;
 
-  // Build filled cloze previews for 問題3 (`日本人の天気の話`)
+  // Build filled cloze previews for any grammar text-cloze passage
+  const isClozePassage = Boolean(
+    currentPassage?.paragraphs.some((p) => p.tokens.some((t) => t.isBlank))
+  );
   const filledClozeBlanks = useMemo(() => {
-    if (!currentPassage || currentPassage.mondaiNumber !== 3) return undefined;
+    if (!currentPassage || !isClozePassage) return undefined;
     const out: Record<number, { optionNumber: string; label: string }> = {};
     for (const q of questions) {
       if (q.passageId === currentPassage.id && q.questionNumber && answers[q.id]) {
@@ -78,7 +83,7 @@ export const PaperBookletRenderer: React.FC<PaperBookletRendererProps> = ({
       }
     }
     return out;
-  }, [answers, currentPassage, questions]);
+  }, [answers, currentPassage, isClozePassage, questions]);
 
   // Sibling questions tied to the same passage (for quick switching inside split view)
   const passageQuestionIndices = useMemo(() => {
@@ -358,7 +363,20 @@ export const PaperBookletRenderer: React.FC<PaperBookletRendererProps> = ({
         </div>
       )}
 
-      {/* Standard prose & 問題3 Cloze */}
+      {/* Optional printed diagram / chart inside passage */}
+      {passage.imageUrl && (
+        <div className="jlpt-listening-img-frame mb-3">
+          <Image
+            src={passage.imageUrl}
+            alt={passage.imageAlt || passage.title || 'Document de lecture'}
+            width={passage.imageWidth ?? 1136}
+            height={passage.imageHeight ?? 900}
+            className="jlpt-listening-illustration"
+          />
+        </div>
+      )}
+
+      {/* Standard prose & cloze */}
       {(!passage.layoutVariant || passage.layoutVariant === 'prose') && (
         <div className="jlpt-prose-frame" lang="ja">
           {passage.title && (
@@ -437,6 +455,15 @@ export const PaperBookletRenderer: React.FC<PaperBookletRendererProps> = ({
           );
         })}
       </nav>
+
+      {/* Mobile/Tablet Question Direct Jump Strip + Section Grid */}
+      <QuestionJumpStrip
+        questions={questions}
+        currentIndex={currentIndex}
+        answers={answers}
+        flaggedIds={flaggedIds}
+        onJumpToQuestion={onJumpToQuestion}
+      />
 
       {/* Authentic booklet running head + margin vertical tab */}
       <div className="jlpt-booklet-sheet">
@@ -582,6 +609,19 @@ export const PaperBookletRenderer: React.FC<PaperBookletRendererProps> = ({
                     );
                   })}
                 </div>
+              </div>
+            )}
+
+            {/* Optional printed question illustration or pseudo-kanji strip */}
+            {currentQ.imageUrl && (
+              <div className="jlpt-listening-img-frame mb-3">
+                <Image
+                  src={currentQ.imageUrl}
+                  alt={currentQ.imageAlt || `Illustration question ${currentQ.questionNumber ?? currentIndex + 1}`}
+                  width={currentQ.imageWidth ?? 800}
+                  height={currentQ.imageHeight ?? 400}
+                  className="jlpt-listening-illustration"
+                />
               </div>
             )}
 

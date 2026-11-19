@@ -4,6 +4,7 @@ import { currentUser } from '@clerk/nextjs/server';
 
 interface AttemptPayload {
   attemptId?: string;
+  examId?: string;
   level: 'N5' | 'N4' | 'N3' | 'N2' | 'N1';
   mode: 'FULL_MOCK' | 'SECTION_PRACTICE';
   sectionFilter?: 'moji_go' | 'bunpou_dokkai' | 'choukai';
@@ -61,6 +62,7 @@ export async function POST(request: Request) {
     const attemptId = body.attemptId?.trim() || `attempt_${Date.now()}`;
     const document = {
       attemptId,
+      examId: body.examId,
       clerkUserId: user.id,
       userEmail: user.primaryEmailAddress?.emailAddress || 'unknown@ejlpt.local',
       userName: user.fullName || 'Apprenant eJLPT',

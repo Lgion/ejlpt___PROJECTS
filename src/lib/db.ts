@@ -120,6 +120,7 @@ export type SyncFlag = 0 | 1;
 export interface LocalExamAttempt {
   id?: number;
   attemptId: string;
+  examId?: string;
   userId?: string;
   userEmail?: string;
   level: 'N5' | 'N4' | 'N3' | 'N2' | 'N1';

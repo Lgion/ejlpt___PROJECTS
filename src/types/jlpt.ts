@@ -26,32 +26,20 @@ export type JLPTQuestionArchetype =
   | 'listening_point'
   | 'listening_overview'
   | 'listening_expression'
-  | 'listening_response';
+  | 'listening_response'
+  | 'listening_integrated';
 
 export type JLPTScoringDomain = 'vocab' | 'grammar' | 'reading' | 'listening';
 
-export type ExamStageId = 'stage-vocab' | 'stage-grammar-reading' | 'stage-listening';
+export type ExamStageId =
+  | 'stage-combined-written'
+  | 'stage-vocab'
+  | 'stage-grammar-reading'
+  | 'stage-listening';
 
 export type ExamPresetMode = 'OFFICIAL_STRICT' | 'CUSTOM_CONDITIONS' | 'MODULAR_SELECTION';
 
-export type ModularSubSectionId =
-  | 'vocab_m1'
-  | 'vocab_m2'
-  | 'vocab_m3'
-  | 'vocab_m4'
-  | 'vocab_m5'
-  | 'grammar_m1'
-  | 'grammar_m2'
-  | 'grammar_m3'
-  | 'reading_m4'
-  | 'reading_m5'
-  | 'reading_m6'
-  | 'reading_m7'
-  | 'listening_m1'
-  | 'listening_m2'
-  | 'listening_m3'
-  | 'listening_m4'
-  | 'listening_m5';
+export type ModularSubSectionId = string;
 
 export interface RichTextToken {
   text: string;
@@ -79,6 +67,10 @@ export interface JLPTPassageBlock {
   leadInstruction?: string;
   author?: string;
   layoutVariant?: 'prose' | 'email' | 'memo' | 'poster_zoo';
+  imageUrl?: string;
+  imageAlt?: string;
+  imageWidth?: number;
+  imageHeight?: number;
   metadata?: {
     to?: string;
     subject?: string;
@@ -188,6 +180,7 @@ export interface JLPTQuestion {
   ezoeBreakdown?: EzoeGrammarSegment[]; // Ezoe grammar structure breakdown
   // Extended official booklet metadata
   questionNumber?: number;
+  questionLabel?: string; // e.g., '3(1)' / '3(2)' in N1/N2 listening 問題5
   stageId?: ExamStageId;
   mondaiNumber?: number;
   mondaiTitle?: string;
@@ -196,11 +189,15 @@ export interface JLPTQuestion {
   archetype?: JLPTQuestionArchetype;
   scoringDomain?: JLPTScoringDomain;
   bookletPageLabel?: string;
-  marginTab?: '文法' | '読解';
+  marginTab?: '文字・語彙' | '文法' | '読解';
   promptTokens?: RichTextToken[];
   passageId?: string;
   imageUrl?: string;
   imageAlt?: string;
+  imageWidth?: number;
+  imageHeight?: number;
+  hasListeningMemoPad?: boolean;
+  hideListeningChoicesText?: boolean;
   starCorrectOrder?: string[];
   audioSegment?: JLPTAudioSegment;
   exampleSnippet?: {
@@ -215,11 +212,15 @@ export interface JLPTQuestion {
 export interface JLPTExam {
   id: string;
   level: JLPTLevel;
+  examNumber?: number;
+  candidateCodePrefix?: string;
   title: string;
   description: string;
   totalTimeMinutes: number;
   scoringScale?: 'RAW' | 'JLPT_180';
   isOfficialSample?: boolean;
+  isDynamicMix?: boolean;
+  sourceExamIds?: string[];
   sourceNote?: string;
   sections: {
     type: ExamSectionType;
@@ -232,6 +233,47 @@ export interface JLPTExam {
   stages?: JLPTExamStage[];
   passages?: JLPTPassageBlock[];
   questions: JLPTQuestion[];
+}
+
+export interface ExamCatalogEntry {
+  id: string;
+  level: JLPTLevel;
+  examNumber: number;
+  candidateCodePrefix: string;
+  title: string;
+  description: string;
+  totalTimeMinutes: number;
+  questionCount: number;
+  scoringScale: 'RAW' | 'JLPT_180';
+  isOfficialSample: boolean;
+  stageCount: number;
+  sections: JLPTExam['sections'];
+}
+
+export type ExamMixGranularity = 'by_mondai' | 'fine_shuffle';
+
+export interface ExamComposablePart {
+  moduleId: string;
+  domain: JLPTScoringDomain;
+  stageId: ExamStageId;
+  mondaiNumber: number;
+  titleJp: string;
+  titleFr: string;
+  supportsFineShuffle: boolean;
+  availableSources: {
+    examId: string;
+    examNumber: number;
+    questionCount: number;
+    recommendedMinutes: number;
+  }[];
+}
+
+export interface ExamMixConfig {
+  level: JLPTLevel;
+  granularity: ExamMixGranularity;
+  /** Maps moduleId -> 'random' | explicit source examId */
+  partSources: Record<string, string>;
+  seed?: number;
 }
 
 export interface ExamResult {
@@ -270,6 +312,8 @@ export interface ExamResult {
     readingTotal: number;
     listeningCorrect: number;
     listeningTotal: number;
+    requiredTotalScore?: number;
+    usesCombinedLanguageReading?: boolean;
   };
   timeSpentSeconds: number;
   answers: Record<string, string>;

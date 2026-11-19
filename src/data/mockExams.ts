@@ -1,8 +1,29 @@
 import { JLPTExam } from '@/types/jlpt';
+import { JLPT_N5_OFFICIAL_2018 } from './jlptN5Official2018';
+import { JLPT_N5_OFFICIAL_2012 } from './jlptN5Official2012';
+import { JLPT_N4_OFFICIAL_2018 } from './jlptN4Official2018';
+import { JLPT_N4_OFFICIAL_2012 } from './jlptN4Official2012';
 import { JLPT_N3_OFFICIAL_2018 } from './jlptN3Official2018';
+import { JLPT_N3_OFFICIAL_2012 } from './jlptN3Official2012';
+import { JLPT_N2_OFFICIAL_2018 } from './jlptN2Official2018';
+import { JLPT_N2_OFFICIAL_2012 } from './jlptN2Official2012';
+import { JLPT_N1_OFFICIAL_2018 } from './jlptN1Official2018';
+import { JLPT_N1_OFFICIAL_2012 } from './jlptN1Official2012';
 
 export const MOCK_EXAMS: JLPTExam[] = [
+  JLPT_N5_OFFICIAL_2018,
+  JLPT_N5_OFFICIAL_2012,
+  JLPT_N4_OFFICIAL_2018,
+  JLPT_N4_OFFICIAL_2012,
   JLPT_N3_OFFICIAL_2018,
+  JLPT_N3_OFFICIAL_2012,
+  JLPT_N2_OFFICIAL_2018,
+  JLPT_N2_OFFICIAL_2012,
+  JLPT_N1_OFFICIAL_2018,
+  JLPT_N1_OFFICIAL_2012,
+];
+
+export const LEGACY_MOCK_EXAMS: JLPTExam[] = [
   {
     id: 'exam-n5-01',
     level: 'N5',

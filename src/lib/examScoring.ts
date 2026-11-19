@@ -6,6 +6,14 @@ export const OVERALL_PASS_RATIO = 0.5;
 export const JLPT_180_DOMAIN_MAX = 60;
 export const JLPT_180_DOMAIN_PASS = 19;
 export const JLPT_180_TOTAL_PASS = 95;
+export const JLPT_180_COMBINED_N4_N5_PASS = 38;
+export const JLPT_180_TOTAL_PASS_BY_LEVEL: Record<JLPTLevel, number> = {
+  N1: 100,
+  N2: 90,
+  N3: 95,
+  N4: 90,
+  N5: 80,
+};
 
 export interface ComputeExamResultInput {
   level: JLPTLevel;
@@ -82,17 +90,27 @@ export function computeExamResult({
     const listeningScore =
       listeningTotal > 0 ? Math.round((listeningCorrect / listeningTotal) * JLPT_180_DOMAIN_MAX) : 0;
 
-    const passedLanguageKnowledge =
-      languageKnowledgeMax === 0 || languageKnowledgeScore >= JLPT_180_DOMAIN_PASS;
-    const passedReading = readingMax === 0 || readingScore >= JLPT_180_DOMAIN_PASS;
+    const usesCombinedLanguageReading = level === 'N4' || level === 'N5';
+    const combinedWrittenMax = languageKnowledgeMax + readingMax;
+    const combinedWrittenScore = languageKnowledgeScore + readingScore;
+
+    const passedLanguageKnowledge = usesCombinedLanguageReading
+      ? combinedWrittenMax === 0 ||
+        combinedWrittenScore >=
+          Math.ceil((JLPT_180_COMBINED_N4_N5_PASS / 120) * combinedWrittenMax)
+      : languageKnowledgeMax === 0 || languageKnowledgeScore >= JLPT_180_DOMAIN_PASS;
+    const passedReading = usesCombinedLanguageReading
+      ? passedLanguageKnowledge
+      : readingMax === 0 || readingScore >= JLPT_180_DOMAIN_PASS;
     const passedListening = listeningMax === 0 || listeningScore >= JLPT_180_DOMAIN_PASS;
 
     const scoreTotal = languageKnowledgeScore + readingScore + listeningScore;
     const maxScoreTotal = languageKnowledgeMax + readingMax + listeningMax;
+    const levelPassTarget = JLPT_180_TOTAL_PASS_BY_LEVEL[level] ?? JLPT_180_TOTAL_PASS;
     const requiredTotal =
       maxScoreTotal === 180
-        ? JLPT_180_TOTAL_PASS
-        : Math.ceil((JLPT_180_TOTAL_PASS / 180) * maxScoreTotal);
+        ? levelPassTarget
+        : Math.ceil((levelPassTarget / 180) * maxScoreTotal);
 
     const passed =
       maxScoreTotal > 0 &&
@@ -137,6 +155,8 @@ export function computeExamResult({
         readingTotal,
         listeningCorrect,
         listeningTotal,
+        requiredTotalScore: requiredTotal,
+        usesCombinedLanguageReading,
       },
       timeSpentSeconds: Math.max(0, timeSpentSeconds),
       answers,

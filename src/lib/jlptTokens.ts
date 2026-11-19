@@ -11,7 +11,7 @@ import type {
 } from '@/types/jlpt';
 
 const TAG_REGEX =
-  /(<br\s*\/>|<b:(\d+)\/>|<s:([0-3])(\*?)\/>|<u([12]?)>([\s\S]*?)<\/u\5>|\{([^|{}^\n]+)\|([^|{}^\n]+)\}|\{([^|{}^\n]+)\^([^|{}^\n]+)\})/g;
+  /(<br\s*\/>|<b:(\d+)\/>|<s:([0-3])(\*?)\/>|<u([1-4]?)>([\s\S]*?)<\/u\5>|\{([^|{}^\n]+)\|([^|{}^\n]+)\}|\{([^|{}^\n]+)\^([^|{}^\n]+)\})/g;
 
 function parsePlainOrRuby(
   text: string,
@@ -95,7 +95,8 @@ export function tk(markup: string): RichTextToken[] {
         starSlotIndex: slotIdx,
       });
     } else if (match[6] !== undefined) {
-      const badge = match[5] === '1' ? '①' : match[5] === '2' ? '②' : undefined;
+      const badgeMap: Record<string, string> = { '1': '①', '2': '②', '3': '③', '4': '④' };
+      const badge = match[5] ? badgeMap[match[5]] : undefined;
       tokens.push(...parsePlainOrRuby(match[6], true, badge));
     } else if (match[7] !== undefined) {
       tokens.push({ text: match[7], reading: match[8] });
@@ -123,196 +124,263 @@ export const MODULAR_SUBSECTION_CATALOG: {
   questionCount: number;
   recommendedMinutes: number;
 }[] = [
-  {
-    id: 'vocab_m1',
-    stageId: 'stage-vocab',
-    domain: 'vocab',
-    mondaiNumber: 1,
-    titleJp: '文字・語彙 問題1（漢字読み）',
-    titleFr: 'Lecture de Kanji (Q1–8)',
-    questionCount: 8,
-    recommendedMinutes: 6,
-  },
-  {
-    id: 'vocab_m2',
-    stageId: 'stage-vocab',
-    domain: 'vocab',
-    mondaiNumber: 2,
-    titleJp: '文字・語彙 問題2（表記）',
-    titleFr: 'Écriture en Kanji (Q9–14)',
-    questionCount: 6,
-    recommendedMinutes: 5,
-  },
-  {
-    id: 'vocab_m3',
-    stageId: 'stage-vocab',
-    domain: 'vocab',
-    mondaiNumber: 3,
-    titleJp: '文字・語彙 問題3（文脈規定）',
-    titleFr: 'Vocabulaire en contexte (Q15–25)',
-    questionCount: 11,
-    recommendedMinutes: 8,
-  },
-  {
-    id: 'vocab_m4',
-    stageId: 'stage-vocab',
-    domain: 'vocab',
-    mondaiNumber: 4,
-    titleJp: '文字・語彙 問題4（言い換え類義）',
-    titleFr: 'Synonymes (Q26–30)',
-    questionCount: 5,
-    recommendedMinutes: 5,
-  },
-  {
-    id: 'vocab_m5',
-    stageId: 'stage-vocab',
-    domain: 'vocab',
-    mondaiNumber: 5,
-    titleJp: '文字・語彙 問題5（用法）',
-    titleFr: 'Usage correct des mots (Q31–35)',
-    questionCount: 5,
-    recommendedMinutes: 6,
-  },
-  {
-    id: 'grammar_m1',
-    stageId: 'stage-grammar-reading',
-    domain: 'grammar',
-    mondaiNumber: 1,
-    titleJp: '文法 問題1（文の文法1）',
-    titleFr: 'Grammaire à trous (Q1–13)',
-    questionCount: 13,
-    recommendedMinutes: 11,
-  },
-  {
-    id: 'grammar_m2',
-    stageId: 'stage-grammar-reading',
-    domain: 'grammar',
-    mondaiNumber: 2,
-    titleJp: '文法 問題2（★ 文の組み立て）',
-    titleFr: 'Construction de phrases ★ (Q14–18)',
-    questionCount: 5,
-    recommendedMinutes: 7,
-  },
-  {
-    id: 'grammar_m3',
-    stageId: 'stage-grammar-reading',
-    domain: 'grammar',
-    mondaiNumber: 3,
-    titleJp: '文法 問題3（文章の文法）',
-    titleFr: 'Grammaire dans un texte (Q19–23)',
-    questionCount: 5,
-    recommendedMinutes: 7,
-  },
-  {
-    id: 'reading_m4',
-    stageId: 'stage-grammar-reading',
-    domain: 'reading',
-    mondaiNumber: 4,
-    titleJp: '読解 問題4（内容理解・短文）',
-    titleFr: 'Textes courts — e-mail & mémo (Q24–27)',
-    questionCount: 4,
-    recommendedMinutes: 10,
-  },
-  {
-    id: 'reading_m5',
-    stageId: 'stage-grammar-reading',
-    domain: 'reading',
-    mondaiNumber: 5,
-    titleJp: '読解 問題5（内容理解・中文）',
-    titleFr: 'Textes moyens (Q28–33)',
-    questionCount: 6,
-    recommendedMinutes: 16,
-  },
-  {
-    id: 'reading_m6',
-    stageId: 'stage-grammar-reading',
-    domain: 'reading',
-    mondaiNumber: 6,
-    titleJp: '読解 問題6（内容理解・長文）',
-    titleFr: 'Texte long — compagnie de taxi (Q34–37)',
-    questionCount: 4,
-    recommendedMinutes: 12,
-  },
-  {
-    id: 'reading_m7',
-    stageId: 'stage-grammar-reading',
-    domain: 'reading',
-    mondaiNumber: 7,
-    titleJp: '読解 問題7（情報検索・動物園）',
-    titleFr: 'Recherche d’info — Zoo Ōhara (Q38–39)',
-    questionCount: 2,
-    recommendedMinutes: 7,
-  },
-  {
-    id: 'listening_m1',
-    stageId: 'stage-listening',
-    domain: 'listening',
-    mondaiNumber: 1,
-    titleJp: '聴解 問題1（課題理解）',
-    titleFr: 'Compréhension de tâche (Q1–6)',
-    questionCount: 6,
-    recommendedMinutes: 11,
-  },
-  {
-    id: 'listening_m2',
-    stageId: 'stage-listening',
-    domain: 'listening',
-    mondaiNumber: 2,
-    titleJp: '聴解 問題2（ポイント理解）',
-    titleFr: 'Compréhension de points clés (Q1–6)',
-    questionCount: 6,
-    recommendedMinutes: 14,
-  },
-  {
-    id: 'listening_m3',
-    stageId: 'stage-listening',
-    domain: 'listening',
-    mondaiNumber: 3,
-    titleJp: '聴解 問題3（概要理解）',
-    titleFr: 'Compréhension globale (Q1–3)',
-    questionCount: 3,
-    recommendedMinutes: 8,
-  },
-  {
-    id: 'listening_m4',
-    stageId: 'stage-listening',
-    domain: 'listening',
-    mondaiNumber: 4,
-    titleJp: '聴解 問題4（発話表現）',
-    titleFr: 'Expressions illustrées 3 choix (Q1–4)',
-    questionCount: 4,
-    recommendedMinutes: 4,
-  },
-  {
-    id: 'listening_m5',
-    stageId: 'stage-listening',
-    domain: 'listening',
-    mondaiNumber: 5,
-    titleJp: '聴解 問題5（即時応答）',
-    titleFr: 'Réponses immédiates 3 choix (Q1–9)',
-    questionCount: 9,
-    recommendedMinutes: 7,
-  },
-];
+    {
+      id: 'vocab_m1',
+      stageId: 'stage-vocab',
+      domain: 'vocab',
+      mondaiNumber: 1,
+      titleJp: '文字・語彙 問題1（漢字読み）',
+      titleFr: 'Lecture de Kanji (Q1–8)',
+      questionCount: 8,
+      recommendedMinutes: 6,
+    },
+    {
+      id: 'vocab_m2',
+      stageId: 'stage-vocab',
+      domain: 'vocab',
+      mondaiNumber: 2,
+      titleJp: '文字・語彙 問題2（表記）',
+      titleFr: 'Écriture en Kanji (Q9–14)',
+      questionCount: 6,
+      recommendedMinutes: 5,
+    },
+    {
+      id: 'vocab_m3',
+      stageId: 'stage-vocab',
+      domain: 'vocab',
+      mondaiNumber: 3,
+      titleJp: '文字・語彙 問題3（文脈規定）',
+      titleFr: 'Vocabulaire en contexte (Q15–25)',
+      questionCount: 11,
+      recommendedMinutes: 8,
+    },
+    {
+      id: 'vocab_m4',
+      stageId: 'stage-vocab',
+      domain: 'vocab',
+      mondaiNumber: 4,
+      titleJp: '文字・語彙 問題4（言い換え類義）',
+      titleFr: 'Synonymes (Q26–30)',
+      questionCount: 5,
+      recommendedMinutes: 5,
+    },
+    {
+      id: 'vocab_m5',
+      stageId: 'stage-vocab',
+      domain: 'vocab',
+      mondaiNumber: 5,
+      titleJp: '文字・語彙 問題5（用法）',
+      titleFr: 'Usage correct des mots (Q31–35)',
+      questionCount: 5,
+      recommendedMinutes: 6,
+    },
+    {
+      id: 'grammar_m1',
+      stageId: 'stage-grammar-reading',
+      domain: 'grammar',
+      mondaiNumber: 1,
+      titleJp: '文法 問題1（文の文法1）',
+      titleFr: 'Grammaire à trous (Q1–13)',
+      questionCount: 13,
+      recommendedMinutes: 11,
+    },
+    {
+      id: 'grammar_m2',
+      stageId: 'stage-grammar-reading',
+      domain: 'grammar',
+      mondaiNumber: 2,
+      titleJp: '文法 問題2（★ 文の組み立て）',
+      titleFr: 'Construction de phrases ★ (Q14–18)',
+      questionCount: 5,
+      recommendedMinutes: 7,
+    },
+    {
+      id: 'grammar_m3',
+      stageId: 'stage-grammar-reading',
+      domain: 'grammar',
+      mondaiNumber: 3,
+      titleJp: '文法 問題3（文章の文法）',
+      titleFr: 'Grammaire dans un texte (Q19–23)',
+      questionCount: 5,
+      recommendedMinutes: 7,
+    },
+    {
+      id: 'reading_m4',
+      stageId: 'stage-grammar-reading',
+      domain: 'reading',
+      mondaiNumber: 4,
+      titleJp: '読解 問題4（内容理解・短文）',
+      titleFr: 'Textes courts — e-mail & mémo (Q24–27)',
+      questionCount: 4,
+      recommendedMinutes: 10,
+    },
+    {
+      id: 'reading_m5',
+      stageId: 'stage-grammar-reading',
+      domain: 'reading',
+      mondaiNumber: 5,
+      titleJp: '読解 問題5（内容理解・中文）',
+      titleFr: 'Textes moyens (Q28–33)',
+      questionCount: 6,
+      recommendedMinutes: 16,
+    },
+    {
+      id: 'reading_m6',
+      stageId: 'stage-grammar-reading',
+      domain: 'reading',
+      mondaiNumber: 6,
+      titleJp: '読解 問題6（内容理解・長文）',
+      titleFr: 'Texte long — compagnie de taxi (Q34–37)',
+      questionCount: 4,
+      recommendedMinutes: 12,
+    },
+    {
+      id: 'reading_m7',
+      stageId: 'stage-grammar-reading',
+      domain: 'reading',
+      mondaiNumber: 7,
+      titleJp: '読解 問題7（情報検索・動物園）',
+      titleFr: 'Recherche d’info — Zoo Ōhara (Q38–39)',
+      questionCount: 2,
+      recommendedMinutes: 7,
+    },
+    {
+      id: 'listening_m1',
+      stageId: 'stage-listening',
+      domain: 'listening',
+      mondaiNumber: 1,
+      titleJp: '聴解 問題1（課題理解）',
+      titleFr: 'Compréhension de tâche (Q1–6)',
+      questionCount: 6,
+      recommendedMinutes: 11,
+    },
+    {
+      id: 'listening_m2',
+      stageId: 'stage-listening',
+      domain: 'listening',
+      mondaiNumber: 2,
+      titleJp: '聴解 問題2（ポイント理解）',
+      titleFr: 'Compréhension de points clés (Q1–6)',
+      questionCount: 6,
+      recommendedMinutes: 14,
+    },
+    {
+      id: 'listening_m3',
+      stageId: 'stage-listening',
+      domain: 'listening',
+      mondaiNumber: 3,
+      titleJp: '聴解 問題3（概要理解）',
+      titleFr: 'Compréhension globale (Q1–3)',
+      questionCount: 3,
+      recommendedMinutes: 8,
+    },
+    {
+      id: 'listening_m4',
+      stageId: 'stage-listening',
+      domain: 'listening',
+      mondaiNumber: 4,
+      titleJp: '聴解 問題4（発話表現）',
+      titleFr: 'Expressions illustrées 3 choix (Q1–4)',
+      questionCount: 4,
+      recommendedMinutes: 4,
+    },
+    {
+      id: 'listening_m5',
+      stageId: 'stage-listening',
+      domain: 'listening',
+      mondaiNumber: 5,
+      titleJp: '聴解 問題5（即時応答）',
+      titleFr: 'Réponses immédiates 3 choix (Q1–9)',
+      questionCount: 9,
+      recommendedMinutes: 7,
+    },
+  ];
+
+export type ExamModularItem = (typeof MODULAR_SUBSECTION_CATALOG)[number];
 
 export function getQuestionModuleId(question: JLPTQuestion): ModularSubSectionId | null {
   const m = question.mondaiNumber ?? 1;
   if (question.scoringDomain === 'vocab' || question.section === 'moji_go') {
-    if (m >= 1 && m <= 5) return `vocab_m${m}` as ModularSubSectionId;
+    if (m >= 1) return `vocab_m${m}`;
   }
   if (question.scoringDomain === 'grammar') {
-    if (m >= 1 && m <= 3) return `grammar_m${m}` as ModularSubSectionId;
+    if (m >= 1) return `grammar_m${m}`;
   }
   if (question.scoringDomain === 'reading') {
-    if (m >= 4 && m <= 7) return `reading_m${m}` as ModularSubSectionId;
+    if (m >= 1) return `reading_m${m}`;
   }
   if (question.scoringDomain === 'listening' || question.section === 'choukai') {
-    if (m >= 1 && m <= 5) return `listening_m${m}` as ModularSubSectionId;
+    if (m >= 1) return `listening_m${m}`;
   }
   return null;
 }
 
-export function createDefaultSessionConfig(presetMode: ExamPresetMode): ExamSessionConfig {
+export function getExamModularCatalog(exam: JLPTExam): ExamModularItem[] {
+  if (exam.id === 'exam-n3-official-2018') {
+    return MODULAR_SUBSECTION_CATALOG;
+  }
+
+  const stageDurations = new Map<ExamStageId, number>();
+  const stageCounts = new Map<ExamStageId, number>();
+  for (const st of exam.stages ?? []) {
+    stageDurations.set(st.id, st.durationMinutes);
+  }
+  for (const q of exam.questions) {
+    const sid = q.stageId ?? (q.section === 'choukai' ? 'stage-listening' : 'stage-vocab');
+    stageCounts.set(sid, (stageCounts.get(sid) ?? 0) + 1);
+  }
+
+  const ordered = new Map<string, ExamModularItem>();
+  for (const q of exam.questions) {
+    const id = getQuestionModuleId(q);
+    if (!id) continue;
+    const domain =
+      q.scoringDomain ??
+      (q.section === 'moji_go' ? 'vocab' : q.section === 'choukai' ? 'listening' : 'reading');
+    const stageId =
+      q.stageId ?? (domain === 'listening' ? 'stage-listening' : 'stage-vocab');
+    const m = q.mondaiNumber ?? 1;
+
+    const existing = ordered.get(id);
+    if (existing) {
+      existing.questionCount += 1;
+    } else {
+      const cleanSub = (q.subCategory || `${domain} 問題${m}`)
+        .replace(/\s*(?:（[0-9０-９]+番）|\([0-9]+\)|\[[0-9]+\])$/, '')
+        .trim();
+      ordered.set(id, {
+        id,
+        stageId,
+        domain,
+        mondaiNumber: m,
+        titleJp: q.mondaiTitle || `問題 ${m}`,
+        titleFr: cleanSub,
+        questionCount: 1,
+        recommendedMinutes: 5,
+      });
+    }
+  }
+
+  const list = Array.from(ordered.values());
+  for (const item of list) {
+    const totalInStage = stageCounts.get(item.stageId) ?? 1;
+    const durInStage = stageDurations.get(item.stageId) ?? 30;
+    item.recommendedMinutes = Math.max(
+      2,
+      Math.round((durInStage * item.questionCount) / Math.max(1, totalInStage))
+    );
+  }
+  return list;
+}
+
+export function createDefaultSessionConfig(
+  presetMode: ExamPresetMode,
+  exam?: JLPTExam
+): ExamSessionConfig {
+  const defaultStages: ExamStageId[] = exam?.stages?.length
+    ? exam.stages.map((s) => s.id)
+    : ['stage-vocab', 'stage-grammar-reading', 'stage-listening'];
+
   if (presetMode === 'OFFICIAL_STRICT') {
     return {
       presetMode: 'OFFICIAL_STRICT',
@@ -337,9 +405,15 @@ export function createDefaultSessionConfig(presetMode: ExamPresetMode): ExamSess
       theme: 'paper_booklet',
       showOmrSheet: true,
       enableBookletCoverGate: false,
-      selectedStages: ['stage-vocab', 'stage-grammar-reading', 'stage-listening'],
+      selectedStages: defaultStages,
     };
   }
+  const defaultModules: ModularSubSectionId[] = exam
+    ? getExamModularCatalog(exam)
+      .slice(0, 3)
+      .map((m) => m.id)
+    : ['vocab_m1', 'grammar_m1', 'reading_m4'];
+
   return {
     presetMode: 'MODULAR_SELECTION',
     timerMultiplier: 1,
@@ -350,7 +424,7 @@ export function createDefaultSessionConfig(presetMode: ExamPresetMode): ExamSess
     theme: 'paper_booklet',
     showOmrSheet: true,
     enableBookletCoverGate: false,
-    selectedModules: ['vocab_m1', 'grammar_m1', 'reading_m4'],
+    selectedModules: defaultModules,
   };
 }
 
@@ -379,7 +453,8 @@ export function buildSimulatorStages(
 
     const writtenQuestions = matched.filter((q) => q.stageId !== 'stage-listening');
     const listeningQuestions = matched.filter((q) => q.stageId === 'stage-listening');
-    const pickedModules = MODULAR_SUBSECTION_CATALOG.filter((m) => selectedSet.has(m.id));
+    const catalog = getExamModularCatalog(exam);
+    const pickedModules = catalog.filter((m) => selectedSet.has(m.id));
     const stages: ActiveSimulatorStage[] = [];
 
     if (writtenQuestions.length > 0) {
@@ -397,9 +472,11 @@ export function buildSimulatorStages(
       stages.push({
         stageMeta: {
           ...baseWrittenStage,
-          id: writtenQuestions.every((q) => q.stageId === 'stage-grammar-reading')
-            ? 'stage-grammar-reading'
-            : 'stage-vocab',
+          id: writtenQuestions.every((q) => q.stageId === 'stage-combined-written')
+            ? 'stage-combined-written'
+            : writtenQuestions.every((q) => q.stageId === 'stage-grammar-reading')
+              ? 'stage-grammar-reading'
+              : 'stage-vocab',
           order: 1,
           titleJp: 'もんだいようし（選択モジュール）',
           titleReadingJp: 'せんたくもじゅーる',
@@ -460,21 +537,26 @@ export function buildSimulatorStages(
     config.presetMode === 'OFFICIAL_STRICT'
       ? new Set(baseStages.map((s) => s.id))
       : new Set(
-          config.selectedStages && config.selectedStages.length > 0
-            ? config.selectedStages
-            : baseStages.map((s) => s.id)
-        );
+        config.selectedStages && config.selectedStages.length > 0
+          ? config.selectedStages
+          : baseStages.map((s) => s.id)
+      );
 
-  return baseStages
-    .filter((s) => allowedStageIds.has(s.id))
+  const selectedList =
+    config.presetMode === 'OFFICIAL_STRICT'
+      ? baseStages
+      : baseStages.filter((s) => allowedStageIds.has(s.id));
+  const targetStages = selectedList.length > 0 ? selectedList : baseStages;
+
+  return targetStages
     .map((stageMeta) => {
       const stageQuestions = exam.questions.filter((q) => q.stageId === stageMeta.id);
       const effectiveMinutes =
         config.presetMode === 'OFFICIAL_STRICT'
           ? stageMeta.durationMinutes
           : config.timerMultiplier === 0
-          ? 0
-          : Math.max(1, Math.round(stageMeta.durationMinutes * config.timerMultiplier));
+            ? 0
+            : Math.max(1, Math.round(stageMeta.durationMinutes * config.timerMultiplier));
 
       return {
         stageMeta,

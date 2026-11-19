@@ -4,13 +4,27 @@
 
 .app-main {
   @apply flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6;
+
+  @media (max-width: 767px) {
+    @apply px-2 py-1.5;
+  }
 }
 
 .app-footer {
   @apply border-t border-slate-800 bg-slate-900/50 py-6 text-center text-xs text-slate-400;
 
+  @media (max-width: 767px) {
+    @apply py-2 px-3 text-[10px] leading-tight;
+    max-height: 100px;
+    overflow: hidden;
+  }
+
   &__inner {
     @apply max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3;
+
+    @media (max-width: 767px) {
+      @apply px-1 gap-0.5;
+    }
   }
 
   &__brand {

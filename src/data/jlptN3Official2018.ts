@@ -3530,7 +3530,9 @@ function buildListeningQuestions(): JLPTQuestion[] {
 export const JLPT_N3_OFFICIAL_2018: JLPTExam = {
   id: 'exam-n3-official-2018',
   level: 'N3',
-  title: 'JLPT N3 — Examen Officiel 2018 (Cahier Intégral)',
+  examNumber: 1,
+  candidateCodePrefix: '001',
+  title: 'JLPT N3 — Examen #1',
   description:
     'Simulation officielle complète 102 questions en 3 épreuves chronométrées (30m + 70m + 40m), mise en page cahier papier, feuille OMR et audio MP3 officiel.',
   totalTimeMinutes: 140,

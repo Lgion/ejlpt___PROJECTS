@@ -21,6 +21,7 @@ import type {
   JLPTAudioTrackMeta,
   JLPTQuestion,
 } from '@/types/jlpt';
+import { QuestionJumpStrip } from './QuestionJumpStrip';
 import { RichJLPTText } from './RichJLPTText';
 
 interface ListeningExamStageProps {
@@ -257,7 +258,10 @@ export const ListeningExamStage: React.FC<ListeningExamStageProps> = ({
   const showQuestionExampleView =
     isStrictStream && strictAudioStatus?.phase === 'example' && Boolean(activeTrackMeta);
 
-  const isBlankPrintMondai = activeMondaiNum === 3 || activeMondaiNum === 5;
+  const isBlankPrintMondai =
+    currentQ.hasListeningMemoPad ??
+    (currentQ.archetype === 'listening_overview' ||
+      (currentQ.options.length === 3 && !currentQ.imageUrl));
   const isPromptHiddenInBooklet =
     config.presetMode === 'OFFICIAL_STRICT' || config.audioControlMode === 'strict_stream';
 
@@ -338,7 +342,7 @@ export const ListeningExamStage: React.FC<ListeningExamStageProps> = ({
               <span className="jlpt-audio-deck__track-name" lang="ja">
                 {streamFinished
                   ? '全音声終了（聴解完了）'
-                  : `Piste ${trackIdx + 1}/5 · ${activeStrictTrack?.titleJp ?? ''} ${
+                  : `Piste ${trackIdx + 1}/${audioTracks.length} · ${activeStrictTrack?.titleJp ?? ''} ${
                       strictAudioStatus?.label ? `· ${strictAudioStatus.label}` : ''
                     }`}
               </span>
@@ -513,6 +517,16 @@ export const ListeningExamStage: React.FC<ListeningExamStageProps> = ({
         })}
       </nav>
 
+      {/* Mobile/Tablet Question Direct Jump Strip + Section Grid */}
+      <QuestionJumpStrip
+        questions={questions}
+        currentIndex={currentIndex}
+        answers={answers}
+        flaggedIds={flaggedIds}
+        onJumpToQuestion={onJumpToQuestion}
+        isListening
+      />
+
       <div className="jlpt-booklet-sheet">
         <div className="jlpt-booklet-sheet__running-head">
           <span lang="ja">{currentQ.bookletPageLabel || '聴解'}</span>
@@ -547,7 +561,7 @@ export const ListeningExamStage: React.FC<ListeningExamStageProps> = ({
               <div className="jlpt-listening-img-frame">
                 <Image
                   src={activeTrackMeta.exampleImageUrl}
-                  alt="Illustration exemple 問題4"
+                  alt={`Illustration exemple 問題${activeMondaiNum}`}
                   width={1136}
                   height={884}
                   className="jlpt-listening-illustration"
@@ -576,18 +590,19 @@ export const ListeningExamStage: React.FC<ListeningExamStageProps> = ({
           <div className="jlpt-question-pane__top">
             <div className="jlpt-listening-qtitle" lang="ja">
               <span className="jlpt-qbox-num">
-                {seg?.itemNumber ?? currentQ.questionNumber ?? currentIndex + 1}番
+                {currentQ.questionLabel ??
+                  `${seg?.itemNumber ?? currentQ.questionNumber ?? currentIndex + 1}番`}
               </span>
               {!isPromptHiddenInBooklet && (
                 <p className="jlpt-listening-spoken-hint">{currentQ.prompt}</p>
               )}
               {isPromptHiddenInBooklet && (
                 <p className="jlpt-listening-strict-note">
-                  {activeMondaiNum === 3 || activeMondaiNum === 5
+                  {isBlankPrintMondai
                     ? 'このページには問題文・選択肢は印刷されていません（音声を聞いて解答してください）。'
-                    : activeMondaiNum === 4
+                    : currentQ.imageUrl && currentQ.options.length === 3
                     ? '絵を見ながら質問と選択肢（１〜３）を聞いてください。'
-                    : '音声を聞いて、下の１〜４から最もよいものを一つえらんでください。'}
+                    : `音声を聞いて、下の１〜${currentQ.options.length}から最もよいものを一つえらんでください。`}
                 </p>
               )}
             </div>
@@ -603,16 +618,19 @@ export const ListeningExamStage: React.FC<ListeningExamStageProps> = ({
             </button>
           </div>
 
-          {/* Printed Illustration (問題1 1番 / 問題4 1-4番) */}
+          {/* Printed Illustration */}
           {currentQ.imageUrl && (
             <div className="jlpt-listening-img-frame">
               <Image
                 src={currentQ.imageUrl}
                 alt={currentQ.imageAlt || `Illustration ${currentQ.subCategory}`}
-                width={activeMondaiNum === 1 ? 1137 : 1136}
-                height={activeMondaiNum === 1 ? 1437 : 884}
+                width={currentQ.imageWidth ?? (activeMondaiNum === 1 ? 1137 : 1136)}
+                height={currentQ.imageHeight ?? (activeMondaiNum === 1 ? 1437 : 884)}
                 className={`jlpt-listening-illustration ${
-                  activeMondaiNum === 1 ? 'jlpt-listening-illustration--tall' : ''
+                  (currentQ.imageHeight ?? (activeMondaiNum === 1 ? 1437 : 884)) >
+                  (currentQ.imageWidth ?? 1136)
+                    ? 'jlpt-listening-illustration--tall'
+                    : ''
                 }`}
               />
             </div>
@@ -644,7 +662,7 @@ export const ListeningExamStage: React.FC<ListeningExamStageProps> = ({
             </legend>
             <div
               className={`jlpt-options-grid ${
-                activeMondaiNum === 3 || activeMondaiNum === 4 || activeMondaiNum === 5
+                currentQ.options.length === 3 || isBlankPrintMondai
                   ? 'jlpt-options-grid--three-numerals'
                   : 'jlpt-options-grid--vertical'
               }`}
@@ -654,9 +672,10 @@ export const ListeningExamStage: React.FC<ListeningExamStageProps> = ({
                 const isSelected = selectedOptId === opt.id;
                 const isCorrect = opt.id === currentQ.correctOptionId;
 
-                // In strict booklet or hidden-text blank 問題3/問題5, show ONLY the spoken numbers unless revealed in free mode!
+                const defaultHide =
+                  isBlankPrintMondai || (Boolean(currentQ.imageUrl) && currentQ.options.length === 3);
                 const hideChoiceText =
-                  activeMondaiNum === 4 || (isBlankPrintMondai && !currentScriptRevealed);
+                  (currentQ.hideListeningChoicesText ?? defaultHide) && !currentScriptRevealed;
 
                 let stateClass = '';
                 if (showImmediateFeedback) {

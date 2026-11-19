@@ -76,6 +76,54 @@
   &__grid {
     @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
   }
+
+  &__filters {
+    @apply flex flex-wrap items-center justify-between gap-3 py-2;
+  }
+
+  &__level-pills {
+    @apply flex flex-wrap items-center gap-1.5;
+  }
+
+  &__level-tab {
+    @apply px-3.5 py-1.5 rounded-lg text-xs font-bold border border-slate-800 bg-slate-900 text-slate-300 hover:border-sky-500/50 hover:text-white transition-all cursor-pointer;
+
+    &--active {
+      @apply bg-sky-600/20 border-sky-500 text-sky-300 shadow-sm;
+    }
+  }
+}
+
+.exam-mix-banner {
+  @apply rounded-2xl border border-indigo-500/40 bg-gradient-to-r from-slate-900 via-indigo-950/60 to-slate-900 p-5 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl;
+
+  &__content {
+    @apply flex flex-col gap-1.5 max-w-2xl;
+  }
+
+  &__badge {
+    @apply inline-flex items-center gap-1.5 self-start px-2.5 py-0.5 rounded-full bg-indigo-500/15 border border-indigo-400/40 text-indigo-300 text-[11px] font-bold;
+  }
+
+  &__title {
+    @apply text-lg font-extrabold text-white;
+  }
+
+  &__desc {
+    @apply text-xs text-slate-300 leading-relaxed;
+  }
+
+  &__actions {
+    @apply flex flex-wrap items-center gap-2 shrink-0;
+  }
+
+  &__btn-primary {
+    @apply inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-sky-600 hover:from-indigo-500 hover:to-sky-500 text-white font-bold text-xs shadow-lg shadow-indigo-950/50 transition-all cursor-pointer disabled:opacity-60;
+  }
+
+  &__btn-secondary {
+    @apply inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold text-xs transition-all cursor-pointer disabled:opacity-60;
+  }
 }
 
 .exam-card {
