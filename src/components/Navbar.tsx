@@ -106,7 +106,7 @@ export default function Navbar() {
       case 'OFF':
         return { label: 'Furigana: Off', modifier: 'site-header__furigana-btn--off' };
       default:
-        return { label: 'Furigana: Auto', modifier: 'site-header__furigana-btn--sky' };
+        return { label: 'Furigana: Adaptatif', modifier: 'site-header__furigana-btn--sky' };
     }
   };
 
@@ -177,7 +177,7 @@ export default function Navbar() {
             type="button"
             onClick={cycleFuriganaMode}
             className={`site-header__furigana-btn ${badge.modifier}`}
-            title="Cliquer pour faire défiler le mode Furigana (Toujours -> Survol -> Désactivé)"
+            title="Cliquer pour faire défiler le mode Furigana (Toujours → Adaptatif SRS → Survol → Masqués)"
           >
             <Eye className="site-header__nav-icon" />
             <span className="site-header__furigana-label">{badge.label}</span>

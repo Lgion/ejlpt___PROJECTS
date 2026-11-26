@@ -1,13 +1,16 @@
 import React from 'react';
 import { type DynamicQuizQuestion } from '@/lib/quizGenerator';
 import { type SRSQuality } from '@/lib/srs';
-import { Clock, CheckCircle2, XCircle, BookOpen, ArrowRight } from 'lucide-react';
+import { MultimediaFeedbackCard } from '@/components/practice/MultimediaFeedbackCard';
+import { Clock, CheckCircle2, XCircle, BookOpen, ArrowRight, Flame } from 'lucide-react';
 
 interface QuizSessionPlayerProps {
   question: DynamicQuizQuestion;
   currentIndex: number;
   totalQuestions: number;
   score: number;
+  streak?: number;
+  dexterityPoints?: number;
   timedMode: boolean;
   timeLeft: number;
   selectedOptionId: string | null;
@@ -22,6 +25,8 @@ export function QuizSessionPlayer({
   currentIndex,
   totalQuestions,
   score,
+  streak = 0,
+  dexterityPoints,
   timedMode,
   timeLeft,
   selectedOptionId,
@@ -42,6 +47,12 @@ export function QuizSessionPlayer({
           <span className="quiz-player__type-badge">
             {question.itemType} • {question.level}
           </span>
+          {streak >= 2 && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber-950/70 border border-amber-700/60 px-2.5 py-0.5 text-xs font-bold text-amber-300">
+              <Flame className="w-3.5 h-3.5" />
+              Série ×{streak}
+            </span>
+          )}
         </div>
         <div className="quiz-player__stats">
           {timedMode && (
@@ -53,6 +64,9 @@ export function QuizSessionPlayer({
               <Clock className="quiz-player__timer-icon" />
               {timeLeft}s
             </span>
+          )}
+          {typeof dexterityPoints === 'number' && timedMode && (
+            <span className="text-xs font-bold text-sky-400">{dexterityPoints} pts</span>
           )}
           <span className="quiz-player__score">Score : {score}</span>
         </div>
@@ -108,6 +122,13 @@ export function QuizSessionPlayer({
 
       {hasAnswered && (
         <div aria-live="polite" className="quiz-player__feedback">
+          <MultimediaFeedbackCard
+            itemKey={question.itemKey}
+            itemType={question.itemType}
+            reading={question.reading}
+            meta={question.itemMeta}
+          />
+
           <div className="quiz-player__explanation">
             <BookOpen className="quiz-player__explanation-icon" />
             <div>
@@ -165,4 +186,3 @@ export function QuizSessionPlayer({
     </section>
   );
 }
-

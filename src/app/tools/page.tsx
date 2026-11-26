@@ -1,12 +1,17 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { useSearchParams } from 'next/navigation';
 import { KanjiCanvasComponent } from '@/components/custom-components/KanjiCanvasComponent';
 import { EzoeGrammarViewer } from '@/components/custom-components/EzoeGrammarViewer';
 import { CascadingKanjiTree } from '@/components/custom-components/CascadingKanjiTree';
 import { ChoukaiAudioPlayer } from '@/components/custom-components/ChoukaiAudioPlayer';
 import { ToolsTabs, type ToolsTabId } from '@/components/tools/ToolsTabs';
+import { ConjugationTableTool } from '@/components/tools/ConjugationTableTool';
+import { PolitenessRecapTool } from '@/components/tools/PolitenessRecapTool';
+import { RecommendedLinksTool } from '@/components/tools/RecommendedLinksTool';
+import { AiStudyTodoTool } from '@/components/tools/AiStudyTodoTool';
 import { PenTool } from 'lucide-react';
 
 const Kanjiverse3D = dynamic(
@@ -21,6 +26,18 @@ const Kanjiverse3D = dynamic(
   }
 );
 
+const VALID_TABS = new Set<ToolsTabId>([
+  'canvas',
+  'ezoe',
+  'tree',
+  'kanjiverse',
+  'audio',
+  'conjugation',
+  'politeness',
+  'links',
+  'ai_todo',
+]);
+
 const SAMPLE_EZOE_SEGMENTS = [
   { text: '私', type: 'subject' as const, reading: 'わたし', frenchMeaning: 'Moi' },
   { text: 'は', type: 'particle' as const, frenchMeaning: 'Thème' },
@@ -30,20 +47,24 @@ const SAMPLE_EZOE_SEGMENTS = [
   { text: '勉強します', type: 'verb' as const, reading: 'べんきょうします', frenchMeaning: 'Étudier' },
 ];
 
-export default function ToolsPage() {
-  const [activeTab, setActiveTab] = useState<ToolsTabId>('canvas');
+function ToolsContent() {
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get('tab') as ToolsTabId | null;
+  const [activeTab, setActiveTab] = useState<ToolsTabId>(
+    initialTab && VALID_TABS.has(initialTab) ? initialTab : 'canvas'
+  );
 
   return (
     <div className="tools-page">
       <div>
         <div className="tools-page__badge">
           <PenTool className="tools-page__badge-icon" />
-          <span>Composants Pédagogiques Sur Mesure</span>
+          <span>9 Outils Pédagogiques Interactifs</span>
         </div>
         <h1 className="tools-page__title">Hub d&apos;Outils Interactifs Pédagogiques</h1>
         <p className="tools-page__subtitle">
-          Explorez le canvas d&apos;écriture manuscrite, la visualisation Ezoe, le lecteur Choukai
-          et l&apos;arbre de filiation des kanjis.
+          Canvas d&apos;écriture, table complète de conjugaison, récapitulatif politesse/keigo,
+          liens sélectionnés, todo-list co-écrite avec l&apos;IA, méthode Ezoe, arbre radical et Choukai.
         </p>
       </div>
 
@@ -57,6 +78,30 @@ export default function ToolsPage() {
               vectoriel.
             </p>
             <KanjiCanvasComponent expectedKanji="語" />
+          </div>
+        )}
+
+        {activeTab === 'conjugation' && (
+          <div className="tools-page__panel-full">
+            <ConjugationTableTool />
+          </div>
+        )}
+
+        {activeTab === 'politeness' && (
+          <div className="tools-page__panel-full">
+            <PolitenessRecapTool />
+          </div>
+        )}
+
+        {activeTab === 'links' && (
+          <div className="tools-page__panel-full">
+            <RecommendedLinksTool />
+          </div>
+        )}
+
+        {activeTab === 'ai_todo' && (
+          <div className="tools-page__panel-full">
+            <AiStudyTodoTool />
           </div>
         )}
 
@@ -94,5 +139,13 @@ export default function ToolsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function ToolsPage() {
+  return (
+    <Suspense fallback={<div className="tools-page__webgl-loading">Chargement des outils…</div>}>
+      <ToolsContent />
+    </Suspense>
   );
 }

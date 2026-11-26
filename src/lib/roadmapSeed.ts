@@ -217,73 +217,73 @@ export function createDefaultRoadmapState(): RoadmapState {
       't-jlpt-full-exams',
       'cat-jlpt-quizzes',
       'Simulateur JLPT complet N5 → N1 (10 examens officiels, OMR, barème /180)',
-      95,
+      100,
       'high',
       'L92, L174',
-      '10 cahiers officiels complets anonymisés (Examen #1 et #2 par niveau, 1 001 questions) + compositeur modulaire par mondai.'
+      '10 cahiers officiels complets anonymisés (Examen #1 et #2 par niveau, 1 001 questions) + compositeur modulaire par mondai + passerelle directe SRS post-examen.'
     ),
     seedTask(
       't-jlpt-audio-choukai',
       'cat-jlpt-quizzes',
       'Exercices audio type JLPT (MP3, script, illustrations, explications FR)',
-      95,
+      100,
       'high',
       'L35',
-      'Pistes MP3 réelles, scripts complets (audioScript) et explanationFr sur toutes les épreuves Choukai (N5–N1) + ChoukaiAudioPlayer.'
+      'Pistes MP3 réelles, scripts complets (audioScript) et explanationFr sur toutes les épreuves Choukai (N5–N1) + ChoukaiAudioPlayer et synthèse vocale contextuelle.'
     ),
     seedTask(
       't-srs-error-loop',
       'cat-jlpt-quizzes',
       'Alimenter les prochains quiz avec les erreurs récentes (SM-2)',
-      90,
+      100,
       'high',
       'L53',
-      'recordErrorToSRS() remonte les erreurs d’examens et de /practice dans localDb.srsCards pour alimenter srs_review.'
+      'recordErrorToSRS() remonte les erreurs d’examens, Yomikata Z, drag-drop, écriture et quiz dans localDb.srsCards + bouton post-examen « Réviser mes erreurs en SRS ».'
     ),
     seedTask(
       't-dynamic-quiz-modes',
       'cat-jlpt-quizzes',
       'Quiz dynamiques QCM multi-modes + chrono (dextérité)',
-      55,
+      100,
       'high',
       'L5, L167, L169, L171, L176',
-      '5 modes QCM texte (kanji, grammaire, intrus, jukugo, SRS) + chrono 10s/20s/30s. Manquent : lecture rapide, écriture notée, traduction, score dextérité.'
+      '10 modes dynamiques (/practice) : lecture, grammaire, intrus, jukugo, constructeur jukugo 2–4+, lecture rapide, traduction FR↔JA, connexions, SRS + écriture notée & score dextérité (S/A/B/C).'
     ),
     seedTask(
       't-quiz-immediate-feedback',
       'cat-jlpt-quizzes',
       'Quiz avec réponse et explication immédiate juste après le choix',
-      45,
+      100,
       'medium',
       'L37–L38',
-      'Actif dans le mode Personnalisé/Modulaire des examens et en indices texte dans /practice. Manquent images, son et GIF dans /practice.'
+      'Feedback immédiat avec MultimediaFeedbackCard (sprite WebP, audio TTS, tracé KanjiVG, badges grammaticaux) + explications dans /practice et simulateur JLPT.'
     ),
     seedTask(
       't-intruder-set',
       'cat-jlpt-quizzes',
       'Trouver l’intrus / l’ensemble (syno, homo, antonyme, paronyme)',
-      25,
+      100,
       'high',
       'L7, L54, L177',
-      'Mode synonyms_intruder présent sur kanjis, mais données vides sur antonymes (0) et homonymes (0), synonyms à 1 % (32/3042).'
+      'Mode dédié intruder_set exploitant synonyms, antonyms, homonyms et similar enrichis en base (intrus sémantiques, visuels, opposés et homophones).'
     ),
     seedTask(
       't-quiz-multimedia-badges',
       'cat-jlpt-quizzes',
       'Quiz kanji/vocab enrichis (images sprites WebP, audio + métadonnées grammaticales après choix)',
-      15,
+      100,
       'medium',
       'L23, L51',
-      'Pipeline sprites WebP : items simples (animaux, couleurs…) -> CDN direct sans IA ; items complexes (ex. 達) -> CDN puis juge IA -> file batch si inadapté. Aucune fiche/sprite encore affichée dans /practice.'
+      'MultimediaFeedbackCard intégrée dans QuizSessionPlayer, YomikataZPlayer et WritingGradedQuiz : sprites WebP, Audio JA, ordre des traits KanjiVG et badges (fréq /10, keigo, soto/uchi, +/-, 1dan/5dan, 自動/他動).'
     ),
     seedTask(
       't-quiz-dragdrop-sort',
       'cat-jlpt-quizzes',
       'Quiz drag-and-drop (remise en ordre), tri/catégorisation & 1dan/5dan',
-      20,
+      100,
       'medium',
       'L168, L172, L175',
-      'Atelier par clics 4 slots ★ (grammar_star) dans le cahier JLPT ; aucun drag-and-drop natif, ni tri/catégorisation, ni 1dan/5dan.'
+      'DragDropSortQuiz (/practice?tab=interactive) : glisser-déposer + fallback clavier pour remise en ordre ★, tri Verbes 1段/5段/Irréguliers (avec pièges -る) et tri 自動詞/他動詞.'
     ),
 
     // Cat 3 — Dictionnaires, Kanji N0 & Données
@@ -477,28 +477,28 @@ export function createDefaultRoadmapState(): RoadmapState {
       't-furigana-engine',
       'cat-tools-search-stats',
       'Système Furigana global (Toujours / Survol / Masqués) & adaptatif SRS',
-      90,
+      100,
       'high',
       'L77',
-      'Opérationnel dans la Navbar (FuriganaContext), les cahiers JLPT (RichJLPTText) et le lecteur adaptatif (shouldShowAdaptiveFurigana).'
+      'FuriganaContext + FuriganaText reliés aux cartes SRS SM-2 maîtrisées : 4 modes dans la Navbar (Toujours, Adaptatif SRS, Survol, Masqués) + RichJLPTText & lecteur adaptatif.'
     ),
     seedTask(
       't-smart-goals-analytics',
       'cat-tools-search-stats',
       'Objectifs SMART & statistiques heatmap kanji / progrès (AnalyticsDashboard)',
-      65,
+      100,
       'high',
       'L42, L72',
-      'Disponible dans /history (heatmap N5→N1, cartes SM-2, 3 objectifs SMART dynamiques). Manquent affichage post-quiz et stats jukugo globales.'
+      'Heatmap N5→N1, cartes SM-2, 3 objectifs SMART + PostQuizSmartGoalCard post-quiz/post-examen + statistiques Jukugo globales (33 425 composés, longueur 2/3/4+, 自動/他動) dans AnalyticsDashboard.'
     ),
     seedTask(
       't-advanced-search-filters',
       'cat-tools-search-stats',
       'Filtres avancés recherche (radical 85 %, SKIP 40 %, only:, exclure, comparer, tri +/-)',
-      35,
+      100,
       'medium',
       'L14, L63–L64, L79–L94',
-      'Recherche globale FlexSearch/WanaKana + filtres radicaux/traits/fréquence. Absents : comparer, exclure, soto/uchi, tadoushi/jidoushi.'
+      'searchOfflineAdvanced & HeaderSearch : opérateurs only:, -exclure, skip:, radical:, reg:soto/uchi, trans:jidoushi/tadoushi, tris (fréq/traits/dualisme +/-), comparer côte à côte et recherches associées.'
     ),
     seedTask(
       't-freq-scale-1-10',
@@ -513,10 +513,10 @@ export function createDefaultRoadmapState(): RoadmapState {
       't-missing-tools-hub',
       'cat-tools-search-stats',
       'Outils à ajouter dans /tools : table conjugaison, récap politesse, おすすめ, todo IA',
-      0,
+      100,
       'medium',
       'L71, L73, L76, L78',
-      '5 onglets actuels dans /tools (Canvas, Ezoe, Arbre, Kanjiverse 3D, Audio). Outil Map (L69) abandonné ; 4 outils restants à créer.'
+      'Hub /tools complété (9 onglets, Map L69 abandonné) : Table de conjugaison (15 formes + TTS), Récap Politesse/Keigo (Soto/Uchi), おすすめのリンクス et Todo-list d’étude co-écrite avec Gemini (/api/tools/ai-todo).'
     ),
 
     // Cat 7 — Inspirations Apps, IA & Ressources
@@ -542,10 +542,10 @@ export function createDefaultRoadmapState(): RoadmapState {
       't-yomikata-z',
       'cat-apps-community',
       'Yomikata Z : phrase par niveau, mot coloré selon maîtrise SRS (QCM / clavier / oral)',
-      0,
+      100,
       'high',
       'L180',
-      'Spec validée : phrase adaptée au niveau, mot coloré selon 4 paliers SRS, réponse QCM / clavier / oral (Web Speech + fallback Gemini audio).'
+      'YomikataZPlayer (/practice?tab=yomikata) : phrases filtrées N5–N1 + 3 collections fusionnables, mot cible coloré selon 4 paliers SRS, réponse QCM, clavier WanaKana ou oral (Web Speech + fallback /api/ai/transcribe).'
     ),
     seedTask(
       't-todai-daily-news',

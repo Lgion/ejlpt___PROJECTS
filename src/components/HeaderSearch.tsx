@@ -3,9 +3,22 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useUser } from '@clerk/nextjs';
-import { Search, X, BookOpen, Bookmark, Sparkles, ArrowRight } from 'lucide-react';
+import {
+  Search,
+  X,
+  BookOpen,
+  Bookmark,
+  Sparkles,
+  ArrowRight,
+  GitCompareArrows,
+} from 'lucide-react';
 import { localDb } from '@/lib/db';
-import { searchOffline, GlobalSearchHit, SearchResultKind } from '@/lib/search';
+import {
+  searchOfflineAdvanced,
+  type GlobalSearchHit,
+  type SearchResultKind,
+  type SearchSortMode,
+} from '@/lib/search';
 import { enqueueSyncAction } from '@/lib/sync';
 
 const KIND_FILTERS: Array<{ id: 'ALL' | SearchResultKind; label: string }> = [
@@ -17,12 +30,30 @@ const KIND_FILTERS: Array<{ id: 'ALL' | SearchResultKind; label: string }> = [
   { id: 'ONOMATOPOEIA', label: 'Onomatopées' },
 ];
 
+const QUICK_OPERATORS = [
+  'only:kanji',
+  'only:n5',
+  'skip:1-',
+  'trans:jidoushi',
+  'reg:soto',
+  'comparer 語 言',
+];
+
 export const HeaderSearch: React.FC = () => {
   const { isSignedIn } = useUser();
   const [query, setQuery] = useState('');
   const [kindFilter, setKindFilter] = useState<'ALL' | SearchResultKind>('ALL');
+  const [sortBy, setSortBy] = useState<SearchSortMode>('relevance');
+  const [sotoFilter, setSotoFilter] = useState<'ALL' | 'soto' | 'uchi'>('ALL');
+  const [transFilter, setTransFilter] = useState<'ALL' | 'jidoushi' | 'tadoushi'>('ALL');
+
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<GlobalSearchHit[]>([]);
+  const [relatedQueries, setRelatedQueries] = useState<string[]>([]);
+  const [comparePair, setComparePair] = useState<[GlobalSearchHit | null, GlobalSearchHit | null] | null>(
+    null
+  );
+  const [pinnedCompare, setPinnedCompare] = useState<GlobalSearchHit[]>([]);
   const [savedSuccess, setSavedSuccess] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDialogElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -42,7 +73,6 @@ export const HeaderSearch: React.FC = () => {
     }
   };
 
-  // Shortcut Ctrl+K / Cmd+K + fallback light dismiss when closedby="any" is missing
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
@@ -79,17 +109,37 @@ export const HeaderSearch: React.FC = () => {
     };
   }, []);
 
-  const handleSearch = async (searchTerm: string) => {
+  const executeSearch = async (
+    searchTerm: string,
+    opts?: {
+      kind?: 'ALL' | SearchResultKind;
+      sort?: SearchSortMode;
+      soto?: 'ALL' | 'soto' | 'uchi';
+      trans?: 'ALL' | 'jidoushi' | 'tadoushi';
+    }
+  ) => {
     setQuery(searchTerm);
-    if (!searchTerm.trim()) {
+    const activeSoto = opts?.soto ?? sotoFilter;
+    const activeTrans = opts?.trans ?? transFilter;
+    if (!searchTerm.trim() && activeSoto === 'ALL' && activeTrans === 'ALL') {
       setResults([]);
+      setRelatedQueries([]);
+      setComparePair(null);
       return;
     }
 
     setLoading(true);
     try {
-      const hits = await searchOffline(searchTerm, 32);
-      setResults(hits);
+      const res = await searchOfflineAdvanced(searchTerm, {
+        limit: 32,
+        kindFilter: opts?.kind ?? kindFilter,
+        sortBy: opts?.sort ?? sortBy,
+        sotoUchi: activeSoto,
+        transitivity: activeTrans,
+      });
+      setResults(res.hits);
+      setRelatedQueries(res.relatedQueries);
+      setComparePair(res.comparePair ?? null);
     } catch (err) {
       console.error('Offline search error:', err);
     } finally {
@@ -100,12 +150,24 @@ export const HeaderSearch: React.FC = () => {
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       if (e.nativeEvent.isComposing || e.keyCode === 229) return;
-      const top = filteredResults[0];
+      const top = results[0];
       if (top) {
         closeModal();
         window.location.href = top.href;
       }
     }
+  };
+
+  const handleTogglePinCompare = (hit: GlobalSearchHit) => {
+    setPinnedCompare((prev) => {
+      if (prev.some((item) => item.id === hit.id)) {
+        return prev.filter((item) => item.id !== hit.id);
+      }
+      if (prev.length >= 2) {
+        return [prev[1], hit];
+      }
+      return [...prev, hit];
+    });
   };
 
   const handleBookmarkItem = async (item: GlobalSearchHit) => {
@@ -129,8 +191,8 @@ export const HeaderSearch: React.FC = () => {
     }
   };
 
-  const filteredResults =
-    kindFilter === 'ALL' ? results : results.filter((r) => r.kind === kindFilter);
+  const effectiveCompare: [GlobalSearchHit | null, GlobalSearchHit | null] | null =
+    comparePair || (pinnedCompare.length === 2 ? [pinnedCompare[0], pinnedCompare[1]] : null);
 
   const kindBadgeClass = (kind: SearchResultKind) => {
     switch (kind) {
@@ -172,9 +234,9 @@ export const HeaderSearch: React.FC = () => {
               id="global-search-input"
               type="search"
               value={query}
-              onChange={(e) => void handleSearch(e.target.value)}
+              onChange={(e) => void executeSearch(e.target.value)}
               onKeyDown={handleInputKeyDown}
-              placeholder="Kanji (語), Romaji (taberu), Grammaire (くらい), Sens (eau)..."
+              placeholder="Kanji, romaji, only:kanji, -N1, skip:1-7, reg:soto, comparer A B…"
               className="search-modal__input"
             />
             <button
@@ -192,7 +254,10 @@ export const HeaderSearch: React.FC = () => {
               <button
                 key={f.id}
                 type="button"
-                onClick={() => setKindFilter(f.id)}
+                onClick={() => {
+                  setKindFilter(f.id);
+                  void executeSearch(query, { kind: f.id });
+                }}
                 className={`search-modal__tab ${
                   kindFilter === f.id ? 'search-modal__tab--active' : ''
                 }`}
@@ -201,6 +266,134 @@ export const HeaderSearch: React.FC = () => {
               </button>
             ))}
           </div>
+
+          <div className="search-advanced__toolbar">
+            <div className="search-advanced__operators">
+              {QUICK_OPERATORS.map((op) => (
+                <button
+                  key={op}
+                  type="button"
+                  onClick={() => {
+                    const next = op.startsWith('comparer')
+                      ? op
+                      : `${query.trim()} ${op}`.trim();
+                    void executeSearch(next);
+                  }}
+                  className="search-advanced__op-chip"
+                >
+                  {op}
+                </button>
+              ))}
+            </div>
+
+            <div className="search-advanced__selects">
+              <select
+                aria-label="Tri des résultats"
+                value={sortBy}
+                onChange={(e) => {
+                  const next = e.target.value as SearchSortMode;
+                  setSortBy(next);
+                  void executeSearch(query, { sort: next });
+                }}
+                className="search-advanced__select"
+              >
+                <option value="relevance">Tri : Pertinence</option>
+                <option value="freq_desc">Tri : Fréquence ↓</option>
+                <option value="strokes_asc">Tri : Traits ↑</option>
+                <option value="dualisme_pos">Tri : Nuance (+)</option>
+                <option value="dualisme_neg">Tri : Nuance (−)</option>
+              </select>
+
+              <select
+                aria-label="Registre Soto ou Uchi"
+                value={sotoFilter}
+                onChange={(e) => {
+                  const next = e.target.value as 'ALL' | 'soto' | 'uchi';
+                  setSotoFilter(next);
+                  void executeSearch(query, { soto: next });
+                }}
+                className="search-advanced__select"
+              >
+                <option value="ALL">Soto/Uchi : Tous</option>
+                <option value="soto">Soto (外)</option>
+                <option value="uchi">Uchi (内)</option>
+              </select>
+
+              <select
+                aria-label="Transitivité verbes"
+                value={transFilter}
+                onChange={(e) => {
+                  const next = e.target.value as 'ALL' | 'jidoushi' | 'tadoushi';
+                  setTransFilter(next);
+                  void executeSearch(query, { trans: next });
+                }}
+                className="search-advanced__select"
+              >
+                <option value="ALL">自動 / 他動 : Tous</option>
+                <option value="jidoushi">自動詞 (Intransitif)</option>
+                <option value="tadoushi">他動詞 (Transitif)</option>
+              </select>
+            </div>
+          </div>
+
+          {relatedQueries.length > 0 && (
+            <div className="search-advanced__related">
+              <span className="search-advanced__related-label">Recherches associées :</span>
+              {relatedQueries.map((rq) => (
+                <button
+                  key={rq}
+                  type="button"
+                  onClick={() => void executeSearch(rq)}
+                  className="search-advanced__related-chip"
+                >
+                  {rq}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {effectiveCompare && (
+            <div className="search-advanced__compare">
+              <div className="search-advanced__compare-head">
+                <span>
+                  <GitCompareArrows className="w-3.5 h-3.5 inline mr-1.5" />
+                  Comparaison côte à côte
+                </span>
+                {pinnedCompare.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setPinnedCompare([])}
+                    className="text-[11px] text-slate-400 hover:text-white"
+                  >
+                    Effacer sélection
+                  </button>
+                )}
+              </div>
+              <div className="search-advanced__compare-grid">
+                {effectiveCompare.map((item, i) => (
+                  <div key={i} className="search-advanced__compare-col">
+                    {item ? (
+                      <>
+                        <div className="text-2xl font-serif font-black text-sky-300">{item.title}</div>
+                        <div className="text-xs text-slate-200 font-semibold">{item.meaning}</div>
+                        <div className="text-[11px] text-slate-400">
+                          {item.level} • {item.strokes ?? '?'} traits • Fréq.{' '}
+                          {item.frequencyScore10 ?? '?'}/10
+                        </div>
+                        {item.reading && (
+                          <div className="text-[11px] text-indigo-300" lang="ja">
+                            {item.reading}
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="text-xs text-slate-500">Item introuvable dans l’index.</div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="search-modal__results">
             {savedSuccess && (
@@ -215,52 +408,73 @@ export const HeaderSearch: React.FC = () => {
                 <div className="search-modal__spinner" />
                 <span>Indexation &amp; recherche locale FlexSearch...</span>
               </div>
-            ) : filteredResults.length > 0 ? (
-              filteredResults.map((res) => (
-                <div key={res.id} className="search-modal__item">
-                  <Link
-                    href={res.href}
-                    onClick={closeModal}
-                    className="search-modal__item-link"
-                  >
-                    <div className={`search-modal__kind-badge ${kindBadgeClass(res.kind)}`}>
-                      {res.title}
-                    </div>
-                    <div className="search-modal__item-info">
-                      <div className="search-modal__item-head">
-                        <span className="search-modal__item-meaning">
-                          {res.meaning || res.title}
-                        </span>
-                        <span className="search-modal__item-meta">
-                          {res.kind} • {res.level}
-                        </span>
+            ) : results.length > 0 ? (
+              results.map((res) => {
+                const isPinned = pinnedCompare.some((p) => p.id === res.id);
+                return (
+                  <div key={res.id} className="search-modal__item">
+                    <Link
+                      href={res.href}
+                      onClick={closeModal}
+                      className="search-modal__item-link"
+                    >
+                      <div className={`search-modal__kind-badge ${kindBadgeClass(res.kind)}`}>
+                        {res.title}
                       </div>
-                      {res.reading && (
-                        <div className="search-modal__item-reading">{res.reading}</div>
-                      )}
-                    </div>
-                    <ArrowRight className="search-modal__item-arrow" />
-                  </Link>
+                      <div className="search-modal__item-info">
+                        <div className="search-modal__item-head">
+                          <span className="search-modal__item-meaning">
+                            {res.meaning || res.title}
+                          </span>
+                          <span className="search-modal__item-meta">
+                            {res.kind} • {res.level}
+                            {res.skipCode ? ` • SKIP ${res.skipCode}` : ''}
+                            {res.sotoUchi ? ` • ${res.sotoUchi}` : ''}
+                          </span>
+                        </div>
+                        {res.reading && (
+                          <div className="search-modal__item-reading">{res.reading}</div>
+                        )}
+                      </div>
+                      <ArrowRight className="search-modal__item-arrow" />
+                    </Link>
 
-                  <button
-                    type="button"
-                    onClick={() => void handleBookmarkItem(res)}
-                    aria-label={`Sauvegarder ${res.title} dans le carnet`}
-                    className="search-modal__bookmark-btn"
-                  >
-                    <Bookmark className="search-modal__bookmark-icon" />
-                  </button>
-                </div>
-              ))
-            ) : query ? (
+                    <button
+                      type="button"
+                      onClick={() => handleTogglePinCompare(res)}
+                      title="Comparer côte à côte"
+                      aria-pressed={isPinned}
+                      className={`search-advanced__pin-btn ${
+                        isPinned ? 'search-advanced__pin-btn--active' : ''
+                      }`}
+                    >
+                      <GitCompareArrows className="w-3.5 h-3.5" />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => void handleBookmarkItem(res)}
+                      aria-label={`Sauvegarder ${res.title} dans le carnet`}
+                      className="search-modal__bookmark-btn"
+                    >
+                      <Bookmark className="search-modal__bookmark-icon" />
+                    </button>
+                  </div>
+                );
+              })
+            ) : query || sotoFilter !== 'ALL' || transFilter !== 'ALL' ? (
               <div className="search-modal__empty">
-                Aucun résultat local pour &quot;{query}&quot;.
+                Aucun résultat local pour cette requête filtrée.
               </div>
             ) : (
               <div className="search-modal__hint">
                 <BookOpen className="search-modal__hint-icon" />
                 <span>
-                  Recherche 100 % offline sur 3 042 kanjis, 3 422 grammaires, 33 425 jukugos, slang et onomatopées.
+                  Astuce : combinez <code className="text-sky-300">only:kanji</code>,{' '}
+                  <code className="text-sky-300">-N1</code>,{' '}
+                  <code className="text-sky-300">skip:1-</code>,{' '}
+                  <code className="text-sky-300">trans:jidoushi</code> ou{' '}
+                  <code className="text-sky-300">comparer 語 言</code>.
                 </span>
               </div>
             )}

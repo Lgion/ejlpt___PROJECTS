@@ -1,8 +1,11 @@
 import React from 'react';
+import Link from 'next/link';
 import { JLPTQuestion, ExamResult } from '@/types/jlpt';
 import { FuriganaText } from '@/components/custom-components/FuriganaText';
 import { RichJLPTText } from '@/components/exam/RichJLPTText';
-import { CheckCircle, XCircle, Sparkles } from 'lucide-react';
+import { PostQuizSmartGoalCard } from '@/components/practice/PostQuizSmartGoalCard';
+import { buildPostQuizSmartGoal } from '@/lib/smartGoals';
+import { CheckCircle, XCircle, Sparkles, RotateCcw } from 'lucide-react';
 
 interface ExamResultsViewProps {
   result: ExamResult;
@@ -24,6 +27,7 @@ export function ExamResultsView({
   const statusMod = result.passed ? 'passed' : 'failed';
   const isOfficial180 = result.scoringScale === 'JLPT_180' && Boolean(result.officialBreakdown);
   const bd = result.officialBreakdown;
+  const missedCount = questions.filter((q) => answers[q.id] !== q.correctOptionId).length;
 
   return (
     <div className="exam-results">
@@ -290,7 +294,27 @@ export function ExamResultsView({
         })}
       </div>
 
+      <PostQuizSmartGoalCard
+        goal={buildPostQuizSmartGoal({
+          contextLabel: `Simulation JLPT ${result.level}`,
+          level: result.level,
+          accuracyPct:
+            result.maxScoreTotal > 0
+              ? Math.round((result.scoreTotal / result.maxScoreTotal) * 100)
+              : 0,
+          missedCount,
+        })}
+      />
+
       <div className="exam-results__footer">
+        {missedCount > 0 && (
+          <Link href="/practice?mode=srs_review" className="exam-results__srs-btn">
+            <RotateCcw className="w-4 h-4" />
+            <span>
+              Réviser mes {missedCount} erreur{missedCount > 1 ? 's' : ''} en SRS
+            </span>
+          </Link>
+        )}
         <button type="button" onClick={onExit} className="exam-results__exit-btn">
           Retourner au Tableau de Bord
         </button>

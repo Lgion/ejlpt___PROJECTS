@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { localDb, type SRSCardRecord } from '@/lib/db';
 import {
+  computeDexterityScore,
   generateDynamicQuiz,
   type DynamicQuizMode,
   type DynamicQuizQuestion,
@@ -16,8 +17,13 @@ import { SrsFlashcardReviewer } from '@/components/practice/SrsFlashcardReviewer
 import { QuizSetupPanel, type QuizModeOption } from '@/components/practice/QuizSetupPanel';
 import { QuizSessionPlayer } from '@/components/practice/QuizSessionPlayer';
 import { DrillsHub } from '@/components/practice/drills/DrillsHub';
+import { YomikataZPlayer } from '@/components/practice/YomikataZPlayer';
+import { DragDropSortQuiz } from '@/components/practice/DragDropSortQuiz';
+import { WritingGradedQuiz } from '@/components/practice/WritingGradedQuiz';
+import { PostQuizSmartGoalCard } from '@/components/practice/PostQuizSmartGoalCard';
+import { buildPostQuizSmartGoal } from '@/lib/smartGoals';
 import type { ExerciseDrillMode } from '@/lib/exerciseCollections';
-import { Zap, RotateCcw, Sparkles, PenLine } from 'lucide-react';
+import { Zap, RotateCcw, Sparkles, PenLine, Eye, Puzzle, Trophy } from 'lucide-react';
 
 const QUIZ_MODES: QuizModeOption[] = [
   {
@@ -32,13 +38,38 @@ const QUIZ_MODES: QuizModeOption[] = [
   },
   {
     id: 'synonyms_intruder',
-    label: 'Intrus & Synonymes',
-    description: 'Trouvez l’intrus sémantique parmi un groupe de kanji synonymes.',
+    label: 'Synonymes & Ressemblances',
+    description: 'Trouvez le kanji proche par le sens ou la forme graphique.',
+  },
+  {
+    id: 'intruder_set',
+    label: 'Intrus, Antonymes & Homophones',
+    description: 'Démasquez l’intrus ou l’opposé parmi synonymes, antonymes, homophones et paronymes.',
   },
   {
     id: 'jukugo_compound',
     label: 'Mots Composés (Jukugo)',
     description: 'Associez les jukugo issus de kanji de niveau ciblé à leur lecture/sens.',
+  },
+  {
+    id: 'jukugo_builder',
+    label: 'Constructeur Jukugo (2–4+ kanjis)',
+    description: 'À partir d’un kanji racine, retrouvez le mot composé exact de 2, 3 ou 4+ caractères.',
+  },
+  {
+    id: 'speed_reading',
+    label: 'Lecture Rapide en Contexte',
+    description: 'Identifiez à toute vitesse la lecture et le sens exact dans une phrase JLPT.',
+  },
+  {
+    id: 'translation_fr_ja',
+    label: 'Traduction Rapide FR ↔ JA',
+    description: 'Alternez traduction français → japonais et japonais → français sous chrono.',
+  },
+  {
+    id: 'grammar_relations_connectors',
+    label: 'Connexions 【接続】 & Registres',
+    description: 'Maîtrisez les schémas de connexion grammaticale, équivalents familiers et opposés.',
   },
   {
     id: 'srs_review',
@@ -47,13 +78,25 @@ const QUIZ_MODES: QuizModeOption[] = [
   },
 ];
 
+type PracticeWorkspace = 'quiz' | 'yomikata' | 'drills' | 'interactive';
+
+function resolveInitialWorkspace(tab: string | null): PracticeWorkspace {
+  if (tab === 'yomikata') return 'yomikata';
+  if (tab === 'drills') return 'drills';
+  if (tab === 'interactive') return 'interactive';
+  return 'quiz';
+}
+
 function PracticeContent() {
   const searchParams = useSearchParams();
   const initialModeParam = searchParams.get('mode') as DynamicQuizMode | null;
-  const initialTabParam = searchParams.get('tab') === 'drills' ? 'drills' : 'quiz';
-  const initialDrillParam = (searchParams.get('drill') || undefined) as ExerciseDrillMode | undefined;
+  const initialWorkspace = resolveInitialWorkspace(searchParams.get('tab'));
+  const initialDrillParam = (searchParams.get('drill') || undefined) as
+    | ExerciseDrillMode
+    | undefined;
 
-  const [activeWorkspace, setActiveWorkspace] = useState<'quiz' | 'drills'>(initialTabParam);
+  const [activeWorkspace, setActiveWorkspace] = useState<PracticeWorkspace>(initialWorkspace);
+  const [interactiveSubTab, setInteractiveSubTab] = useState<'dnd' | 'writing'>('dnd');
   const [mode, setMode] = useState<DynamicQuizMode>(
     initialModeParam && QUIZ_MODES.some((m) => m.id === initialModeParam)
       ? initialModeParam
@@ -68,6 +111,9 @@ function PracticeContent() {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [score, setScore] = useState<number>(0);
+  const [streak, setStreak] = useState<number>(0);
+  const [maxStreak, setMaxStreak] = useState<number>(0);
+  const [totalTimeRemainingSec, setTotalTimeRemainingSec] = useState<number>(0);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [sessionState, setSessionState] = useState<'setup' | 'playing' | 'finished'>('setup');
   const [timeLeft, setTimeLeft] = useState<number>(20);
@@ -106,6 +152,18 @@ function PracticeContent() {
 
   const currentQuestion = questions[currentIndex] || null;
 
+  const liveDexterity = useMemo(
+    () =>
+      computeDexterityScore({
+        correctCount: score,
+        totalCount: questions.length,
+        totalTimeRemainingSec: timedMode ? totalTimeRemainingSec : 0,
+        secondsPerQuestion,
+        maxStreak,
+      }),
+    [score, questions.length, timedMode, totalTimeRemainingSec, secondsPerQuestion, maxStreak]
+  );
+
   useEffect(() => {
     if (sessionState !== 'playing' || !timedMode || selectedOptionId !== null) {
       return;
@@ -126,6 +184,7 @@ function PracticeContent() {
     ) {
       queueMicrotask(() => {
         setSelectedOptionId('__TIMEOUT__');
+        setStreak(0);
         const correctOpt = currentQuestion.options.find(
           (o) => o.id === currentQuestion.correctOptionId
         );
@@ -159,6 +218,9 @@ function PracticeContent() {
       setCurrentIndex(0);
       setSelectedOptionId(null);
       setScore(0);
+      setStreak(0);
+      setMaxStreak(0);
+      setTotalTimeRemainingSec(0);
       setGradedCurrentCard(false);
       setTimeLeft(secondsPerQuestion);
       setSessionState('playing');
@@ -177,11 +239,20 @@ function PracticeContent() {
 
     if (isCorrect) {
       setScore((s) => s + 1);
+      setStreak((prev) => {
+        const nextStreak = prev + 1;
+        setMaxStreak((ms) => Math.max(ms, nextStreak));
+        return nextStreak;
+      });
+      if (timedMode) {
+        setTotalTimeRemainingSec((prev) => prev + timeLeft);
+      }
       const existing = await localDb.srsCards.get(currentQuestion.srsCardId);
       if (existing) {
         await gradeSRSCard(currentQuestion.srsCardId, 3);
       }
     } else {
+      setStreak(0);
       await recordErrorToSRS({
         cardId: currentQuestion.srsCardId,
         itemType: currentQuestion.itemType,
@@ -257,8 +328,8 @@ function PracticeContent() {
             </div>
             <h1 className="practice-page__title">Pratique ciblée &amp; Révision espacée</h1>
             <p className="practice-page__subtitle">
-              Générateur infini 100% hors-ligne à partir de vos 3 042 Kanji, 3 422 règles de
-              grammaire et 33 425 Jukugo.
+              10 modes de quiz dynamiques multimédias, Yomikata Z (QCM/Clavier/Oral), ateliers
+              phrases &amp; registres, drag-and-drop et écriture kanji notée.
             </p>
           </div>
           <div className="practice-page__nav-links">
@@ -299,7 +370,19 @@ function PracticeContent() {
             }`}
           >
             <Zap className="w-4 h-4" />
-            <span>Quiz Dynamiques &amp; SRS</span>
+            <span>Quiz Dynamiques &amp; SRS (10 modes)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveWorkspace('yomikata')}
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+              activeWorkspace === 'yomikata'
+                ? 'bg-emerald-600 text-white'
+                : 'text-slate-400 hover:text-slate-100'
+            }`}
+          >
+            <Eye className="w-4 h-4" />
+            <span>Yomikata Z</span>
           </button>
           <button
             type="button"
@@ -311,12 +394,54 @@ function PracticeContent() {
             }`}
           >
             <PenLine className="w-4 h-4" />
-            <span>Ateliers Phrases &amp; Registres (8 modes)</span>
+            <span>Ateliers Phrases (8 modes)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveWorkspace('interactive')}
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+              activeWorkspace === 'interactive'
+                ? 'bg-amber-600 text-white'
+                : 'text-slate-400 hover:text-slate-100'
+            }`}
+          >
+            <Puzzle className="w-4 h-4" />
+            <span>Drag-Drop, Tri &amp; Écriture</span>
           </button>
         </div>
 
-        {activeWorkspace === 'drills' ? (
+        {activeWorkspace === 'yomikata' ? (
+          <YomikataZPlayer />
+        ) : activeWorkspace === 'drills' ? (
           <DrillsHub initialMode={initialDrillParam} />
+        ) : activeWorkspace === 'interactive' ? (
+          <div className="space-y-4">
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => setInteractiveSubTab('dnd')}
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
+                  interactiveSubTab === 'dnd'
+                    ? 'bg-amber-600 border-amber-500 text-white'
+                    : 'bg-slate-900 border-slate-800 text-slate-300 hover:border-slate-700'
+                }`}
+              >
+                Drag-and-Drop / Tri 1段-5段 / 自動・他動
+              </button>
+              <button
+                type="button"
+                onClick={() => setInteractiveSubTab('writing')}
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
+                  interactiveSubTab === 'writing'
+                    ? 'bg-amber-600 border-amber-500 text-white'
+                    : 'bg-slate-900 border-slate-800 text-slate-300 hover:border-slate-700'
+                }`}
+              >
+                Écriture Kanji Notée (Canvas)
+              </button>
+            </div>
+            {interactiveSubTab === 'dnd' ? <DragDropSortQuiz /> : <WritingGradedQuiz />}
+          </div>
         ) : (
           <>
             {flashcardActive && activeFlashcard && (
@@ -354,6 +479,8 @@ function PracticeContent() {
                 currentIndex={currentIndex}
                 totalQuestions={questions.length}
                 score={score}
+                streak={streak}
+                dexterityPoints={liveDexterity.totalPoints}
                 timedMode={timedMode}
                 timeLeft={timeLeft}
                 selectedOptionId={selectedOptionId}
@@ -376,10 +503,42 @@ function PracticeContent() {
                     <strong className="quiz-finished__score">
                       {score} / {questions.length}
                     </strong>{' '}
-                    ({questions.length > 0 ? Math.round((score / questions.length) * 100) : 0}%). Les
-                    erreurs ont été ajoutées automatiquement à votre file de révision SM-2.
+                    ({liveDexterity.accuracyPct}%). Les erreurs ont été ajoutées automatiquement à
+                    votre file de révision SM-2.
                   </p>
                 </div>
+
+                <div className="dexterity-card">
+                  <div className="dexterity-card__head">
+                    <Trophy className="w-4 h-4 text-amber-400" />
+                    <span>Score de dextérité : {liveDexterity.rankLabelFr}</span>
+                  </div>
+                  <div className="dexterity-card__stats">
+                    <div>
+                      <span>Total</span>
+                      <strong>{liveDexterity.totalPoints} pts</strong>
+                    </div>
+                    <div>
+                      <span>Série max</span>
+                      <strong>×{maxStreak} (+{liveDexterity.streakBonus})</strong>
+                    </div>
+                    <div>
+                      <span>Bonus vitesse</span>
+                      <strong>+{liveDexterity.speedBonus}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <PostQuizSmartGoalCard
+                  goal={buildPostQuizSmartGoal({
+                    contextLabel: QUIZ_MODES.find((m) => m.id === mode)?.label || mode,
+                    level,
+                    accuracyPct: liveDexterity.accuracyPct,
+                    missedCount: Math.max(0, questions.length - score),
+                    dueCount: srsStats.dueCount,
+                  })}
+                />
+
                 <div className="quiz-finished__actions">
                   <button
                     type="button"

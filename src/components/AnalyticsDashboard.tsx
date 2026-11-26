@@ -4,7 +4,8 @@ import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { localDb } from '@/lib/db';
-import { Target, Flame, Brain, TrendingUp, ArrowRight } from 'lucide-react';
+import { computeJukugoGlobalStats } from '@/lib/smartGoals';
+import { Target, Flame, Brain, TrendingUp, ArrowRight, Library } from 'lucide-react';
 
 const JLPT_ORDER = ['N5', 'N4', 'N3', 'N2', 'N1'] as const;
 
@@ -22,6 +23,7 @@ export function AnalyticsDashboard() {
   const [nowIso] = useState<string>(() => new Date().toISOString());
 
   const kanjis = useLiveQuery(() => localDb.kanjis.toArray(), []);
+  const jukugo = useLiveQuery(() => localDb.jukugo.toArray(), []);
   const srsCards = useLiveQuery(() => localDb.srsCards.toArray(), []);
   const attempts = useLiveQuery(() => localDb.attempts.toArray(), []);
 
@@ -126,6 +128,11 @@ export function AnalyticsDashboard() {
 
     return { byLevel, smartGoals, totalAttempts: attemptRows.length, totalCards: cards.length };
   }, [kanjis, srsCards, attempts, nowIso]);
+
+  const jukugoStats = useMemo(
+    () => computeJukugoGlobalStats(jukugo || [], srsCards || []),
+    [jukugo, srsCards]
+  );
 
   const activeLevelData =
     analytics.byLevel.find((b) => b.level === selectedLevel) || analytics.byLevel[0];
@@ -234,6 +241,43 @@ export function AnalyticsDashboard() {
           </div>
         </div>
       )}
+
+      <div className="analytics-panel__goals-section">
+        <div className="analytics-panel__goals-kicker">
+          <Library className="analytics-panel__goals-icon" />
+          Statistiques Jukugo Globales ({jukugoStats.totalJukugo.toLocaleString('fr-FR')} composés)
+        </div>
+        <div className="analytics-jukugo-grid">
+          <div className="analytics-jukugo-card">
+            <span className="analytics-jukugo-card__label">Progression SRS Jukugo</span>
+            <strong className="analytics-jukugo-card__val">
+              {jukugoStats.studiedCount} étudiés • {jukugoStats.masteredCount} maîtrisés
+            </strong>
+          </div>
+          <div className="analytics-jukugo-card">
+            <span className="analytics-jukugo-card__label">Longueur (2 / 3 / 4+ kanjis)</span>
+            <strong className="analytics-jukugo-card__val">
+              {jukugoStats.byLength.len2.toLocaleString('fr-FR')} /{' '}
+              {jukugoStats.byLength.len3.toLocaleString('fr-FR')} /{' '}
+              {jukugoStats.byLength.len4Plus.toLocaleString('fr-FR')}
+            </strong>
+          </div>
+          <div className="analytics-jukugo-card">
+            <span className="analytics-jukugo-card__label">Verbes 自動詞 / 他動詞</span>
+            <strong className="analytics-jukugo-card__val">
+              {jukugoStats.transitivity.jidoushi.toLocaleString('fr-FR')} 自動 •{' '}
+              {jukugoStats.transitivity.tadoushi.toLocaleString('fr-FR')} 他動
+            </strong>
+          </div>
+          <div className="analytics-jukugo-card">
+            <span className="analytics-jukugo-card__label">Répartition N5→N1 &amp; N0</span>
+            <strong className="analytics-jukugo-card__val">
+              N5:{jukugoStats.byLevel.N5} N4:{jukugoStats.byLevel.N4} N3:{jukugoStats.byLevel.N3}{' '}
+              N0:{jukugoStats.byLevel.N0}
+            </strong>
+          </div>
+        </div>
+      </div>
 
       <div className="analytics-panel__goals-section">
         <div className="analytics-panel__goals-kicker">

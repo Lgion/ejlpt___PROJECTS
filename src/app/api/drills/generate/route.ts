@@ -112,13 +112,26 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: 'Mode d’exercice invalide.' }, { status: 400 });
     }
 
+    const yomikataGuide =
+      mode === 'yomikata_z'
+        ? [
+            '- prompt : phrase japonaise naturelle et complète contenant le mot cible sans furigana',
+            '- targetWord : le mot ou kanji exact présent dans prompt à lire',
+            '- reading : sa lecture exacte en hiragana',
+            '- expectedAnswers : [reading] (exactement la lecture en hiragana)',
+            '- distractors : exactement 3 fausses lectures plausibles en hiragana',
+          ].join('\n')
+        : [
+            '- prompt : consigne claire en français + phrase japonaise à traiter',
+            '- expectedAnswers : tableau de 1 à 2 réponses exactes attendues en japonais',
+            '- distractors : tableau de exactement 3 distracteurs plausibles mais faux en japonais',
+          ].join('\n');
+
     const genPrompt = [
       `Génère exactement ${count} exercice(s) originaux de japonais pour le niveau JLPT ${level}.`,
       `Type d'atelier : ${MODE_LABELS_FR[mode]}.`,
       'Chaque exercice doit contenir :',
-      '- prompt : consigne claire en français + phrase japonaise à traiter',
-      '- expectedAnswers : tableau de 1 à 2 réponses exactes attendues en japonais',
-      '- distractors : tableau de exactement 3 distracteurs plausibles mais faux en japonais',
+      yomikataGuide,
       '- explanation : explication grammaticale concise en français',
       '- tags : 1 à 2 mots-clés courts',
       'Retourne STRICTEMENT un tableau JSON d’objets.',

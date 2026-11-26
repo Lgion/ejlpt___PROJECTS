@@ -14,13 +14,14 @@ export const FuriganaText: React.FC<FuriganaTextProps> = ({
   reading,
   className = '',
 }) => {
-  const { furiganaMode } = useFurigana();
+  const { furiganaMode, masteredKeys } = useFurigana();
 
   if (furiganaMode === 'OFF' || !reading) {
     return <span className={className}>{text}</span>;
   }
 
-  const isHoverMode = furiganaMode === 'HOVER';
+  const isAdaptiveHidden = furiganaMode === 'AUTO' && masteredKeys.has(text);
+  const isHoverMode = furiganaMode === 'HOVER' || isAdaptiveHidden;
 
   return (
     <ruby

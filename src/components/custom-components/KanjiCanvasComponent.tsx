@@ -11,6 +11,7 @@ interface Point {
 interface KanjiCanvasProps {
   expectedKanji?: string;
   expectedStrokeCount?: number | null;
+  initialShowGuide?: boolean;
   onRecognized?: (kanji: string) => void;
 }
 
@@ -57,6 +58,7 @@ function renderStrokes(ctx: CanvasRenderingContext2D, width: number, height: num
 export const KanjiCanvasComponent: React.FC<KanjiCanvasProps> = ({
   expectedKanji = '語',
   expectedStrokeCount,
+  initialShowGuide = true,
   onRecognized,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -64,7 +66,7 @@ export const KanjiCanvasComponent: React.FC<KanjiCanvasProps> = ({
   const currentStrokeRef = useRef<Point[]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [strokeCount, setStrokeCount] = useState(0);
-  const [showGuide, setShowGuide] = useState(true);
+  const [showGuide, setShowGuide] = useState(initialShowGuide);
   const [feedback, setFeedback] = useState<{ ok: boolean; text: string } | null>(null);
 
   const redraw = useCallback(() => {
@@ -81,9 +83,10 @@ export const KanjiCanvasComponent: React.FC<KanjiCanvasProps> = ({
     queueMicrotask(() => {
       setStrokeCount(0);
       setFeedback(null);
+      setShowGuide(initialShowGuide);
     });
     redraw();
-  }, [expectedKanji, redraw]);
+  }, [expectedKanji, initialShowGuide, redraw]);
 
   const getRelativePoint = (
     e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>,
