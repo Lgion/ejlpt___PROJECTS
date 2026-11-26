@@ -1,6 +1,25 @@
 import Dexie, { Table } from 'dexie';
 
 export type JLPTLevelNormalized = 'N5' | 'N4' | 'N3' | 'N2' | 'N1' | 'N0';
+export type SotoUchi = 'soto' | 'uchi' | 'neutral';
+export type ScriptType =
+  | 'hira_only'
+  | 'kata_only'
+  | 'mixed_hira_kata'
+  | 'mixed_kanji'
+  | 'mixed_romaji';
+
+export interface SpriteImageRef {
+  sheet: string;
+  index: number;
+  senseIndex?: number;
+  source?: 'cdn' | 'ai';
+}
+
+export interface SenseProbability {
+  meaning: string;
+  percent: number;
+}
 
 export interface UnifiedKanjiRecord {
   kanji: string;
@@ -59,6 +78,12 @@ export interface UnifiedKanjiRecord {
   kanjidb_extra: Record<string, unknown>;
   similar: string[];
   variants: string[];
+  frequencyScore10?: number;
+  themes?: string[];
+  sotoUchi?: SotoUchi;
+  senseProbabilities?: SenseProbability[];
+  strokeSvgCode?: string;
+  images?: SpriteImageRef[];
 }
 
 export interface GrammarExample {
@@ -89,6 +114,10 @@ export interface SlangRecord {
   note: string[];
   link?: string;
   category?: string;
+  era?: string;
+  annualFrequency?: number;
+  lastFrequencyRefresh?: string;
+  images?: SpriteImageRef[];
 }
 
 export interface OnomatopoeiaRecord {
@@ -99,6 +128,9 @@ export interface OnomatopoeiaRecord {
   examples: string[];
   sourceUrl?: string;
   category: string;
+  oppositeTerms?: string[];
+  pairTheme?: string;
+  images?: SpriteImageRef[];
 }
 
 export interface JukugoRecord {
@@ -108,6 +140,15 @@ export interface JukugoRecord {
   meaning_en: string;
   frequency: number;
   grammaticalFeature: string;
+  jlpt?: JLPTLevelNormalized;
+  scriptType?: ScriptType;
+  pos?: string;
+  transitivity?: 'jidoushi' | 'tadoushi' | 'both' | 'none';
+  affixRole?: 'prefix' | 'suffix' | 'none';
+  kanjiCount?: number;
+  frequencyScore10?: number;
+  senseProbabilities?: SenseProbability[];
+  images?: SpriteImageRef[];
 }
 
 export interface MetaRecord {
@@ -182,7 +223,7 @@ interface RawSchemaDataset {
   data: unknown[][];
 }
 
-const CURRENT_DATASET_VERSION = '2026-11-lot3-v2';
+const CURRENT_DATASET_VERSION = '2026-11-phase2-v3';
 
 export class EJLPTDatabase extends Dexie {
   kanjis!: Table<UnifiedKanjiRecord, string>;
@@ -220,6 +261,12 @@ export class EJLPTDatabase extends Dexie {
       srsCards: '&cardId, itemType, itemKey, level, dueAt, errorCount',
     };
 
+    const storesSchemaV6 = {
+      ...storesSchemaV5,
+      kanjis: '&kanji, jlpt, radical, category, subCategory, rtk_6th, wanikani_level, *themes',
+      jukugo: '++id, &word, frequency, jlpt, scriptType, pos',
+    };
+
     this.version(2).stores(storesSchemaV2V3);
 
     // IndexedDB cannot index booleans; normalize legacy boolean isSynced flags to 0 | 1.
@@ -235,6 +282,7 @@ export class EJLPTDatabase extends Dexie {
 
     this.version(4).stores(storesSchemaV4);
     this.version(5).stores(storesSchemaV5);
+    this.version(6).stores(storesSchemaV6);
   }
 }
 

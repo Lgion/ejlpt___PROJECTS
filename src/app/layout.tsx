@@ -6,6 +6,7 @@ import '../styles/main.scss';
 import Navbar from '@/components/Navbar';
 import { DatabaseSeeder } from '@/components/DatabaseSeeder';
 import { FuriganaProvider } from '@/context/FuriganaContext';
+import { VisualSystemProvider } from '@/context/VisualSystemContext';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const notoSansJP = Noto_Sans_JP({ subsets: ['latin'], weight: ['400', '500', '700'], variable: '--font-noto-jp' });
@@ -25,22 +26,24 @@ export default function RootLayout({
     <ClerkProvider>
           <html lang="fr" className={`${inter.variable} ${notoSansJP.variable} ${notoSerifJP.variable} app-html--dark`}>
         <body className="app-body">
-          <FuriganaProvider>
-            <DatabaseSeeder />
-            <Navbar />
-            <main className="app-main">{children}</main>
-            <footer className="app-footer">
-              <div className="app-footer__inner">
-                <div className="app-footer__brand">
-                  <span className="app-footer__title">eJLPT</span>
-                  <span>• Plateforme Pédagogique d’Examen Japonais</span>
+          <VisualSystemProvider>
+            <FuriganaProvider>
+              <DatabaseSeeder />
+              <Navbar />
+              <main className="app-main">{children}</main>
+              <footer className="app-footer">
+                <div className="app-footer__inner">
+                  <div className="app-footer__brand">
+                    <span className="app-footer__title">eJLPT</span>
+                    <span>• Plateforme Pédagogique d’Examen Japonais</span>
+                  </div>
+                  <div>
+                    Stack : Next.js App Router • Clerk • Dexie.js (Offline) • MongoDB Atlas
+                  </div>
                 </div>
-                <div>
-                  Stack : Next.js App Router • Clerk • Dexie.js (Offline) • MongoDB Atlas
-                </div>
-              </div>
-            </footer>
-          </FuriganaProvider>
+              </footer>
+            </FuriganaProvider>
+          </VisualSystemProvider>
         </body>
       </html>
     </ClerkProvider>

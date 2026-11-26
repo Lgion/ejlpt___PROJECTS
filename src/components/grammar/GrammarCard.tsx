@@ -1,14 +1,24 @@
 import React from 'react';
 import { GrammarRecord } from '@/lib/db';
+import {
+  formatGrammarConnection,
+  type ConnectionDisplayFormat,
+} from '@/lib/connectionFormatter';
 import { Bookmark } from 'lucide-react';
 
 interface GrammarCardProps {
   grammar: GrammarRecord;
   showConnections: boolean;
+  connectionFormat?: ConnectionDisplayFormat;
   onBookmark: (g: GrammarRecord) => void;
 }
 
-export function GrammarCard({ grammar, showConnections, onBookmark }: GrammarCardProps) {
+export function GrammarCard({
+  grammar,
+  showConnections,
+  connectionFormat = 'standard_ja',
+  onBookmark,
+}: GrammarCardProps) {
   return (
     <article className="grammar-card">
       <div className="grammar-card__head">
@@ -39,11 +49,18 @@ export function GrammarCard({ grammar, showConnections, onBookmark }: GrammarCar
         <div className="grammar-card__connections">
           <span className="grammar-card__conn-label">【接続】 Type de connexion</span>
           <div className="grammar-card__conn-chips">
-            {grammar.connections.slice(0, 3).map((conn, cIdx) => (
-              <span key={cIdx} className="grammar-card__conn-chip">
-                {conn}
-              </span>
-            ))}
+            {grammar.connections.slice(0, 3).map((conn, cIdx) => {
+              const formatted = formatGrammarConnection(conn, connectionFormat);
+              return (
+                <span
+                  key={cIdx}
+                  title={connectionFormat !== 'standard_ja' ? `Original : ${conn}` : undefined}
+                  className="grammar-card__conn-chip"
+                >
+                  {formatted}
+                </span>
+              );
+            })}
           </div>
         </div>
       )}

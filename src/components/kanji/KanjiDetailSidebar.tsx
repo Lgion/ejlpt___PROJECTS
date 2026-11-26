@@ -1,9 +1,15 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
+import { toRomaji } from 'wanakana';
 import type { UnifiedKanjiRecord } from '@/lib/db';
 import type { RadicalEntry } from '@/components/kanji/KanjiFilterBar';
 import { getAllFrequencyEntries, normalizeRadicalGlyph } from '@/lib/kanjiRadicals';
+import { computeKanjiFrequencyScore10 } from '@/lib/frequencyScale';
+import { useVisualSystem } from '@/context/VisualSystemContext';
+import { VisualLegendBar } from '@/components/visual/VisualLegendBar';
+import { SpriteThumbnail } from '@/components/media/SpriteThumbnail';
+import { KanjiStrokeSvg } from '@/components/media/KanjiStrokeSvg';
 import { KanjiModal } from '@/components/kanji/KanjiModal';
 import { KanjiSameReadingModal } from '@/components/kanji/KanjiSameReadingModal';
 import { KanjiRelationsNav } from '@/components/kanji/KanjiRelationsNav';
@@ -38,7 +44,8 @@ type ActiveKanjiModal =
   | { kind: 'reading'; mode: 'on' | 'kun'; reading: string }
   | { kind: 'frequencies' }
   | { kind: 'tree' }
-  | { kind: 'canvas' };
+  | { kind: 'canvas' }
+  | { kind: 'stroke' };
 
 function getJouyouBadge(grade: number | string | undefined): { label: string; title: string } | null {
   const num = typeof grade === 'number' ? grade : Number(grade);
@@ -70,6 +77,7 @@ export function KanjiDetailSidebar({
 }: KanjiDetailSidebarProps) {
   const [activeModal, setActiveModal] = useState<ActiveKanjiModal>(null);
   const [freqHovered, setFreqHovered] = useState(false);
+  const { adaptiveProfile } = useVisualSystem();
 
   const jouyou = getJouyouBadge(kanji.grade);
   const radicalGlyph = normalizeRadicalGlyph(kanji.radical);
@@ -94,6 +102,8 @@ export function KanjiDetailSidebar({
     [kanji.frequencies]
   );
   const topFrequency = frequencyEntries[0] || null;
+  const freqScore10 =
+    kanji.frequencyScore10 ?? computeKanjiFrequencyScore10(kanji.frequencies);
 
   const categoryBadgeValue =
     kanji.subCategory && kanji.subCategory !== '-'
@@ -109,6 +119,10 @@ export function KanjiDetailSidebar({
 
   return (
     <section className="kanji-detail">
+      <div className="mb-3">
+        <VisualLegendBar compact />
+      </div>
+
       <div className="kanji-tile">
         {/* TOP PERIMETER BAR: Numeric data (SKIP, strokes, RTK) + Combined Levels Cell */}
         <div className="kanji-tile__top-bar">
@@ -160,9 +174,12 @@ export function KanjiDetailSidebar({
             <div className="kanji-tile__stage-actions">
               <button
                 type="button"
-                onClick={onPlayAnimation}
-                title="Aperçu Visuel"
-                aria-label="Aperçu Visuel"
+                onClick={() => {
+                  onPlayAnimation();
+                  setActiveModal({ kind: 'stroke' });
+                }}
+                title="Animation d'ordre des traits (KanjiVG)"
+                aria-label="Aperçu Visuel et Ordre des traits"
                 className="kanji-tile__icon-btn kanji-tile__icon-btn--play"
               >
                 <Play className="kanji-tile__icon-svg" />
@@ -245,6 +262,9 @@ export function KanjiDetailSidebar({
                       className="kanji-tile__reading-pill kanji-tile__reading-pill--on"
                     >
                       {r}
+                      {adaptiveProfile === 'beginner' && (
+                        <span className="ml-1 text-[10px] opacity-75">({toRomaji(r)})</span>
+                      )}
                     </button>
                   ))}
                 </div>
@@ -263,6 +283,11 @@ export function KanjiDetailSidebar({
                       className="kanji-tile__reading-pill kanji-tile__reading-pill--kun"
                     >
                       {k}
+                      {adaptiveProfile === 'beginner' && (
+                        <span className="ml-1 text-[10px] opacity-75">
+                          ({toRomaji(k.replace('.', ''))})
+                        </span>
+                      )}
                     </button>
                   ))}
                 </div>
@@ -280,6 +305,18 @@ export function KanjiDetailSidebar({
               <div className="kanji-detail__meanings-text">{meanings.join(', ')}</div>
             )}
             <div className="kanji-detail__badges-row">
+              <SpriteThumbnail
+                itemKey={`kanji:${kanji.kanji}`}
+                fallbackLabel={kanji.kanji}
+                images={kanji.images}
+                size={40}
+              />
+              <span
+                className="kanji-detail__meta-chip"
+                title="Fréquence normalisée sur une échelle de 1 (rare) à 10 (très courant)"
+              >
+                Fréq. {freqScore10}/10
+              </span>
               {categoryBadgeValue && (
                 <span
                   className="kanji-detail__meta-chip"
@@ -287,6 +324,27 @@ export function KanjiDetailSidebar({
                 >
                   {categoryBadgeValue}
                 </span>
+              )}
+              {kanji.dualisme !== 0 && (
+                <span className="kanji-detail__meta-chip">
+                  {kanji.dualisme > 0 ? '+ Positif' : '− Négatif'}
+                </span>
+              )}
+              {kanji.sotoUchi && kanji.sotoUchi !== 'neutral' && (
+                <span className="kanji-detail__meta-chip">
+                  {kanji.sotoUchi === 'soto' ? '外 Soto' : '内 Uchi'}
+                </span>
+              )}
+              {kanji.isKeigo && (kanji.isKeigo[0] || kanji.isKeigo[1]) && (
+                <span className="kanji-detail__meta-chip">
+                  {kanji.isKeigo[0] ? '尊敬語' : ''} {kanji.isKeigo[1] ? '謙譲語' : ''}
+                </span>
+              )}
+              {kanji.isVerbe !== 'false' && kanji.isVerbe && (
+                <span className="kanji-detail__meta-chip">V:{kanji.isVerbe}</span>
+              )}
+              {kanji.isAdj !== 'false' && kanji.isAdj && (
+                <span className="kanji-detail__meta-chip">Adj-{kanji.isAdj}</span>
               )}
               {kanji.rtk_keyword_6th && (
                 <span
@@ -296,12 +354,43 @@ export function KanjiDetailSidebar({
                   « {kanji.rtk_keyword_6th} »
                 </span>
               )}
-              {kanji.nanori && kanji.nanori.length > 0 && (
+              {kanji.nanori && kanji.nanori.length > 0 && adaptiveProfile !== 'beginner' && (
                 <span className="kanji-detail__meta-chip kanji-detail__meta-chip--nanori" title="Nanori (Prénoms / Lieux)">
                   名 {kanji.nanori.join(', ')}
                 </span>
               )}
             </div>
+            {adaptiveProfile === 'advanced' && (
+              <div className="mt-2 flex flex-wrap gap-1.5 text-[11px] text-slate-300">
+                {kanji.compositionsSKIP && kanji.compositionsSKIP.length > 0 && (
+                  <span className="rounded-md border border-indigo-700/60 bg-indigo-950/40 px-2 py-0.5 text-indigo-200">
+                    SKIP : {kanji.compositionsSKIP.join(' · ')}
+                  </span>
+                )}
+                {kanji.encodage?.unicode && (
+                  <span className="rounded-md border border-slate-700 bg-slate-950 px-2 py-0.5">
+                    {kanji.encodage.unicode} / {kanji.encodage.jis || 'JIS —'}
+                  </span>
+                )}
+                {kanji.classification && (
+                  <span className="rounded-md border border-slate-700 bg-slate-950 px-2 py-0.5">
+                    {kanji.classification}
+                  </span>
+                )}
+              </div>
+            )}
+            {kanji.senseProbabilities && kanji.senseProbabilities.length > 1 && (
+              <div className="mt-2 flex flex-wrap gap-1.5 text-[11px] text-slate-300">
+                {kanji.senseProbabilities.slice(0, 4).map((sp, sIdx) => (
+                  <span
+                    key={sIdx}
+                    className="rounded-md border border-slate-700/80 bg-slate-900/70 px-2 py-0.5"
+                  >
+                    {sp.meaning} · <strong className="text-sky-300">{sp.percent}%</strong>
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
           {topFrequency && (
@@ -473,6 +562,20 @@ export function KanjiDetailSidebar({
               expectedKanji={kanji.kanji}
               expectedStrokeCount={kanji.strokes}
             />
+          </div>
+        )}
+      </KanjiModal>
+
+      <KanjiModal
+        open={activeModal?.kind === 'stroke'}
+        title={`Ordre des traits KanjiVG — ${kanji.kanji}`}
+        subtitle="Animation vectorielle des traits (source libre KanjiVG)"
+        size="sm"
+        onClose={() => setActiveModal(null)}
+      >
+        {activeModal?.kind === 'stroke' && (
+          <div className="flex justify-center py-2">
+            <KanjiStrokeSvg kanji={kanji.kanji} strokeSvgCode={kanji.strokeSvgCode} />
           </div>
         )}
       </KanjiModal>

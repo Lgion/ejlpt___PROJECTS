@@ -1,0 +1,9 @@
+
+# 1. Triage CDN (Unsplash/Wikimedia) + analyse IA uniquement sur items complexes
+python3 scripts/build_sprites_pipeline.py --triage-limit 50 --level N5
+
+# 2. Génération différée par lots des prompts en attente (résumable sans bloquer sur quota)
+python3 scripts/build_sprites_pipeline.py --run-gen-batch --limit 20
+
+# 3. Compilation des vignettes en feuilles sprites WebP + injection dans public/data/*.json
+python3 scripts/compile_sprites_webp.py

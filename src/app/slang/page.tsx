@@ -30,6 +30,8 @@ function SlangExplorerInner() {
 
   const [query, setQuery] = useState(initialQuery);
   const [tab, setTab] = useState<'all' | 'slang' | 'ono'>(initialTab);
+  const [eraFilter, setEraFilter] = useState<string>('ALL');
+  const [onlyOppositePairs, setOnlyOppositePairs] = useState<boolean>(false);
   const [limit, setLimit] = useState(40);
   const [toast, setToast] = useState<string | null>(null);
 
@@ -43,6 +45,7 @@ function SlangExplorerInner() {
         ? Promise.resolve([])
         : localDb.slang
             .filter((s) => {
+              if (eraFilter !== 'ALL' && s.era !== eraFilter) return false;
               if (!rawQ) return true;
               const readings = asStringArray(s.readings);
               const meanings = asStringArray(s.meaning);
@@ -62,6 +65,9 @@ function SlangExplorerInner() {
         ? Promise.resolve([])
         : localDb.onomatopoeia
             .filter((o) => {
+              if (onlyOppositePairs && !(o.oppositeTerms && o.oppositeTerms.length > 0)) {
+                return false;
+              }
               if (!rawQ) return true;
               const shortDefs = asStringArray(o.shortDefinitions);
               return (
@@ -76,7 +82,7 @@ function SlangExplorerInner() {
     ]);
 
     return { slangRows, onoRows };
-  }, [query, tab]);
+  }, [query, tab, eraFilter, onlyOppositePairs]);
 
   const handleBookmark = async (term: string, reading: string, meaning: string, level: string) => {
     const payload = {
@@ -123,12 +129,22 @@ function SlangExplorerInner() {
       <SlangFilterBar
         query={query}
         tab={tab}
+        eraFilter={eraFilter}
+        onlyOppositePairs={onlyOppositePairs}
         onQueryChange={(val) => {
           setQuery(val);
           setLimit(40);
         }}
         onTabChange={(nextTab) => {
           setTab(nextTab);
+          setLimit(40);
+        }}
+        onEraFilterChange={(era) => {
+          setEraFilter(era);
+          setLimit(40);
+        }}
+        onOnlyOppositePairsChange={(only) => {
+          setOnlyOppositePairs(only);
           setLimit(40);
         }}
       />
@@ -154,6 +170,11 @@ function SlangExplorerInner() {
             item={o}
             shortDefs={asStringArray(o.shortDefinitions)}
             examples={asStringArray(o.examples)}
+            onSelectTerm={(opp) => {
+              setTab('ono');
+              setQuery(opp);
+              setLimit(40);
+            }}
             onBookmark={(term, reading, meaning, level) =>
               void handleBookmark(term, reading, meaning, level)
             }

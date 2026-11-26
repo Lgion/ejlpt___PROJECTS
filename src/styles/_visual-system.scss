@@ -1,0 +1,215 @@
+/* 4-Channel Simultaneous Visual System (Japanese Traditional Tones, WCAG AA on dark) */
+.vtok {
+  @apply inline-flex items-baseline gap-1 rounded-md px-1 py-0.5 transition-colors;
+
+  /* Channel 1 — Text color = SRS Mastery */
+  &--m-unseen {
+    color: #f1f5f9;
+  }
+
+  &--m-learning {
+    color: #fbbf24; /* Yamabuki amber */
+  }
+
+  &--m-consolidated {
+    color: #38bdf8; /* Ai-iro sky */
+  }
+
+  &--m-mastered {
+    color: #34d399; /* Matcha emerald */
+  }
+
+  /* Channel 2 — Background tint = Frequency 1-10 */
+  &--f-high {
+    background-color: rgba(14, 165, 233, 0.16);
+  }
+
+  &--f-mid {
+    background-color: rgba(139, 92, 246, 0.14);
+  }
+
+  &--f-low {
+    background-color: rgba(244, 63, 94, 0.13);
+  }
+
+  /* Channel 3 — Underline shape + color = Grammatical Type */
+  &--g-verb_ichidan {
+    text-decoration: underline;
+    text-decoration-style: solid;
+    text-decoration-color: #38bdf8;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 2px;
+  }
+
+  &--g-verb_godan {
+    text-decoration: underline;
+    text-decoration-style: dashed;
+    text-decoration-color: #22d3ee;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 2px;
+  }
+
+  &--g-verb_irregular {
+    text-decoration: underline;
+    text-decoration-style: double;
+    text-decoration-color: #60a5fa;
+    text-underline-offset: 4px;
+  }
+
+  &--g-jidoushi {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-decoration-color: #34d399;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 2px;
+  }
+
+  &--g-tadoushi {
+    text-decoration: underline;
+    text-decoration-style: solid;
+    text-decoration-color: #fb923c;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 2px;
+  }
+
+  &--g-adj_i {
+    text-decoration: underline;
+    text-decoration-style: wavy;
+    text-decoration-color: #fbbf24;
+    text-underline-offset: 4px;
+  }
+
+  &--g-adj_na {
+    text-decoration: underline;
+    text-decoration-style: dashed;
+    text-decoration-color: #f472b6;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 2px;
+  }
+
+  &--g-particle {
+    text-decoration: underline;
+    text-decoration-style: solid;
+    text-decoration-color: #fb7185; /* Akane rose */
+    text-underline-offset: 4px;
+    text-decoration-thickness: 2px;
+  }
+
+  &--g-keigo {
+    text-decoration: underline;
+    text-decoration-style: double;
+    text-decoration-color: #c084fc; /* Fuji violet */
+    text-underline-offset: 4px;
+  }
+
+  &--g-setsuzokushi {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-decoration-color: #67e8f9;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 2px;
+  }
+
+  &--g-positive {
+    text-decoration: underline;
+    text-decoration-style: solid;
+    text-decoration-color: #4ade80;
+    text-underline-offset: 4px;
+  }
+
+  &--g-negative {
+    text-decoration: underline;
+    text-decoration-style: wavy;
+    text-decoration-color: #f87171;
+    text-underline-offset: 4px;
+  }
+
+  &--g-soto,
+  &--g-uchi,
+  &--g-noun {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-decoration-color: rgba(148, 163, 184, 0.55);
+    text-underline-offset: 4px;
+  }
+
+  &__romaji {
+    @apply text-[10px] font-sans text-slate-400 font-normal ml-0.5;
+  }
+
+  &__jlpt {
+    @apply inline-flex items-center px-1 py-0.5 rounded text-[9px] font-bold leading-none border;
+
+    &--n5 {
+      @apply bg-sky-950/90 border-sky-700/80 text-sky-300;
+    }
+    &--n4 {
+      @apply bg-emerald-950/90 border-emerald-700/80 text-emerald-300;
+    }
+    &--n3 {
+      @apply bg-amber-950/90 border-amber-700/80 text-amber-300;
+    }
+    &--n2 {
+      @apply bg-orange-950/90 border-orange-700/80 text-orange-300;
+    }
+    &--n1 {
+      @apply bg-rose-950/90 border-rose-700/80 text-rose-300;
+    }
+    &--n0 {
+      @apply bg-slate-900 border-slate-700 text-slate-300;
+    }
+  }
+}
+
+.visual-legend-bar {
+  @apply rounded-2xl border border-slate-800 bg-slate-900/90 px-3.5 py-2.5 flex flex-col gap-2 text-xs;
+
+  &--compact {
+    @apply px-3 py-2 rounded-xl;
+  }
+
+  &__row {
+    @apply flex flex-wrap items-center justify-between gap-2;
+  }
+
+  &__toggles {
+    @apply flex flex-wrap items-center gap-1.5;
+  }
+
+  &__chip {
+    @apply inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-1 text-[11px] font-semibold text-slate-400 hover:text-slate-100 transition-colors cursor-pointer;
+
+    &--active {
+      @apply border-sky-500/60 bg-sky-950/60 text-sky-200;
+    }
+  }
+
+  &__profiles {
+    @apply flex items-center gap-1 rounded-lg border border-slate-800 bg-slate-950 p-0.5;
+  }
+
+  &__profile-btn {
+    @apply px-2 py-0.5 rounded-md text-[11px] font-semibold text-slate-400 hover:text-slate-100 transition-colors cursor-pointer;
+
+    &--active {
+      @apply bg-indigo-600 text-white hover:text-white;
+    }
+  }
+
+  &__details {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 pt-2 border-t border-slate-800 text-[11px] text-slate-300;
+  }
+}
+
+/* Kanjiverse frequency coloring on /kanji strip */
+.kanji-strip__btn--freq-high {
+  @apply bg-sky-950/70 border-sky-600/60;
+}
+
+.kanji-strip__btn--freq-mid {
+  @apply bg-violet-950/60 border-violet-600/50;
+}
+
+.kanji-strip__btn--freq-low {
+  @apply bg-rose-950/50 border-rose-700/40;
+}

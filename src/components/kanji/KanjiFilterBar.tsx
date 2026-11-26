@@ -4,13 +4,34 @@ import { normalizeRadicalGlyph } from '@/lib/kanjiRadicals';
 import { Search, Filter, ArrowUpDown } from 'lucide-react';
 
 export type StrokeFilter = 'ALL' | '1-5' | '6-10' | '11-15' | '16+';
+export type RelationGroupFilter = 'ALL' | 'similar' | 'synonyms' | 'antonyms' | 'homonyms';
 export type FrequencySort =
   | 'default'
-  | 'aozora'
+  | 'score10'
   | 'news'
-  | 'twitter'
+  | 'aozora'
   | 'wikipedia'
+  | 'twitter'
   | 'innocent_rank';
+
+export const KANJI_THEME_OPTIONS = [
+  { id: 'ALL', label: 'Tous thèmes' },
+  { id: 'quotidien', label: 'Quotidien (N0/courant)' },
+  { id: 'grammaire', label: 'Grammaire' },
+  { id: 'verbe', label: 'Verbes' },
+  { id: 'nom', label: 'Noms' },
+  { id: 'adjectif', label: 'Adjectifs' },
+  { id: 'adverbe', label: 'Adverbes' },
+  { id: 'pronom', label: 'Pronoms' },
+  { id: 'numeral', label: 'Numéraux' },
+  { id: 'preposition', label: 'Prépositions' },
+  { id: 'conjonction', label: 'Conjonctions' },
+  { id: 'keigo', label: 'Keigo' },
+  { id: 'setsuzokushi', label: '接続詞' },
+  { id: 'gairaigo', label: 'Gairaigo' },
+  { id: 'ateji', label: 'Ateji' },
+  { id: 'expressions', label: 'Expressions' },
+] as const;
 
 export interface RadicalEntry {
   strokes: number | null;
@@ -26,6 +47,8 @@ interface KanjiFilterBarProps {
   searchQuery: string;
   selectedJlpt: string;
   selectedCategory: string;
+  selectedTheme?: string;
+  selectedRelationGroup?: RelationGroupFilter;
   selectedRadical: string;
   selectedStrokes: StrokeFilter;
   sortBy: FrequencySort;
@@ -34,6 +57,8 @@ interface KanjiFilterBarProps {
   onSearchChange: (val: string) => void;
   onJlptChange: (lvl: string) => void;
   onCategoryChange: (cat: string) => void;
+  onThemeChange?: (theme: string) => void;
+  onRelationGroupChange?: (grp: RelationGroupFilter) => void;
   onRadicalChange: (rad: string) => void;
   onStrokesChange: (strokes: StrokeFilter) => void;
   onSortChange: (sort: FrequencySort) => void;
@@ -44,6 +69,8 @@ export function KanjiFilterBar({
   searchQuery,
   selectedJlpt,
   selectedCategory,
+  selectedTheme = 'ALL',
+  selectedRelationGroup = 'ALL',
   selectedRadical,
   selectedStrokes,
   sortBy,
@@ -52,6 +79,8 @@ export function KanjiFilterBar({
   onSearchChange,
   onJlptChange,
   onCategoryChange,
+  onThemeChange,
+  onRelationGroupChange,
   onRadicalChange,
   onStrokesChange,
   onSortChange,
@@ -61,6 +90,8 @@ export function KanjiFilterBar({
     Boolean(searchQuery) ||
     selectedJlpt !== 'ALL' ||
     selectedCategory !== 'ALL' ||
+    selectedTheme !== 'ALL' ||
+    selectedRelationGroup !== 'ALL' ||
     selectedRadical !== 'ALL' ||
     selectedStrokes !== 'ALL' ||
     sortBy !== 'default';
@@ -177,6 +208,7 @@ export function KanjiFilterBar({
               className="kanji-filters__select kanji-filters__select--flex"
             >
               <option value="default">Ordre par défaut</option>
+              <option value="score10">Échelle 10 → 1 (Popularité)</option>
               <option value="news">Presse (News)</option>
               <option value="aozora">Littérature (Aozora)</option>
               <option value="wikipedia">Encyclopédie (Wikipedia)</option>
@@ -190,6 +222,46 @@ export function KanjiFilterBar({
             )}
           </div>
         </div>
+
+        {onThemeChange && (
+          <div>
+            <label htmlFor="kanji-theme-select" className="kanji-filters__label">
+              Thème grammatical / lexical
+            </label>
+            <select
+              id="kanji-theme-select"
+              value={selectedTheme}
+              onChange={(e) => onThemeChange(e.target.value)}
+              className="kanji-filters__select"
+            >
+              {KANJI_THEME_OPTIONS.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {onRelationGroupChange && (
+          <div>
+            <label htmlFor="kanji-group-select" className="kanji-filters__label">
+              Groupes relationnels
+            </label>
+            <select
+              id="kanji-group-select"
+              value={selectedRelationGroup}
+              onChange={(e) => onRelationGroupChange(e.target.value as RelationGroupFilter)}
+              className="kanji-filters__select"
+            >
+              <option value="ALL">Tous les kanjis</option>
+              <option value="similar">Visuels proches</option>
+              <option value="synonyms">Avec synonymes</option>
+              <option value="antonyms">Avec antonymes</option>
+              <option value="homonyms">Avec homophones</option>
+            </select>
+          </div>
+        )}
       </div>
     </div>
   );

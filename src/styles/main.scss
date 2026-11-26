@@ -12,6 +12,10 @@
 @use './tools';
 @use './admin';
 @use './jlpt-booklet';
+@use './ai';
+@use './dictionary';
+@use './visual-system';
+@use './drills';
 
 @reference "tailwindcss";
 

@@ -1,12 +1,13 @@
 import React from 'react';
 import { OnomatopoeiaRecord } from '@/lib/db';
-import { Bookmark, Sparkles } from 'lucide-react';
+import { ArrowLeftRight, Bookmark, Sparkles } from 'lucide-react';
 
 interface OnomatopoeiaCardProps {
   item: OnomatopoeiaRecord;
   shortDefs: string[];
   examples: string[];
   onBookmark: (term: string, reading: string, meaning: string, level: string) => void;
+  onSelectTerm?: (term: string) => void;
 }
 
 export function OnomatopoeiaCard({
@@ -14,7 +15,10 @@ export function OnomatopoeiaCard({
   shortDefs,
   examples,
   onBookmark,
+  onSelectTerm,
 }: OnomatopoeiaCardProps) {
+  const opposites = item.oppositeTerms || [];
+
   return (
     <article className="slang-card">
       <div className="slang-card__head">
@@ -24,6 +28,11 @@ export function OnomatopoeiaCard({
             <Sparkles className="slang-card__sparkle-icon" />
             Onomatopée
           </span>
+          {item.pairTheme && (
+            <span className="rounded-md border border-slate-700 bg-slate-950 px-2 py-0.5 text-[10px] font-medium text-amber-200">
+              {item.pairTheme}
+            </span>
+          )}
         </div>
         <button
           type="button"
@@ -36,6 +45,25 @@ export function OnomatopoeiaCard({
       </div>
 
       <div className="slang-card__meaning">{shortDefs.join(' / ')}</div>
+
+      {opposites.length > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
+          <span className="inline-flex items-center gap-1 text-slate-400 font-semibold">
+            <ArrowLeftRight className="w-3 h-3 text-amber-400" />
+            Paire opposée :
+          </span>
+          {opposites.map((opp) => (
+            <button
+              key={opp}
+              type="button"
+              onClick={() => onSelectTerm?.(opp)}
+              className="rounded-md border border-amber-700/50 bg-amber-950/40 px-2 py-0.5 text-amber-200 hover:bg-amber-900/50 transition-colors cursor-pointer"
+            >
+              {opp}
+            </button>
+          ))}
+        </div>
+      )}
 
       {item.extendedDefinition && (
         <p className="slang-card__extended">{item.extendedDefinition}</p>
@@ -53,4 +81,3 @@ export function OnomatopoeiaCard({
     </article>
   );
 }
-

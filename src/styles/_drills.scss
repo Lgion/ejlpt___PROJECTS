@@ -1,0 +1,83 @@
+.drills-hub {
+  @apply flex flex-col gap-4;
+
+  &__modes {
+    @apply grid grid-cols-2 sm:grid-cols-4 gap-2;
+  }
+
+  &__mode-btn {
+    @apply rounded-xl border border-slate-800 bg-slate-900 p-3 text-left flex flex-col gap-0.5 hover:border-sky-500/60 transition-colors cursor-pointer;
+
+    &--active {
+      @apply border-sky-500 bg-sky-950/60;
+    }
+  }
+
+  &__mode-title {
+    @apply text-xs font-bold text-slate-100;
+  }
+
+  &__mode-desc {
+    @apply text-[10px] text-slate-400;
+  }
+
+  &__controls {
+    @apply flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-900 p-3.5;
+  }
+}
+
+.drills-sources {
+  @apply flex flex-wrap items-center gap-2;
+
+  &__list {
+    @apply flex flex-wrap items-center gap-1.5;
+  }
+
+  &__chip {
+    @apply inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-950 px-2.5 py-1.5 text-xs font-semibold text-slate-400 hover:text-slate-100 transition-colors cursor-pointer;
+
+    &--active {
+      @apply border-emerald-500/60 bg-emerald-950/50 text-emerald-200;
+    }
+  }
+
+  &__count {
+    @apply rounded-full bg-slate-900 px-1.5 py-0.5 text-[10px] font-bold text-slate-300;
+  }
+
+  &__gen-btn {
+    @apply inline-flex items-center gap-1.5 rounded-xl border border-indigo-600/60 bg-indigo-950/70 hover:bg-indigo-900/70 px-3 py-1.5 text-xs font-bold text-indigo-200 transition-colors cursor-pointer disabled:opacity-50;
+  }
+}
+
+.drills-card {
+  @apply rounded-2xl border border-slate-800 bg-slate-900 p-5 flex flex-col gap-4 shadow-lg;
+
+  &__meta {
+    @apply flex flex-wrap items-center justify-between gap-2;
+  }
+
+  &__prompt {
+    @apply text-base md:text-lg font-bold text-slate-100 leading-relaxed;
+  }
+
+  &__options {
+    @apply grid grid-cols-1 sm:grid-cols-2 gap-2.5;
+  }
+
+  &__option {
+    @apply rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-3 text-sm font-serif font-medium text-slate-100 hover:border-sky-500 transition-colors cursor-pointer flex items-center justify-between gap-2 text-left;
+
+    &--correct {
+      @apply border-emerald-500 bg-emerald-950/60 text-emerald-200;
+    }
+
+    &--wrong {
+      @apply border-rose-500 bg-rose-950/60 text-rose-200;
+    }
+  }
+
+  &__feedback {
+    @apply rounded-xl border border-slate-700 bg-slate-950/90 p-3.5 flex flex-col gap-2;
+  }
+}

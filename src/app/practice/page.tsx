@@ -15,7 +15,9 @@ import { SrsDashboardStrip } from '@/components/practice/SrsDashboardStrip';
 import { SrsFlashcardReviewer } from '@/components/practice/SrsFlashcardReviewer';
 import { QuizSetupPanel, type QuizModeOption } from '@/components/practice/QuizSetupPanel';
 import { QuizSessionPlayer } from '@/components/practice/QuizSessionPlayer';
-import { Zap, RotateCcw, Sparkles } from 'lucide-react';
+import { DrillsHub } from '@/components/practice/drills/DrillsHub';
+import type { ExerciseDrillMode } from '@/lib/exerciseCollections';
+import { Zap, RotateCcw, Sparkles, PenLine } from 'lucide-react';
 
 const QUIZ_MODES: QuizModeOption[] = [
   {
@@ -48,7 +50,10 @@ const QUIZ_MODES: QuizModeOption[] = [
 function PracticeContent() {
   const searchParams = useSearchParams();
   const initialModeParam = searchParams.get('mode') as DynamicQuizMode | null;
+  const initialTabParam = searchParams.get('tab') === 'drills' ? 'drills' : 'quiz';
+  const initialDrillParam = (searchParams.get('drill') || undefined) as ExerciseDrillMode | undefined;
 
+  const [activeWorkspace, setActiveWorkspace] = useState<'quiz' | 'drills'>(initialTabParam);
   const [mode, setMode] = useState<DynamicQuizMode>(
     initialModeParam && QUIZ_MODES.some((m) => m.id === initialModeParam)
       ? initialModeParam
@@ -283,85 +288,118 @@ function PracticeContent() {
           }}
         />
 
-        {flashcardActive && activeFlashcard && (
-          <SrsFlashcardReviewer
-            card={activeFlashcard}
-            revealed={flashcardReveal}
-            onReveal={() => setFlashcardReveal(true)}
-            onGrade={(q) => void handleGradeFlashcard(q)}
-          />
-        )}
+        <div className="flex flex-wrap gap-2 bg-slate-900 border border-slate-800 rounded-2xl p-1.5">
+          <button
+            type="button"
+            onClick={() => setActiveWorkspace('quiz')}
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+              activeWorkspace === 'quiz'
+                ? 'bg-indigo-600 text-white'
+                : 'text-slate-400 hover:text-slate-100'
+            }`}
+          >
+            <Zap className="w-4 h-4" />
+            <span>Quiz Dynamiques &amp; SRS</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveWorkspace('drills')}
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+              activeWorkspace === 'drills'
+                ? 'bg-sky-600 text-white'
+                : 'text-slate-400 hover:text-slate-100'
+            }`}
+          >
+            <PenLine className="w-4 h-4" />
+            <span>Ateliers Phrases &amp; Registres (8 modes)</span>
+          </button>
+        </div>
 
-        {sessionState === 'setup' && (
-          <QuizSetupPanel
-            modes={QUIZ_MODES}
-            mode={mode}
-            level={level}
-            count={count}
-            timedMode={timedMode}
-            secondsPerQuestion={secondsPerQuestion}
-            dueCount={srsStats.dueCount}
-            isGenerating={isGenerating}
-            emptyWarning={emptyWarning}
-            onModeChange={setMode}
-            onLevelChange={setLevel}
-            onCountChange={setCount}
-            onTimedModeChange={setTimedMode}
-            onSecondsChange={setSecondsPerQuestion}
-            onStart={() => void handleStartQuiz()}
-          />
-        )}
+        {activeWorkspace === 'drills' ? (
+          <DrillsHub initialMode={initialDrillParam} />
+        ) : (
+          <>
+            {flashcardActive && activeFlashcard && (
+              <SrsFlashcardReviewer
+                card={activeFlashcard}
+                revealed={flashcardReveal}
+                onReveal={() => setFlashcardReveal(true)}
+                onGrade={(q) => void handleGradeFlashcard(q)}
+              />
+            )}
 
-        {sessionState === 'playing' && currentQuestion && (
-          <QuizSessionPlayer
-            question={currentQuestion}
-            currentIndex={currentIndex}
-            totalQuestions={questions.length}
-            score={score}
-            timedMode={timedMode}
-            timeLeft={timeLeft}
-            selectedOptionId={selectedOptionId}
-            gradedCurrentCard={gradedCurrentCard}
-            onSelectOption={(id) => void handleSelectOption(id)}
-            onManualGrade={(q) => void handleManualSRSGrade(q)}
-            onNext={handleNextQuestion}
-          />
-        )}
+            {sessionState === 'setup' && (
+              <QuizSetupPanel
+                modes={QUIZ_MODES}
+                mode={mode}
+                level={level}
+                count={count}
+                timedMode={timedMode}
+                secondsPerQuestion={secondsPerQuestion}
+                dueCount={srsStats.dueCount}
+                isGenerating={isGenerating}
+                emptyWarning={emptyWarning}
+                onModeChange={setMode}
+                onLevelChange={setLevel}
+                onCountChange={setCount}
+                onTimedModeChange={setTimedMode}
+                onSecondsChange={setSecondsPerQuestion}
+                onStart={() => void handleStartQuiz()}
+              />
+            )}
 
-        {sessionState === 'finished' && (
-          <section className="quiz-finished">
-            <div className="quiz-finished__icon-wrap">
-              <Zap className="quiz-finished__icon" />
-            </div>
-            <div>
-              <h2 className="quiz-finished__title">Session terminée !</h2>
-              <p className="quiz-finished__summary">
-                Votre score :{' '}
-                <strong className="quiz-finished__score">
-                  {score} / {questions.length}
-                </strong>{' '}
-                ({questions.length > 0 ? Math.round((score / questions.length) * 100) : 0}%). Les
-                erreurs ont été ajoutées automatiquement à votre file de révision SM-2.
-              </p>
-            </div>
-            <div className="quiz-finished__actions">
-              <button
-                type="button"
-                onClick={() => void handleStartQuiz()}
-                className="quiz-finished__replay-btn"
-              >
-                <RotateCcw className="quiz-finished__replay-icon" />
-                Rejouer ({level})
-              </button>
-              <button
-                type="button"
-                onClick={() => setSessionState('setup')}
-                className="quiz-finished__setup-btn"
-              >
-                Changer de mode
-              </button>
-            </div>
-          </section>
+            {sessionState === 'playing' && currentQuestion && (
+              <QuizSessionPlayer
+                question={currentQuestion}
+                currentIndex={currentIndex}
+                totalQuestions={questions.length}
+                score={score}
+                timedMode={timedMode}
+                timeLeft={timeLeft}
+                selectedOptionId={selectedOptionId}
+                gradedCurrentCard={gradedCurrentCard}
+                onSelectOption={(id) => void handleSelectOption(id)}
+                onManualGrade={(q) => void handleManualSRSGrade(q)}
+                onNext={handleNextQuestion}
+              />
+            )}
+
+            {sessionState === 'finished' && (
+              <section className="quiz-finished">
+                <div className="quiz-finished__icon-wrap">
+                  <Zap className="quiz-finished__icon" />
+                </div>
+                <div>
+                  <h2 className="quiz-finished__title">Session terminée !</h2>
+                  <p className="quiz-finished__summary">
+                    Votre score :{' '}
+                    <strong className="quiz-finished__score">
+                      {score} / {questions.length}
+                    </strong>{' '}
+                    ({questions.length > 0 ? Math.round((score / questions.length) * 100) : 0}%). Les
+                    erreurs ont été ajoutées automatiquement à votre file de révision SM-2.
+                  </p>
+                </div>
+                <div className="quiz-finished__actions">
+                  <button
+                    type="button"
+                    onClick={() => void handleStartQuiz()}
+                    className="quiz-finished__replay-btn"
+                  >
+                    <RotateCcw className="quiz-finished__replay-icon" />
+                    Rejouer ({level})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSessionState('setup')}
+                    className="quiz-finished__setup-btn"
+                  >
+                    Changer de mode
+                  </button>
+                </div>
+              </section>
+            )}
+          </>
         )}
       </div>
     </div>

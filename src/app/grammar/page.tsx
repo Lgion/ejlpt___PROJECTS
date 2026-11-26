@@ -1,15 +1,23 @@
 'use client';
 
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useUser } from '@clerk/nextjs';
 import { toHiragana, isRomaji } from 'wanakana';
 import { localDb, GrammarRecord } from '@/lib/db';
 import { enqueueSyncAction } from '@/lib/sync';
+import { useVisualSystem } from '@/context/VisualSystemContext';
+import {
+  buildConnectionPatternIndex,
+  CONNECTION_FORMAT_OPTIONS,
+  type ConnectionDisplayFormat,
+} from '@/lib/connectionFormatter';
 import { GrammarFilterBar } from '@/components/grammar/GrammarFilterBar';
 import { GrammarCard } from '@/components/grammar/GrammarCard';
-import { Sparkles, Eye, EyeOff, BookOpen } from 'lucide-react';
+import { ConnectionsIndexModal } from '@/components/grammar/ConnectionsIndexModal';
+import { ParticlesPriorityGuide } from '@/components/grammar/ParticlesPriorityGuide';
+import { Sparkles, Eye, EyeOff, BookOpen, Layers, Compass } from 'lucide-react';
 
 function GrammarExplorerInner() {
   const searchParams = useSearchParams();
@@ -21,8 +29,17 @@ function GrammarExplorerInner() {
   const [selectedCategory, setSelectedCategory] = useState<'ALL' | 'particule' | 'bunpou'>('ALL');
   const [selectedSource, setSelectedSource] = useState<string>('ALL');
   const [showConnections, setShowConnections] = useState(true);
+  const [showConnectionsIndex, setShowConnectionsIndex] = useState(false);
+  const [showParticlesGuide, setShowParticlesGuide] = useState(false);
   const [visibleLimit, setVisibleLimit] = useState(40);
   const [toast, setToast] = useState<string | null>(null);
+  const { connectionFormat, setConnectionFormat } = useVisualSystem();
+
+  const allGrammarForIndex = useLiveQuery(() => localDb.grammar.toArray(), []);
+  const connectionPatternGroups = useMemo(
+    () => buildConnectionPatternIndex(allGrammarForIndex || []),
+    [allGrammarForIndex]
+  );
 
   const grammarList = useLiveQuery(async () => {
     const base =
@@ -90,22 +107,64 @@ function GrammarExplorerInner() {
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setShowConnections((v) => !v)}
-          className={`grammar-page__conn-toggle ${
-            showConnections ? 'grammar-page__conn-toggle--active' : ''
-          }`}
-        >
-          {showConnections ? (
-            <Eye className="grammar-page__conn-icon" />
-          ) : (
-            <EyeOff className="grammar-page__conn-icon" />
-          )}
-          <span>
-            {showConnections ? 'Connexions 【接続】 affichées' : 'Connexions 【接続】 masquées'}
-          </span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <label htmlFor="conn-format-select" className="sr-only-label">
+            Format d&apos;affichage des connexions
+          </label>
+          <select
+            id="conn-format-select"
+            value={connectionFormat}
+            onChange={(e) => setConnectionFormat(e.target.value as ConnectionDisplayFormat)}
+            className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-semibold text-slate-200 focus:outline-none focus:border-sky-500"
+          >
+            {CONNECTION_FORMAT_OPTIONS.map((opt) => (
+              <option key={opt.id} value={opt.id}>
+                接続 : {opt.label}
+              </option>
+            ))}
+          </select>
+
+          <button
+            type="button"
+            onClick={() => {
+              setShowConnectionsIndex((v) => !v);
+              setShowParticlesGuide(false);
+            }}
+            className="inline-flex items-center gap-1.5 rounded-xl border border-sky-700/60 bg-sky-950/50 px-3 py-2 text-xs font-bold text-sky-200 hover:bg-sky-900/60 transition-colors cursor-pointer"
+          >
+            <Layers className="w-3.5 h-3.5" />
+            <span>Index 【接続】</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setShowParticlesGuide((v) => !v);
+              setShowConnectionsIndex(false);
+            }}
+            className="inline-flex items-center gap-1.5 rounded-xl border border-amber-700/60 bg-amber-950/50 px-3 py-2 text-xs font-bold text-amber-200 hover:bg-amber-900/60 transition-colors cursor-pointer"
+          >
+            <Compass className="w-3.5 h-3.5" />
+            <span>Guide &amp; Priorité Particules</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setShowConnections((v) => !v)}
+            className={`grammar-page__conn-toggle ${
+              showConnections ? 'grammar-page__conn-toggle--active' : ''
+            }`}
+          >
+            {showConnections ? (
+              <Eye className="grammar-page__conn-icon" />
+            ) : (
+              <EyeOff className="grammar-page__conn-icon" />
+            )}
+            <span>
+              {showConnections ? 'Connexions 【接続】 affichées' : 'Connexions 【接続】 masquées'}
+            </span>
+          </button>
+        </div>
       </div>
 
       {toast && (
@@ -113,6 +172,27 @@ function GrammarExplorerInner() {
           {toast}
         </div>
       )}
+
+      <ConnectionsIndexModal
+        open={showConnectionsIndex}
+        groups={connectionPatternGroups}
+        format={connectionFormat}
+        onSelectPattern={(token) => {
+          setQuery(token);
+          setVisibleLimit(40);
+        }}
+        onClose={() => setShowConnectionsIndex(false)}
+      />
+
+      <ParticlesPriorityGuide
+        open={showParticlesGuide}
+        onSelectParticle={(particle) => {
+          setSelectedCategory('particule');
+          setQuery(particle);
+          setVisibleLimit(40);
+        }}
+        onClose={() => setShowParticlesGuide(false)}
+      />
 
       <GrammarFilterBar
         query={query}
@@ -143,6 +223,7 @@ function GrammarExplorerInner() {
               key={`${g.id ?? g.term}-${idx}`}
               grammar={g}
               showConnections={showConnections}
+              connectionFormat={connectionFormat}
               onBookmark={(item) => void handleBookmark(item)}
             />
           ))}

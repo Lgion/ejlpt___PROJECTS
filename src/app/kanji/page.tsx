@@ -10,8 +10,10 @@ import {
   KanjiFilterBar,
   StrokeFilter,
   FrequencySort,
+  RelationGroupFilter,
   RadicalEntry,
 } from '@/components/kanji/KanjiFilterBar';
+import { computeKanjiFrequencyScore10 } from '@/lib/frequencyScale';
 import { KanjiResultsStrip } from '@/components/kanji/KanjiResultsStrip';
 import { KanjiDetailSidebar } from '@/components/kanji/KanjiDetailSidebar';
 import { BookOpen, Type } from 'lucide-react';
@@ -38,6 +40,8 @@ function KanjiStudyContent() {
   const [searchQuery, setSearchQuery] = useState<string>(qParam);
   const [selectedJlpt, setSelectedJlpt] = useState<string>('ALL');
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
+  const [selectedTheme, setSelectedTheme] = useState<string>('ALL');
+  const [selectedRelationGroup, setSelectedRelationGroup] = useState<RelationGroupFilter>('ALL');
   const [selectedRadical, setSelectedRadical] = useState<string>('ALL');
   const [selectedStrokes, setSelectedStrokes] = useState<StrokeFilter>('ALL');
   const [sortBy, setSortBy] = useState<FrequencySort>('default');
@@ -105,6 +109,8 @@ function KanjiStudyContent() {
     const hasFilter =
       Boolean(q) ||
       selectedCategory !== 'ALL' ||
+      selectedTheme !== 'ALL' ||
+      selectedRelationGroup !== 'ALL' ||
       selectedRadical !== 'ALL' ||
       selectedStrokes !== 'ALL';
 
@@ -117,6 +123,11 @@ function KanjiStudyContent() {
     items = await collection
       .filter((k) => {
         if (selectedCategory !== 'ALL' && k.category !== selectedCategory) return false;
+        if (selectedTheme !== 'ALL' && !(k.themes || []).includes(selectedTheme)) return false;
+        if (selectedRelationGroup === 'similar' && !(k.similar && k.similar.length > 0)) return false;
+        if (selectedRelationGroup === 'synonyms' && !(k.synonyms && k.synonyms.length > 0)) return false;
+        if (selectedRelationGroup === 'antonyms' && !(k.antonyms && k.antonyms.length > 0)) return false;
+        if (selectedRelationGroup === 'homonyms' && !(k.homonyms && k.homonyms.length > 0)) return false;
         if (selectedRadical !== 'ALL' && k.radical !== selectedRadical) return false;
         if (!matchesStrokeRange(k.strokes, selectedStrokes)) return false;
         if (!q) return true;
@@ -132,7 +143,13 @@ function KanjiStudyContent() {
       })
       .toArray();
 
-    if (sortBy !== 'default') {
+    if (sortBy === 'score10') {
+      items.sort(
+        (a, b) =>
+          (b.frequencyScore10 ?? computeKanjiFrequencyScore10(b.frequencies)) -
+          (a.frequencyScore10 ?? computeKanjiFrequencyScore10(a.frequencies))
+      );
+    } else if (sortBy !== 'default') {
       items.sort((a, b) => {
         const ra = a.frequencies?.[sortBy] ?? Number.MAX_SAFE_INTEGER;
         const rb = b.frequencies?.[sortBy] ?? Number.MAX_SAFE_INTEGER;
@@ -141,7 +158,16 @@ function KanjiStudyContent() {
     }
 
     return items.slice(0, 120);
-  }, [searchQuery, selectedJlpt, selectedCategory, selectedRadical, selectedStrokes, sortBy]);
+  }, [
+    searchQuery,
+    selectedJlpt,
+    selectedCategory,
+    selectedTheme,
+    selectedRelationGroup,
+    selectedRadical,
+    selectedStrokes,
+    sortBy,
+  ]);
 
   const currentKanji = useLiveQuery(
     () => localDb.kanjis.get(selectedKanjiChar),
@@ -204,6 +230,8 @@ function KanjiStudyContent() {
     setSearchQuery('');
     setSelectedJlpt('ALL');
     setSelectedCategory('ALL');
+    setSelectedTheme('ALL');
+    setSelectedRelationGroup('ALL');
     setSelectedRadical('ALL');
     setSelectedStrokes('ALL');
     setSortBy('default');
@@ -259,6 +287,8 @@ function KanjiStudyContent() {
         searchQuery={searchQuery}
         selectedJlpt={selectedJlpt}
         selectedCategory={selectedCategory}
+        selectedTheme={selectedTheme}
+        selectedRelationGroup={selectedRelationGroup}
         selectedRadical={selectedRadical}
         selectedStrokes={selectedStrokes}
         sortBy={sortBy}
@@ -267,6 +297,8 @@ function KanjiStudyContent() {
         onSearchChange={setSearchQuery}
         onJlptChange={setSelectedJlpt}
         onCategoryChange={setSelectedCategory}
+        onThemeChange={setSelectedTheme}
+        onRelationGroupChange={setSelectedRelationGroup}
         onRadicalChange={setSelectedRadical}
         onStrokesChange={setSelectedStrokes}
         onSortChange={setSortBy}

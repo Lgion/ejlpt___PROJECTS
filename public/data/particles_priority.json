@@ -1,0 +1,72 @@
+{
+  "description": "Guide complet des particules japonaises et table de priorité (analogie opérateurs)",
+  "version": 1,
+  "priorityTiers": [
+    {
+      "tier": 1,
+      "name": "Syntagme nominal interne",
+      "jpName": "並列・連体助詞",
+      "operatorAnalogy": "Parenthèses / Priorité maximale (comme () ou . en CSS)",
+      "particles": ["の", "と (énum.)", "や", "か (ou)"],
+      "rule": "Lient des noms entre eux pour former un bloc nominal unique avant qu'une particule de cas ne s'applique à l'ensemble."
+    },
+    {
+      "tier": 2,
+      "name": "Cas grammaticaux cœur",
+      "jpName": "格助詞",
+      "operatorAnalogy": "Multiplication / Division (lien direct verbe ↔ argument)",
+      "particles": ["が", "を", "に", "で", "へ", "から", "まで", "より", "と (avec)"],
+      "rule": "Définissent le rôle syntaxique strict (sujet, COD, lieu, moyen, origine). Ne s'utilisent jamais l'une sur l'autre entre が et を."
+    },
+    {
+      "tier": 3,
+      "name": "Focus, limite & nuance",
+      "jpName": "副助詞",
+      "operatorAnalogy": "Modificateurs de portée (se greffent sur un bloc nominal)",
+      "particles": ["だけ", "しか", "ばかり", "さえ", "すら", "こそ", "ほど", "くらい"],
+      "rule": "Peuvent remplacer が/を (だけ) ou se placer avant/après に/で (だけに / だけで). Attention : しか exige toujours une négation finale."
+    },
+    {
+      "tier": 4,
+      "name": "Thème & emphase discursive",
+      "jpName": "係助詞",
+      "operatorAnalogy": "Addition / Soustraction globale (portée sur toute la proposition)",
+      "particles": ["は", "も"],
+      "rule": "Écrasement obligatoire : が + は → は, を + は → は. Mais cumul obligatoire avec les autres cas : に + は → には, で + は → では, と + は → とは, から + は → からは."
+    },
+    {
+      "tier": 5,
+      "name": "Conjonction & fin de phrase",
+      "jpName": "接続助詞・終助詞",
+      "operatorAnalogy": "Affectation finale (=) / Séparateur d'instruction (;)",
+      "particles": ["から (car)", "ので", "のに", "けど", "が (mais)", "ね", "よ", "か (?)"],
+      "rule": "Enveloppent la proposition entière pour la relier à une autre ou marquer l'intention du locuteur (question, insistance, confirmation)."
+    }
+  ],
+  "particles": [
+    { "particle": "は", "tier": 4, "level": "N5", "roleFr": "Marqueur de thème / contraste", "operatorAnalogy": "Scope global de la phrase (thème)", "rules": ["Écrase が et を", "Se cumule après に, で, へ, と, から, まで (には, では, とは)"], "combinations": ["には", "では", "とは", "からは", "までは"], "exampleJp": "私は日本語を勉強しています。", "exampleFr": "En ce qui me concerne, j'étudie le japonais." },
+    { "particle": "が", "tier": 2, "level": "N5", "roleFr": "Sujet grammatical / information nouvelle", "operatorAnalogy": "Liaison forte sujet → prédicat", "rules": ["Obligatoire après un mot interrogatif (誰が)", "Utilisé devant ある/いる, できる, 好き, 分かる"], "combinations": ["だが", "〜が (mais)"], "exampleJp": "猫が庭にいます。", "exampleFr": "Il y a un chat dans le jardin." },
+    { "particle": "を", "tier": 2, "level": "N5", "roleFr": "Complément d'objet direct (COD) / traversée", "operatorAnalogy": "Cible directe d'action transitive (他動詞)", "rules": ["S'écrase devant は/も (本は読む)", "Indique aussi le lieu traversé ou quitté (公園を歩く, 家を出る)"], "combinations": ["のを", "ことを"], "exampleJp": "毎日水を飲みます。", "exampleFr": "Je bois de l'eau tous les jours." },
+    { "particle": "に", "tier": 2, "level": "N5", "roleFr": "Cible, temps ponctuel, localisation statique, but", "operatorAnalogy": "Pointeur d'adresse précise", "rules": ["Temps exact (七時に)", "Existence statique avec いる/ある", "Agent du passif (受身形) et destinataire"], "combinations": ["には", "にも", "について", "にとって"], "exampleJp": "図書館に本があります。", "exampleFr": "Il y a des livres à la bibliothèque." },
+    { "particle": "で", "tier": 2, "level": "N5", "roleFr": "Lieu d'action, moyen/outil, cause, limite", "operatorAnalogy": "Contexte opératoire d'exécution", "rules": ["Lieu où se déroule une action (カフェで読む)", "Moyen ou langue (電車で, 日本語で)", "Cause (病気で休む)"], "combinations": ["では", "でも", "だけで"], "exampleJp": "駅で友達に会いました。", "exampleFr": "J'ai rencontré un ami à la gare." },
+    { "particle": "へ", "tier": 2, "level": "N5", "roleFr": "Direction générale vers", "operatorAnalogy": "Vecteur directionnel", "rules": ["Met l'accent sur la direction plutôt que le point d'arrivée", "Se prononce え"], "combinations": ["への", "へは"], "exampleJp": "来年日本へ行きます。", "exampleFr": "L'année prochaine, j'irai vers le Japon." },
+    { "particle": "の", "tier": 1, "level": "N5", "roleFr": "Possession, détermination nominale, nominalisation", "operatorAnalogy": "Opérateur membre (A.B) / regroupement prioritaire", "rules": ["Nom1 の Nom2 (Nom1 modifie Nom2)", "Nominalise une proposition (食べるのが好き)"], "combinations": ["のは", "のが", "のを", "のに", "ので"], "exampleJp": "これは私の新しい辞書です。", "exampleFr": "Ceci est mon nouveau dictionnaire." },
+    { "particle": "と", "tier": 2, "level": "N5", "roleFr": "Énumération exhaustive, accompagnement, citation, si naturel", "operatorAnalogy": "ET strict / Guillemets de citation", "rules": ["A と B (tous deux, exhaustif)", "Avec quelqu'un (友達と)", "Citation devant 言う/思う", "Conséquence inévitable (春になると)"], "combinations": ["とは", "としても", "という"], "exampleJp": "友達と映画を見ました。", "exampleFr": "J'ai regardé un film avec un ami." },
+    { "particle": "も", "tier": 4, "level": "N5", "roleFr": "Addition (« aussi »), emphase sur quantité", "operatorAnalogy": "Addition inclusive (remplace が/を)", "rules": ["Écrase が et を", "Se place après に/で/と/から (にも, でも)", "Quantité + も + négation = rien du tout"], "combinations": ["にも", "でも", "とも", "からも"], "exampleJp": "私もコーヒーを飲みます。", "exampleFr": "Moi aussi, je bois du café." },
+    { "particle": "から", "tier": 2, "level": "N5", "roleFr": "Point de départ (temps/lieu) ou cause (« parce que »)", "operatorAnalogy": "Origine / Cause causale", "rules": ["Nom + から (depuis)", "Proposition + から (parce que)", "Vて + から (après avoir fait)"], "combinations": ["からは", "からも", "からこそ"], "exampleJp": "九時から授業が始まります。", "exampleFr": "Le cours commence à 9 heures." },
+    { "particle": "まで", "tier": 2, "level": "N5", "roleFr": "Limite finale (« jusqu'à »)", "operatorAnalogy": "Borne supérieure incluse", "rules": ["S'oppose à から", "Peut marquer un degré extrême (« même jusqu'à »)"], "combinations": ["までは", "までに"], "exampleJp": "駅まで歩きました。", "exampleFr": "J'ai marché jusqu'à la gare." },
+    { "particle": "より", "tier": 2, "level": "N4", "roleFr": "Point de comparaison (« plus que ») / origine formelle", "operatorAnalogy": "Opérateur comparatif (>)", "rules": ["A は B より Adj = A est plus Adj que B"], "combinations": ["よりも"], "exampleJp": "東京は京都より広いです。", "exampleFr": "Tokyo est plus vaste que Kyoto." },
+    { "particle": "や", "tier": 1, "level": "N5", "roleFr": "Énumération non exhaustive (« et, entre autres »)", "operatorAnalogy": "Sous-ensemble ouvert [A, B, ...]", "rules": ["Souvent suivi de など en fin de liste"], "combinations": ["〜や〜など"], "exampleJp": "机の上に本やペンがあります。", "exampleFr": "Il y a entre autres des livres et des stylos sur le bureau." },
+    { "particle": "か", "tier": 5, "level": "N5", "roleFr": "Question finale ou alternative (« ou »)", "operatorAnalogy": "Booléen / OU logique (||)", "rules": ["En fin de phrase : interrogation", "Entre deux termes : A か B (ou)"], "combinations": ["かどうか", "〜か〜"], "exampleJp": "お茶かコーヒーはいかがですか。", "exampleFr": "Voulez-vous du thé ou du café ?" },
+    { "particle": "だけ", "tier": 3, "level": "N4", "roleFr": "Limitation (« seulement, uniquement »)", "operatorAnalogy": "Filtre restrictif positif", "rules": ["Compatible avec une phrase affirmative ou négative", "だけ + に/で ou に/で + だけ"], "combinations": ["だけで", "だけに", "だけでなく"], "exampleJp": "これだけ覚えてください。", "exampleFr": "Retenez seulement ceci, s'il vous plaît." },
+    { "particle": "しか", "tier": 3, "level": "N4", "roleFr": "Restriction exclusive (« ne... que »)", "operatorAnalogy": "Filtre restrictif lié au NOT (!)", "rules": ["Exige obligatoirement un verbe/adjectif à la forme NÉGATIVE"], "combinations": ["しかない"], "exampleJp": "千円しかありません。", "exampleFr": "Je n'ai que mille yens." },
+    { "particle": "ばかり", "tier": 3, "level": "N3", "roleFr": "Répétition excessive / juste à l'instant", "operatorAnalogy": "Quantificateur de saturation", "rules": ["Nom + ばかり (ne faire que ça)", "Vた + ばかり (venir tout juste de)"], "combinations": ["ばかりだ", "ばかりに"], "exampleJp": "最近、雨ばかり降っています。", "exampleFr": "Ces derniers temps, il ne fait que pleuvoir." },
+    { "particle": "さえ", "tier": 3, "level": "N2", "roleFr": "Exemple extrême (« même ») / condition minimale", "operatorAnalogy": "Cas limite (edge case)", "rules": ["Remplace が/を", "Vて/Nom + さえ〜ば = il suffit que"], "combinations": ["でさえ", "さえ〜ば"], "exampleJp": "子供でさえ知っています。", "exampleFr": "Même un enfant le sait." },
+    { "particle": "こそ", "tier": 3, "level": "N2", "roleFr": "Emphase exclusive (« c'est précisément... »)", "operatorAnalogy": "Sélecteur exact (===)", "rules": ["Met fortement en valeur le mot qui précède"], "combinations": ["からこそ", "ばこそ"], "exampleJp": "こちらこそよろしくお願いします。", "exampleFr": "C'est moi qui vous remercie / tout le plaisir est pour moi." },
+    { "particle": "のに", "tier": 5, "level": "N4", "roleFr": "Concession avec regret/surprise (« alors que, bien que »)", "operatorAnalogy": "Conjonction adversative émotionnelle", "rules": ["Exprimer une attente déçue"], "combinations": ["にもかかわらず"], "exampleJp": "約束したのに、来ませんでした。", "exampleFr": "Alors qu'il l'avait promis, il n'est pas venu." },
+    { "particle": "ので", "tier": 5, "level": "N4", "roleFr": "Cause objective et polie (« étant donné que »)", "operatorAnalogy": "Implication causale douce", "rules": ["Plus objectif et poli que から", "Prend な après Nom / なAdj"], "combinations": ["なので"], "exampleJp": "雨が降っているので、家で映画を見ます。", "exampleFr": "Comme il pleut, je regarde un film à la maison." },
+    { "particle": "とは", "tier": 4, "level": "N3", "roleFr": "Double particule : définition ou étonnement", "operatorAnalogy": "Citation (と) + Thème (は)", "rules": ["Sert à définir un terme (« ce qu'on appelle... »)", "Exprime la surprise en fin de phrase"], "combinations": ["というのは"], "exampleJp": "敬語とは丁寧な言葉のことです。", "exampleFr": "Le keigo désigne le langage honorifique." },
+    { "particle": "のを", "tier": 2, "level": "N4", "roleFr": "Double particule : nominalisateur の + COD を", "operatorAnalogy": "Bloc nominalisé (の) passé en COD (を)", "rules": ["Transforme une action/proposition en COD d'un verbe comme 忘れる, 待つ, 見る"], "combinations": ["のを忘れる", "のを待つ"], "exampleJp": "鍵をかけるのを忘れました。", "exampleFr": "J'ai oublié de fermer à clé." },
+    { "particle": "ね / よ", "tier": 5, "level": "N5", "roleFr": "Particules finales d'accord (ね) et d'information nouvelle (よ)", "operatorAnalogy": "Modificateurs d'énonciation finale", "rules": ["ね : recherche d'assentiment", "よ : affirmation d'une info nouvelle pour l'interlocuteur", "よね : affirmation nuancée"], "combinations": ["よね"], "exampleJp": "今日は本当に暑いですね。", "exampleFr": "Il fait vraiment chaud aujourd'hui, n'est-ce pas ?" }
+  ]
+}

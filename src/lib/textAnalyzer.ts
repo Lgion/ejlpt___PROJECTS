@@ -1,4 +1,21 @@
-import { localDb, seedLocalDatabase, type UnifiedKanjiRecord, type JukugoRecord, type GrammarRecord } from '@/lib/db';
+import {
+  localDb,
+  seedLocalDatabase,
+  type UnifiedKanjiRecord,
+  type JukugoRecord,
+  type GrammarRecord,
+  type SRSCardRecord,
+} from '@/lib/db';
+import {
+  computeMasteryTier,
+  inferTokenGrammaticalTag,
+  type GrammaticalVisualTag,
+  type MasteryTier,
+} from '@/lib/mastery';
+import {
+  computeJukugoFrequencyScore10,
+  computeKanjiFrequencyScore10,
+} from '@/lib/frequencyScale';
 
 export type TargetJLPTLevel = 'N5' | 'N4' | 'N3' | 'N2' | 'N1';
 export type ReaderFuriganaMode = 'ALWAYS' | 'ADAPTIVE' | 'OFF';
@@ -10,6 +27,9 @@ export interface TextToken {
   meaning?: string;
   jlpt?: string;
   isMastered?: boolean;
+  masteryTier?: MasteryTier;
+  frequencyScore10?: number;
+  grammaticalTag?: GrammaticalVisualTag;
 }
 
 export interface AnalyzedKanjiEntry {
@@ -52,8 +72,24 @@ export interface TextAnalysisResult {
 }
 
 export interface AnalysisDictionaries {
-  kanjiMap: Map<string, Pick<UnifiedKanjiRecord, 'kanji' | 'jlpt' | 'strokes' | 'on_readings' | 'kun_readings' | 'meanings_fr' | 'meanings_en'>>;
-  jukugoMap: Map<string, Pick<JukugoRecord, 'word' | 'reading' | 'meaning_en'>>;
+  kanjiMap: Map<
+    string,
+    Pick<
+      UnifiedKanjiRecord,
+      'kanji' | 'jlpt' | 'strokes' | 'on_readings' | 'kun_readings' | 'meanings_fr' | 'meanings_en'
+    > &
+      Partial<
+        Pick<
+          UnifiedKanjiRecord,
+          'frequencies' | 'frequencyScore10' | 'isVerbe' | 'isAdj' | 'isKeigo' | 'isSetsuzokushi' | 'sotoUchi' | 'dualisme'
+        >
+      >
+  >;
+  jukugoMap: Map<
+    string,
+    Pick<JukugoRecord, 'word' | 'reading' | 'meaning_en'> &
+      Partial<Pick<JukugoRecord, 'frequency' | 'frequencyScore10' | 'pos' | 'transitivity' | 'jlpt'>>
+  >;
   grammarList: Array<Pick<GrammarRecord, 'term' | 'reading' | 'jlpt_level' | 'meaning'>>;
 }
 
@@ -109,9 +145,14 @@ export function shouldShowAdaptiveFurigana(
 export function analyzeJapaneseTextPure(
   text: string,
   dicts: AnalysisDictionaries,
-  options: { targetLevel: TargetJLPTLevel; masteredKeys?: Set<string> }
+  options: {
+    targetLevel: TargetJLPTLevel;
+    masteredKeys?: Set<string>;
+    srsCardsMap?: Map<string, Pick<SRSCardRecord, 'repetitions' | 'intervalDays' | 'lapses'>>;
+  }
 ): TextAnalysisResult {
   const masteredKeys = options.masteredKeys || new Set<string>();
+  const srsCardsMap = options.srsCardsMap;
   const tokens: TextToken[] = [];
   const kanjiCounts = new Map<string, number>();
   const vocabCounts = new Map<string, AnalyzedVocabEntry>();
@@ -148,7 +189,10 @@ export function analyzeJapaneseTextPure(
     }
 
     // Attempt longest Jukugo match (up to 5 chars) when current char is Kanji
-    let matchedWord: Pick<JukugoRecord, 'word' | 'reading' | 'meaning_en'> | undefined;
+    let matchedWord:
+      | (Pick<JukugoRecord, 'word' | 'reading' | 'meaning_en'> &
+          Partial<Pick<JukugoRecord, 'frequency' | 'frequencyScore10' | 'pos' | 'transitivity' | 'jlpt'>>)
+      | undefined;
     let matchedLen = 0;
 
     if (KANJI_REGEX.test(ch)) {
@@ -199,13 +243,32 @@ export function analyzeJapaneseTextPure(
         });
       }
 
+      const wordCard = srsCardsMap?.get(matchedWord.word);
+      const wordMasteryTier: MasteryTier = wordCard
+        ? computeMasteryTier(wordCard)
+        : masteredKeys.has(matchedWord.word)
+          ? 'mastered'
+          : 'unseen';
+      const wordFreq10 =
+        matchedWord.frequencyScore10 ??
+        (typeof matchedWord.frequency === 'number'
+          ? computeJukugoFrequencyScore10(matchedWord.frequency)
+          : undefined);
+      const wordGramTag = inferTokenGrammaticalTag({
+        pos: matchedWord.pos,
+        transitivity: matchedWord.transitivity,
+      });
+
       tokens.push({
         text: matchedWord.word,
         kind: 'jukugo',
         reading: matchedWord.reading,
         meaning: matchedWord.meaning_en,
-        jlpt: wordJlpt,
-        isMastered: masteredKeys.has(matchedWord.word),
+        jlpt: matchedWord.jlpt || wordJlpt,
+        isMastered: masteredKeys.has(matchedWord.word) || wordMasteryTier === 'mastered',
+        masteryTier: wordMasteryTier,
+        frequencyScore10: wordFreq10,
+        grammaticalTag: wordGramTag,
       });
       i += matchedLen;
       continue;
@@ -223,13 +286,36 @@ export function analyzeJapaneseTextPure(
         readableKanjiOccurrences += 1;
       }
 
+      const kCard = srsCardsMap?.get(ch);
+      const kMasteryTier: MasteryTier = kCard
+        ? computeMasteryTier(kCard)
+        : masteredKeys.has(ch)
+          ? 'mastered'
+          : 'unseen';
+      const kFreq10 =
+        kEntry?.frequencyScore10 ??
+        (kEntry?.frequencies ? computeKanjiFrequencyScore10(kEntry.frequencies) : undefined);
+      const kGramTag = kEntry
+        ? inferTokenGrammaticalTag({
+            isVerbe: kEntry.isVerbe,
+            isAdj: kEntry.isAdj,
+            isKeigo: kEntry.isKeigo,
+            isSetsuzokushi: kEntry.isSetsuzokushi,
+            sotoUchi: kEntry.sotoUchi,
+            dualisme: kEntry.dualisme,
+          })
+        : 'other';
+
       tokens.push({
         text: ch,
         kind: 'kanji',
         reading: kEntry ? primaryKanjiReading(kEntry) : undefined,
         meaning: kEntry ? firstMeaning(kEntry) : undefined,
         jlpt: lvl,
-        isMastered: masteredKeys.has(ch),
+        isMastered: masteredKeys.has(ch) || kMasteryTier === 'mastered',
+        masteryTier: kMasteryTier,
+        frequencyScore10: kFreq10,
+        grammaticalTag: kGramTag,
       });
       i += 1;
       continue;
@@ -331,12 +417,19 @@ export async function analyzeJapaneseText(
   text: string,
   targetLevel: TargetJLPTLevel
 ): Promise<TextAnalysisResult> {
-  const [dicts, masteredCards] = await Promise.all([
+  const [dicts, allCards] = await Promise.all([
     getDictionaries(),
-    localDb.srsCards.filter((c) => c.repetitions >= 3 && c.intervalDays >= 6).toArray(),
+    localDb.srsCards.toArray(),
   ]);
 
-  const masteredKeys = new Set(masteredCards.map((c) => c.itemKey));
-  return analyzeJapaneseTextPure(text, dicts, { targetLevel, masteredKeys });
+  const srsCardsMap = new Map<string, SRSCardRecord>();
+  const masteredKeys = new Set<string>();
+  for (const c of allCards) {
+    srsCardsMap.set(c.itemKey, c);
+    if (computeMasteryTier(c) === 'mastered') {
+      masteredKeys.add(c.itemKey);
+    }
+  }
+  return analyzeJapaneseTextPure(text, dicts, { targetLevel, masteredKeys, srsCardsMap });
 }
 

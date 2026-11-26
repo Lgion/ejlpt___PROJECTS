@@ -18,11 +18,14 @@ import {
   History,
   Zap,
   BookText,
+  Library,
+  SlidersHorizontal,
 } from 'lucide-react';
 import { isAdminEmail } from '@/lib/admin';
 import { localDb } from '@/lib/db';
 import { flushSyncQueue } from '@/lib/sync';
 import { useFurigana } from '@/context/FuriganaContext';
+import { useVisualSystem } from '@/context/VisualSystemContext';
 import { HeaderSearch } from './HeaderSearch';
 import { SelectionBookmarkToolbar } from './SelectionBookmarkToolbar';
 
@@ -30,6 +33,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const { user, isLoaded, isSignedIn } = useUser();
   const { furiganaMode, cycleFuriganaMode } = useFurigana();
+  const { adaptiveProfile, cycleAdaptiveProfile } = useVisualSystem();
   const [isOnline, setIsOnline] = useState(true);
   const [unsyncedCount, setUnsyncedCount] = useState(0);
 
@@ -82,6 +86,7 @@ export default function Navbar() {
   const navLinks = [
     { href: '/', label: 'Examens', icon: GraduationCap },
     { href: '/kanji', label: 'Kanji', icon: BookOpen },
+    { href: '/dictionary', label: 'Dico', icon: Library },
     { href: '/grammar', label: 'Grammaire', icon: Sparkles },
     { href: '/slang', label: 'Slang', icon: MessageSquare },
     { href: '/practice', label: 'Quiz & SRS', icon: Zap },
@@ -106,6 +111,12 @@ export default function Navbar() {
   };
 
   const badge = getFuriganaModeBadge();
+  const profileLabel =
+    adaptiveProfile === 'beginner'
+      ? 'Profil: Débutant'
+      : adaptiveProfile === 'advanced'
+        ? 'Profil: Avancé'
+        : 'Profil: Interm.';
 
   return (
     <header className="site-header">
@@ -152,6 +163,16 @@ export default function Navbar() {
         <HeaderSearch />
 
         <div className="site-header__actions">
+          <button
+            type="button"
+            onClick={cycleAdaptiveProfile}
+            className="site-header__furigana-btn site-header__furigana-btn--purple"
+            title="Profil adaptatif Kanjiverse (Débutant -> Intermédiaire -> Avancé)"
+          >
+            <SlidersHorizontal className="site-header__nav-icon" />
+            <span className="site-header__furigana-label">{profileLabel}</span>
+          </button>
+
           <button
             type="button"
             onClick={cycleFuriganaMode}

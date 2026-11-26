@@ -1,0 +1,2712 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark light">
+  <title>eJLPT · Suivi d'Évolution &amp; Roadmap</title>
+  <style>
+    @layer reset, base, components, utilities;
+
+    @layer reset {
+      :where(html, body, header, main, footer, section, aside, article, search, nav, dialog, details, summary, div, ul, ol, li, h1, h2, h3, p, form, fieldset, legend, label, button, input, select, textarea, progress) {
+        box-sizing: border-box;
+      }
+
+      :where(body, h1, h2, h3, p, ul, ol, fieldset) {
+        margin: 0;
+      }
+
+      :where(ul, ol) {
+        padding: 0;
+        list-style: none;
+      }
+
+      :where(button, input, select, textarea) {
+        font: inherit;
+        color: inherit;
+      }
+    }
+
+    @layer base {
+      :root {
+        --hue-brand: 199;
+        --hue-accent: 239;
+
+        --bg-canvas-light: #f4f6fb;
+        --bg-canvas-dark: #070b14;
+        --bg-surface-light: #ffffff;
+        --bg-surface-dark: #0e1525;
+        --bg-elevated-light: #eef2f9;
+        --bg-elevated-dark: #151f35;
+        --bg-hover-light: #e5ebf6;
+        --bg-hover-dark: #1c2944;
+
+        --border-light: #d7dfec;
+        --border-dark: #22304c;
+        --border-strong-light: #b6c4da;
+        --border-strong-dark: #33476e;
+
+        --text-primary-light: #0f172a;
+        --text-primary-dark: #f1f5f9;
+        --text-secondary-light: #475569;
+        --text-secondary-dark: #94a3b8;
+        --text-muted-light: #64748b;
+        --text-muted-dark: #7d8da6;
+
+        --brand-light: #0284c7;
+        --brand-dark: #38bdf8;
+        --brand-contrast-light: #ffffff;
+        --brand-contrast-dark: #041725;
+
+        --ok-light: #047857;
+        --ok-dark: #34d399;
+        --ok-bg-light: #dcfce7;
+        --ok-bg-dark: rgba(16, 185, 129, 0.14);
+
+        --warn-light: #b45309;
+        --warn-dark: #fbbf24;
+        --warn-bg-light: #fef3c7;
+        --warn-bg-dark: rgba(245, 158, 11, 0.14);
+
+        --danger-light: #b91c1c;
+        --danger-dark: #f87171;
+        --danger-bg-light: #fee2e2;
+        --danger-bg-dark: rgba(239, 68, 68, 0.14);
+
+        --todo-light: #475569;
+        --todo-dark: #94a3b8;
+        --todo-bg-light: #e2e8f0;
+        --todo-bg-dark: rgba(148, 163, 184, 0.14);
+
+        /* Default light values + dark override for browsers lacking light-dark() */
+        --bg-canvas: var(--bg-canvas-light);
+        --bg-surface: var(--bg-surface-light);
+        --bg-elevated: var(--bg-elevated-light);
+        --bg-hover: var(--bg-hover-light);
+        --border-subtle: var(--border-light);
+        --border-strong: var(--border-strong-light);
+        --text-primary: var(--text-primary-light);
+        --text-secondary: var(--text-secondary-light);
+        --text-muted: var(--text-muted-light);
+        --brand: var(--brand-light);
+        --brand-contrast: var(--brand-contrast-light);
+        --ok: var(--ok-light);
+        --ok-bg: var(--ok-bg-light);
+        --warn: var(--warn-light);
+        --warn-bg: var(--warn-bg-light);
+        --danger: var(--danger-light);
+        --danger-bg: var(--danger-bg-light);
+        --todo: var(--todo-light);
+        --todo-bg: var(--todo-bg-light);
+        --scrollbar-thumb: #94a3b8;
+        --scrollbar-track: #e2e8f0;
+
+        color-scheme: dark light;
+        accent-color: var(--brand);
+        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg-canvas: var(--bg-canvas-dark);
+          --bg-surface: var(--bg-surface-dark);
+          --bg-elevated: var(--bg-elevated-dark);
+          --bg-hover: var(--bg-hover-dark);
+          --border-subtle: var(--border-dark);
+          --border-strong: var(--border-strong-dark);
+          --text-primary: var(--text-primary-dark);
+          --text-secondary: var(--text-secondary-dark);
+          --text-muted: var(--text-muted-dark);
+          --brand: var(--brand-dark);
+          --brand-contrast: var(--brand-contrast-dark);
+          --ok: var(--ok-dark);
+          --ok-bg: var(--ok-bg-dark);
+          --warn: var(--warn-dark);
+          --warn-bg: var(--warn-bg-dark);
+          --danger: var(--danger-dark);
+          --danger-bg: var(--danger-bg-dark);
+          --todo: var(--todo-dark);
+          --todo-bg: var(--todo-bg-dark);
+          --scrollbar-thumb: #475569;
+          --scrollbar-track: #0f172a;
+        }
+      }
+
+      @supports (color: light-dark(white, black)) {
+        :root {
+          --bg-canvas: light-dark(var(--bg-canvas-light), var(--bg-canvas-dark));
+          --bg-surface: light-dark(var(--bg-surface-light), var(--bg-surface-dark));
+          --bg-elevated: light-dark(var(--bg-elevated-light), var(--bg-elevated-dark));
+          --bg-hover: light-dark(var(--bg-hover-light), var(--bg-hover-dark));
+          --border-subtle: light-dark(var(--border-light), var(--border-dark));
+          --border-strong: light-dark(var(--border-strong-light), var(--border-strong-dark));
+          --text-primary: light-dark(var(--text-primary-light), var(--text-primary-dark));
+          --text-secondary: light-dark(var(--text-secondary-light), var(--text-secondary-dark));
+          --text-muted: light-dark(var(--text-muted-light), var(--text-muted-dark));
+          --brand: light-dark(var(--brand-light), var(--brand-dark));
+          --brand-contrast: light-dark(var(--brand-contrast-light), var(--brand-contrast-dark));
+          --ok: light-dark(var(--ok-light), var(--ok-dark));
+          --ok-bg: light-dark(var(--ok-bg-light), var(--ok-bg-dark));
+          --warn: light-dark(var(--warn-light), var(--warn-dark));
+          --warn-bg: light-dark(var(--warn-bg-light), var(--warn-bg-dark));
+          --danger: light-dark(var(--danger-light), var(--danger-dark));
+          --danger-bg: light-dark(var(--danger-bg-light), var(--danger-bg-dark));
+          --todo: light-dark(var(--todo-light), var(--todo-dark));
+          --todo-bg: light-dark(var(--todo-bg-light), var(--todo-bg-dark));
+          --scrollbar-thumb: light-dark(#94a3b8, #475569);
+          --scrollbar-track: light-dark(#e2e8f0, #0f172a);
+        }
+      }
+
+      :root[data-theme="dark"] {
+        color-scheme: dark;
+      }
+
+      :root[data-theme="light"] {
+        color-scheme: light;
+      }
+
+      @supports not (scrollbar-color: auto) {
+        ::-webkit-scrollbar {
+          width: 10px;
+          height: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+          background: var(--scrollbar-thumb);
+          border-radius: 6px;
+        }
+        ::-webkit-scrollbar-track {
+          background: var(--scrollbar-track);
+        }
+      }
+
+      body {
+        font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+        font-size: 0.9rem;
+        line-height: 1.45;
+        background-color: var(--bg-canvas);
+        color: var(--text-primary);
+        min-block-size: 100dvh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      :where(a:any-link, button, input, select, textarea, summary):focus-visible {
+        outline: 2px solid var(--brand);
+        outline-offset: 2px;
+      }
+
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.85em;
+        background: var(--bg-elevated);
+        padding-inline: 0.35em;
+        padding-block: 0.1em;
+        border-radius: 4px;
+        border: 1px solid var(--border-subtle);
+      }
+    }
+
+    @layer components {
+      .app-shell {
+        inline-size: min(1160px, 100% - 1.5rem);
+        margin-inline: auto;
+      }
+
+      /* Top sticky compact header */
+      .top-header {
+        position: sticky;
+        inset-block-start: 0;
+        z-index: 20;
+        background: color-mix(in srgb, var(--bg-surface) 92%, transparent);
+        backdrop-filter: blur(10px);
+        border-block-end: 1px solid var(--border-subtle);
+        padding-block: 0.65rem;
+      }
+
+      .top-header__row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.65rem 1rem;
+      }
+
+      .brand-block {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+      }
+
+      .brand-badge {
+        display: inline-grid;
+        place-items: center;
+        inline-size: 2rem;
+        block-size: 2rem;
+        border-radius: 8px;
+        background: var(--brand);
+        color: var(--brand-contrast);
+        font-weight: 800;
+        font-size: 0.78rem;
+        letter-spacing: -0.02em;
+        flex-shrink: 0;
+      }
+
+      .brand-title {
+        font-size: 1.08rem;
+        font-weight: 700;
+        letter-spacing: -0.015em;
+      }
+
+      .brand-sub {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+      }
+
+      .server-controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.45rem;
+      }
+
+      .sync-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding-inline: 0.65rem;
+        padding-block: 0.3rem;
+        border-radius: 999px;
+        font-size: 0.76rem;
+        font-weight: 600;
+        border: 1px solid var(--border-subtle);
+        background: var(--bg-elevated);
+
+        &[data-state="online"] {
+          color: var(--ok);
+          background: var(--ok-bg);
+          border-color: color-mix(in srgb, var(--ok) 40%, transparent);
+        }
+
+        &[data-state="offline"] {
+          color: var(--warn);
+          background: var(--warn-bg);
+          border-color: color-mix(in srgb, var(--warn) 45%, transparent);
+        }
+
+        &[data-state="syncing"] {
+          color: var(--brand);
+          border-color: color-mix(in srgb, var(--brand) 45%, transparent);
+        }
+      }
+
+      .pending-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding-inline: 0.55rem;
+        padding-block: 0.25rem;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--warn);
+        background: var(--warn-bg);
+        border: 1px solid color-mix(in srgb, var(--warn) 40%, transparent);
+      }
+
+      .main-content {
+        flex: 1;
+        padding-block: 0.9rem 1.8rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+      }
+
+      /* KPI overview bar */
+      .kpi-strip {
+        display: grid;
+        grid-template-columns: minmax(220px, 1.4fr) repeat(4, minmax(95px, 1fr));
+        gap: 0.5rem;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        border-radius: 10px;
+        padding: 0.65rem 0.85rem;
+        align-items: center;
+      }
+
+      @media (max-width: 780px) {
+        .kpi-strip {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .kpi-overall {
+          grid-column: 1 / -1;
+        }
+      }
+
+      .kpi-overall {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+        padding-inline-end: 0.75rem;
+      }
+
+      .kpi-overall__head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 0.5rem;
+      }
+
+      .kpi-overall__label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .kpi-overall__pct {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--brand);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .progress-meter {
+        inline-size: 100%;
+        block-size: 0.45rem;
+        border-radius: 999px;
+        overflow: hidden;
+        border: 0;
+        background: var(--bg-elevated);
+      }
+
+      .progress-meter::-webkit-progress-bar {
+        background: var(--bg-elevated);
+        border-radius: 999px;
+      }
+
+      .progress-meter::-webkit-progress-value {
+        background: var(--brand);
+        border-radius: 999px;
+      }
+
+      .progress-meter::-moz-progress-bar {
+        background: var(--brand);
+        border-radius: 999px;
+      }
+
+      .kpi-stat {
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+        padding-inline: 0.6rem;
+        padding-block: 0.25rem;
+        border-inline-start: 1px solid var(--border-subtle);
+      }
+
+      @media (max-width: 780px) {
+        .kpi-stat {
+          border-inline-start: 0;
+          background: var(--bg-elevated);
+          border-radius: 6px;
+        }
+      }
+
+      .kpi-stat__value {
+        font-size: 1.05rem;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .kpi-stat__label {
+        font-size: 0.72rem;
+        color: var(--text-secondary);
+      }
+
+      /* Compact search & action toolbar */
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: end;
+        justify-content: space-between;
+        gap: 0.55rem;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        border-radius: 10px;
+        padding: 0.6rem 0.75rem;
+      }
+
+      .filter-form {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: end;
+        gap: 0.5rem;
+        flex: 1 1 520px;
+      }
+
+      .field-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+      }
+
+      .field-group--grow {
+        flex: 1 1 200px;
+      }
+
+      .field-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+      }
+
+      .input-control,
+      .select-control,
+      .textarea-control {
+        min-block-size: 30px;
+        padding-inline: 0.55rem;
+        padding-block: 0.25rem;
+        border-radius: 6px;
+        border: 1px solid var(--border-strong);
+        background: var(--bg-elevated);
+        color: var(--text-primary);
+        font-size: 0.82rem;
+
+        &:hover:not(:disabled) {
+          border-color: var(--brand);
+        }
+      }
+
+      .textarea-control {
+        min-block-size: 72px;
+        padding-block: 0.45rem;
+        resize: vertical;
+      }
+
+      .toolbar-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      /* Buttons */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        min-block-size: 30px;
+        min-inline-size: 30px;
+        padding-inline: 0.68rem;
+        padding-block: 0.25rem;
+        border-radius: 6px;
+        border: 1px solid var(--border-strong);
+        background: var(--bg-elevated);
+        color: var(--text-primary);
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+
+        &:hover:not(:disabled) {
+          background: var(--bg-hover);
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+
+      .btn--primary {
+        background: var(--brand);
+        color: var(--brand-contrast);
+        border-color: transparent;
+
+        &:hover:not(:disabled) {
+          filter: brightness(1.08);
+          background: var(--brand);
+        }
+      }
+
+      .btn--danger {
+        color: var(--danger);
+        background: var(--danger-bg);
+        border-color: color-mix(in srgb, var(--danger) 35%, transparent);
+
+        &:hover:not(:disabled) {
+          background: color-mix(in srgb, var(--danger) 22%, transparent);
+        }
+      }
+
+      .btn--compact {
+        min-block-size: 26px;
+        min-inline-size: 26px;
+        padding-inline: 0.48rem;
+        padding-block: 0.15rem;
+        font-size: 0.74rem;
+      }
+
+      [command="--toggle-all"][aria-expanded="true"] .label-expand,
+      [command="--toggle-all"][aria-expanded="false"] .label-collapse {
+        display: none;
+      }
+
+      /* Category Accordion */
+      .accordion-section {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .section-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+      }
+
+      .section-heading {
+        font-size: 0.84rem;
+        font-weight: 700;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .cat-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        border-radius: 10px;
+        overflow: hidden;
+
+        &[open] {
+          border-color: var(--border-strong);
+        }
+      }
+
+      .cat-summary {
+        list-style: none;
+        display: grid;
+        grid-template-columns: auto minmax(160px, 1fr) auto auto;
+        align-items: center;
+        gap: 0.65rem;
+        padding-inline: 0.75rem;
+        padding-block: 0.52rem;
+        cursor: pointer;
+        user-select: none;
+        background: var(--bg-surface);
+
+        &::-webkit-details-marker {
+          display: none;
+        }
+
+        &:hover {
+          background: var(--bg-hover);
+        }
+
+        &::before {
+          content: "";
+          inline-size: 0.95em;
+          block-size: 0.95em;
+          flex-shrink: 0;
+          background-color: var(--text-secondary);
+          -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat center / contain;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat center / contain;
+          rotate: -90deg;
+        }
+      }
+
+      details[open] > .cat-summary::before {
+        rotate: 0deg;
+        background-color: var(--brand);
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        .cat-summary::before {
+          transition: rotate 0.18s ease, background-color 0.18s ease;
+        }
+      }
+
+      .cat-summary__title {
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        min-inline-size: 0;
+      }
+
+      .cat-summary__desc {
+        font-weight: 400;
+        font-size: 0.74rem;
+        color: var(--text-muted);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      @media (max-width: 720px) {
+        .cat-summary {
+          grid-template-columns: auto 1fr auto;
+        }
+        .cat-summary__desc,
+        .cat-summary__meter-wrap {
+          display: none;
+        }
+      }
+
+      .cat-summary__count {
+        font-size: 0.74rem;
+        color: var(--text-secondary);
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+
+      .cat-summary__meter-wrap {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        inline-size: 125px;
+      }
+
+      .cat-summary__pct {
+        font-size: 0.78rem;
+        font-weight: 700;
+        min-inline-size: 3ch;
+        text-align: end;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* Accordion slide animation */
+      details.cat-card::details-content {
+        interpolate-size: allow-keywords;
+        overflow: clip;
+        contain: layout;
+      }
+
+      details.cat-card:not([open])::details-content {
+        block-size: 0;
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        details.cat-card::details-content {
+          transition: block-size, content-visibility, display;
+          transition-duration: 0.22s;
+          transition-timing-function: ease-in-out;
+          transition-behavior: allow-discrete;
+        }
+      }
+
+      .cat-body {
+        border-block-start: 1px solid var(--border-subtle);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .task-list {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .task-row {
+        display: grid;
+        grid-template-columns: auto minmax(220px, 1fr) auto auto auto auto;
+        align-items: center;
+        gap: 0.5rem;
+        padding-inline: 0.75rem;
+        padding-block: 0.42rem;
+
+        &:hover {
+          background: color-mix(in srgb, var(--bg-elevated) 70%, transparent);
+        }
+      }
+
+      .task-list > li:not(:last-child) .task-row {
+        border-block-end: 1px solid var(--border-subtle);
+      }
+
+      @media (max-width: 860px) {
+        .task-row {
+          grid-template-columns: auto 1fr auto;
+          row-gap: 0.35rem;
+        }
+        .task-row__meta-group {
+          grid-column: 2 / -1;
+          justify-self: start;
+        }
+      }
+
+      .task-check {
+        inline-size: 18px;
+        block-size: 18px;
+        margin: 0;
+        cursor: pointer;
+      }
+
+      .task-check-wrap {
+        display: inline-grid;
+        place-items: center;
+        min-inline-size: 24px;
+        min-block-size: 24px;
+      }
+
+      .task-main {
+        display: flex;
+        flex-direction: column;
+        gap: 0.12rem;
+        min-inline-size: 0;
+      }
+
+      .task-title-line {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      .task-title {
+        font-weight: 600;
+        font-size: 0.85rem;
+        word-break: break-word;
+      }
+
+      /* Parent state styling via :has() per CSS guidance */
+      .task-row:has(.task-check:checked) .task-title {
+        text-decoration: line-through;
+        color: var(--text-muted);
+      }
+
+      .ref-badge {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.68rem;
+        padding-inline: 0.35rem;
+        padding-block: 0.05rem;
+        border-radius: 4px;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-secondary);
+      }
+
+      .task-notes {
+        font-size: 0.74rem;
+        color: var(--text-muted);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .task-notes--expanded {
+        white-space: normal;
+      }
+
+      .priority-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding-inline: 0.42rem;
+        padding-block: 0.14rem;
+        border-radius: 5px;
+        font-size: 0.71rem;
+        font-weight: 600;
+        border: 1px solid transparent;
+
+        &[data-priority="high"] {
+          color: var(--danger);
+          background: var(--danger-bg);
+          border-color: color-mix(in srgb, var(--danger) 30%, transparent);
+        }
+
+        &[data-priority="medium"] {
+          color: var(--warn);
+          background: var(--warn-bg);
+          border-color: color-mix(in srgb, var(--warn) 30%, transparent);
+        }
+
+        &[data-priority="low"] {
+          color: var(--todo);
+          background: var(--todo-bg);
+          border-color: color-mix(in srgb, var(--todo) 25%, transparent);
+        }
+      }
+
+      .status-select {
+        min-block-size: 26px;
+        padding-inline: 0.42rem;
+        border-radius: 5px;
+        font-size: 0.74rem;
+        font-weight: 600;
+        border: 1px solid var(--border-subtle);
+        cursor: pointer;
+
+        &[data-status="done"] {
+          color: var(--ok);
+          background: var(--ok-bg);
+        }
+        &[data-status="in_progress"] {
+          color: var(--brand);
+          background: color-mix(in srgb, var(--brand) 14%, transparent);
+        }
+        &[data-status="todo"] {
+          color: var(--todo);
+          background: var(--todo-bg);
+        }
+      }
+
+      .pct-editor {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.22rem;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .pct-input {
+        inline-size: 3.35rem;
+        min-block-size: 26px;
+        padding-inline: 0.32rem;
+        border-radius: 5px;
+        border: 1px solid var(--border-strong);
+        background: var(--bg-elevated);
+        text-align: end;
+        font-size: 0.78rem;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .row-actions {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.28rem;
+      }
+
+      .cat-footer-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        padding-inline: 0.75rem;
+        padding-block: 0.48rem;
+        background: color-mix(in srgb, var(--bg-elevated) 55%, transparent);
+        border-block-start: 1px solid var(--border-subtle);
+      }
+
+      .quick-add-form {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.38rem;
+        flex: 1 1 320px;
+      }
+
+      .quick-add-input {
+        flex: 1 1 210px;
+        min-block-size: 28px;
+      }
+
+      .cat-admin-actions {
+        display: inline-flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+      }
+
+      .empty-state {
+        background: var(--bg-surface);
+        border: 1px dashed var(--border-strong);
+        border-radius: 10px;
+        padding: 1.5rem;
+        text-align: center;
+        color: var(--text-secondary);
+      }
+
+      /* Native Modals per dialog guide */
+      dialog.modal-dialog {
+        inline-size: min(540px, calc(100% - 2rem));
+        max-block-size: calc(100dvh - 2rem);
+        margin: auto;
+        padding: 0;
+        border: 1px solid var(--border-strong);
+        border-radius: 12px;
+        background: var(--bg-surface);
+        color: var(--text-primary);
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+      }
+
+      dialog.modal-dialog:modal {
+        overscroll-behavior: contain;
+      }
+
+      dialog.modal-dialog::backdrop {
+        background: rgba(2, 6, 23, 0.68);
+        backdrop-filter: blur(4px);
+        overflow: hidden;
+        overscroll-behavior: contain;
+      }
+
+      .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding: 0.85rem 1rem;
+        border-block-end: 1px solid var(--border-subtle);
+      }
+
+      .modal-title {
+        font-size: 1rem;
+        font-weight: 700;
+      }
+
+      .modal-body {
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        overflow-y: auto;
+      }
+
+      .modal-grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.65rem;
+      }
+
+      @media (max-width: 520px) {
+        .modal-grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .range-row {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+      }
+
+      .range-row input[type="range"] {
+        flex: 1;
+      }
+
+      .modal-footer {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        border-block-start: 1px solid var(--border-subtle);
+        background: color-mix(in srgb, var(--bg-elevated) 50%, transparent);
+      }
+
+      .dialog-error {
+        font-size: 0.78rem;
+        color: var(--danger);
+        background: var(--danger-bg);
+        padding: 0.45rem 0.6rem;
+        border-radius: 6px;
+      }
+
+      .app-footer {
+        border-block-start: 1px solid var(--border-subtle);
+        padding-block: 0.65rem;
+        font-size: 0.74rem;
+        color: var(--text-muted);
+      }
+
+      .app-footer__row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 0.5rem;
+      }
+
+      .toast-bar {
+        position: fixed;
+        inset-block-end: 1rem;
+        inset-inline-end: 1rem;
+        z-index: 30;
+        padding: 0.5rem 0.85rem;
+        border-radius: 8px;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border-strong);
+        color: var(--text-primary);
+        font-size: 0.8rem;
+        font-weight: 600;
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+
+        &[hidden] {
+          display: none;
+        }
+      }
+    }
+
+    @layer utilities {
+      [hidden] {
+        display: none;
+      }
+
+      .visually-hidden:where(:not(:focus-within, :active)) {
+        position: absolute !important;
+        clip-path: inset(50%) !important;
+        overflow: hidden !important;
+        width: 1px !important;
+        height: 1px !important;
+        margin: -1px !important;
+        padding: 0 !important;
+        border: 0 !important;
+        white-space: nowrap !important;
+      }
+
+      .skip-link:focus {
+        position: fixed;
+        inset-block-start: 0.5rem;
+        inset-inline-start: 0.5rem;
+        z-index: 50;
+        padding: 0.5rem 0.85rem;
+        background: var(--brand);
+        color: var(--brand-contrast);
+        border-radius: 6px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#roadmap-main" class="skip-link visually-hidden">Aller au contenu principal</a>
+
+  <header class="top-header">
+    <div class="app-shell top-header__row">
+      <div class="brand-block">
+        <span class="brand-badge" aria-hidden="true">eJ</span>
+        <div>
+          <h1 id="roadmap-main" class="brand-title" tabindex="-1">eJLPT · Roadmap &amp; Suivi des Tâches</h1>
+          <p class="brand-sub">Suivi éditable (CRUD) synchronisé avec le serveur Next.js ou en localStorage hors ligne</p>
+        </div>
+      </div>
+
+      <div class="server-controls">
+        <span id="server-status-pill" class="sync-pill" data-state="syncing">
+          <span id="server-status-icon" aria-hidden="true">◌</span>
+          <span id="server-status-text">Détection du serveur…</span>
+        </span>
+        <span id="pending-sync-chip" class="pending-chip" hidden>
+          <span aria-hidden="true">⟳</span>
+          <span id="pending-sync-text">0 en attente</span>
+        </span>
+        <button type="button" id="btn-sync-now" class="btn btn--compact">Tester / Sync</button>
+        <button type="button" id="btn-open-settings" class="btn btn--compact" command="show-modal" commandfor="server-dialog">
+          Serveur &amp; Outils
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-shell main-content">
+    <section aria-label="Indicateurs globaux" class="kpi-strip">
+      <div class="kpi-overall">
+        <div class="kpi-overall__head">
+          <span class="kpi-overall__label">Avancement global</span>
+          <span id="kpi-avg-pct" class="kpi-overall__pct">0 %</span>
+        </div>
+        <progress id="kpi-avg-progress" class="progress-meter" value="0" max="100" aria-label="Avancement global"></progress>
+      </div>
+      <div class="kpi-stat">
+        <span id="kpi-total" class="kpi-stat__value">0</span>
+        <span class="kpi-stat__label">Tâches totales</span>
+      </div>
+      <div class="kpi-stat">
+        <span id="kpi-done" class="kpi-stat__value">0</span>
+        <span class="kpi-stat__label">Terminées (100 %)</span>
+      </div>
+      <div class="kpi-stat">
+        <span id="kpi-progress" class="kpi-stat__value">0</span>
+        <span class="kpi-stat__label">En cours (1–99 %)</span>
+      </div>
+      <div class="kpi-stat">
+        <span id="kpi-todo" class="kpi-stat__value">0</span>
+        <span class="kpi-stat__label">À faire (0 %)</span>
+      </div>
+    </section>
+
+    <section class="toolbar" aria-label="Filtres et actions rapides">
+      <search class="filter-form">
+        <form id="filter-form" class="filter-form">
+          <div class="field-group field-group--grow">
+            <label for="search-input" class="field-label">Rechercher (titre, ligne README, note)</label>
+            <input id="search-input" type="search" class="input-control" placeholder="Ex. : ukemikei, L180, kanjiverse…">
+          </div>
+          <div class="field-group">
+            <label for="status-filter" class="field-label">Statut</label>
+            <select id="status-filter" class="select-control">
+              <option value="all">Tous</option>
+              <option value="todo">À faire (0 %)</option>
+              <option value="in_progress">En cours</option>
+              <option value="done">Terminées (100 %)</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label for="priority-filter" class="field-label">Priorité</label>
+            <select id="priority-filter" class="select-control">
+              <option value="all">Toutes</option>
+              <option value="high">Haute</option>
+              <option value="medium">Normale</option>
+              <option value="low">Basse</option>
+            </select>
+          </div>
+        </form>
+      </search>
+
+      <div class="toolbar-actions">
+        <button type="button" id="btn-toggle-all" class="btn" commandfor="categories-accordion" command="--toggle-all" aria-expanded="false">
+          <span class="label-expand">Tout déplier</span>
+          <span class="label-collapse">Tout replier</span>
+        </button>
+        <button type="button" id="btn-new-category" class="btn">+ Catégorie</button>
+        <button type="button" id="btn-new-task" class="btn btn--primary">+ Nouvelle tâche</button>
+      </div>
+    </section>
+
+    <section id="categories-accordion" class="accordion-section" aria-labelledby="categories-heading">
+      <div class="section-bar">
+        <h2 id="categories-heading" class="section-heading">Catégories de tâches (dropdowns éditables)</h2>
+        <span id="visible-count-label" class="brand-sub"></span>
+      </div>
+      <div id="categories-container" class="accordion-section"></div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <div class="app-shell app-footer__row">
+      <span>Document autonome <code>index.html</code> · API serveur <code>/api/roadmap</code> (<code>_docs/roadmap-tasks.json</code>)</span>
+      <span id="last-updated-footer">Dernière mise à jour : —</span>
+    </div>
+  </footer>
+
+  <!-- Modal Créer / Éditer une tâche -->
+  <dialog id="task-dialog" class="modal-dialog" aria-labelledby="task-dialog-title">
+    <div class="modal-header">
+      <h1 id="task-dialog-title" class="modal-title">Nouvelle tâche</h1>
+      <button type="button" class="btn btn--compact" id="task-dialog-close">Fermer</button>
+    </div>
+    <form id="task-form" method="dialog">
+      <div class="modal-body">
+        <div id="task-form-error" class="dialog-error" hidden></div>
+        <div class="field-group">
+          <label for="task-title-input" class="field-label">Intitulé de la tâche *</label>
+          <input id="task-title-input" type="text" class="input-control" required autofocus>
+        </div>
+
+        <div class="modal-grid-2">
+          <div class="field-group">
+            <label for="task-category-select" class="field-label">Catégorie</label>
+            <select id="task-category-select" class="select-control"></select>
+          </div>
+          <div class="field-group">
+            <label for="task-priority-select" class="field-label">Priorité</label>
+            <select id="task-priority-select" class="select-control">
+              <option value="high">Haute</option>
+              <option value="medium">Normale</option>
+              <option value="low">Basse</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-grid-2">
+          <div class="field-group">
+            <label for="task-status-select" class="field-label">Statut</label>
+            <select id="task-status-select" class="select-control">
+              <option value="todo">À faire</option>
+              <option value="in_progress">En cours</option>
+              <option value="done">Terminé</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label for="task-ref-input" class="field-label">Référence README / module</label>
+            <input id="task-ref-input" type="text" class="input-control" placeholder="Ex. : L8, L75">
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="task-progress-range" class="field-label">Complétion (%)</label>
+          <div class="range-row">
+            <input id="task-progress-range" type="range" min="0" max="100" step="1">
+            <input id="task-progress-number" type="number" min="0" max="100" class="pct-input" aria-label="Pourcentage numérique">
+            <span>%</span>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="task-notes-input" class="field-label">Notes techniques / observations</label>
+          <textarea id="task-notes-input" class="textarea-control" rows="3"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="task-form-cancel" class="btn">Annuler</button>
+        <button type="submit" class="btn btn--primary" value="save">Enregistrer</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Modal Créer / Renommer une catégorie -->
+  <dialog id="category-dialog" class="modal-dialog" aria-labelledby="category-dialog-title">
+    <div class="modal-header">
+      <h1 id="category-dialog-title" class="modal-title">Nouvelle catégorie</h1>
+      <button type="button" class="btn btn--compact" id="category-dialog-close">Fermer</button>
+    </div>
+    <form id="category-form" method="dialog">
+      <div class="modal-body">
+        <div id="category-form-error" class="dialog-error" hidden></div>
+        <div class="field-group">
+          <label for="category-name-input" class="field-label">Nom de la catégorie *</label>
+          <input id="category-name-input" type="text" class="input-control" required autofocus>
+        </div>
+        <div class="field-group">
+          <label for="category-desc-input" class="field-label">Description courte</label>
+          <input id="category-desc-input" type="text" class="input-control">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="category-form-cancel" class="btn">Annuler</button>
+        <button type="submit" class="btn btn--primary" value="save">Enregistrer</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Modal Confirmation de suppression -->
+  <dialog id="confirm-dialog" class="modal-dialog" aria-labelledby="confirm-dialog-title">
+    <div class="modal-header">
+      <h1 id="confirm-dialog-title" class="modal-title">Confirmer la suppression</h1>
+      <button type="button" class="btn btn--compact" id="confirm-dialog-close">Fermer</button>
+    </div>
+    <form method="dialog">
+      <div class="modal-body">
+        <p id="confirm-dialog-message"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" value="confirm" class="btn btn--danger">Supprimer définitivement</button>
+        <button type="submit" value="cancel" class="btn" autofocus>Annuler</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Modal Serveur, Synchronisation & Outils -->
+  <dialog id="server-dialog" class="modal-dialog" aria-labelledby="server-dialog-title" closedby="any">
+    <div class="modal-header">
+      <h1 id="server-dialog-title" class="modal-title">Serveur d'application, Thème &amp; Import/Export</h1>
+      <button type="button" class="btn btn--compact" id="server-dialog-close">Fermer</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-group">
+        <label for="server-url-input" class="field-label">Origine du serveur Next.js (auto-détectée par défaut)</label>
+        <span id="server-url-hint" class="brand-sub">Laissez vide pour sonder automatiquement localhost:3000 et :3001</span>
+        <div class="range-row">
+          <input id="server-url-input" type="url" class="input-control" aria-describedby="server-url-hint" placeholder="http://localhost:3000" autofocus>
+          <button type="button" id="btn-save-server-url" class="btn btn--primary">Appliquer</button>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label for="theme-select" class="field-label">Thème d'affichage</label>
+        <select id="theme-select" class="select-control">
+          <option value="system">Suivre le système</option>
+          <option value="dark">Sombre (eJLPT)</option>
+          <option value="light">Clair</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <span class="field-label">Sauvegarde / Réinitialisation JSON</span>
+        <div class="toolbar-actions">
+          <button type="button" id="btn-export-json" class="btn">Exporter JSON</button>
+          <button type="button" id="btn-import-json" class="btn">Importer JSON</button>
+          <input id="import-json-input" type="file" accept="application/json,.json" hidden>
+          <button type="button" id="btn-reset-seed" class="btn btn--danger">Réinitialiser (README)</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <form method="dialog">
+        <button type="submit" value="close" class="btn">Fermer</button>
+      </form>
+    </div>
+  </dialog>
+
+  <div id="toast-bar" class="toast-bar" role="status" aria-live="polite" hidden></div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const STORAGE_KEYS = {
+        state: 'ejlpt_roadmap_state_v1',
+        pendingOps: 'ejlpt_roadmap_pending_ops_v1',
+        serverUrl: 'ejlpt_roadmap_server_url_v1',
+        openCats: 'ejlpt_roadmap_open_cats_v1',
+        theme: 'ejlpt_roadmap_theme_v1',
+      };
+
+      const CANDIDATE_SERVERS = [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'http://127.0.0.1:3000',
+        'http://127.0.0.1:3001',
+      ];
+
+      const SEED_TS = '2026-11-26T08:30:00.000Z';
+
+      function makeSeedTask(id, categoryId, title, progress, priority, ref, notes) {
+        const status = progress >= 100 ? 'done' : progress > 0 ? 'in_progress' : 'todo';
+        return {
+          id,
+          categoryId,
+          title,
+          progress,
+          status,
+          priority,
+          ref,
+          notes,
+          createdAt: SEED_TS,
+          updatedAt: SEED_TS,
+        };
+      }
+
+      function createDefaultState() {
+        return {
+          version: 1,
+          updatedAt: SEED_TS,
+          categories: [
+            {
+              id: 'cat-grammar-drills',
+              name: 'Exercices, Phrases & Registres',
+              description: 'Transformation de phrases, particules, passif (ukemikei), politesse et syntaxe.',
+              order: 1,
+            },
+            {
+              id: 'cat-jlpt-quizzes',
+              name: 'Simulateur JLPT & Quiz Dynamiques',
+              description: 'Cahiers officiels N5–N1, Choukai audio, SRS SM-2 et modes de quiz interactifs.',
+              order: 2,
+            },
+            {
+              id: 'cat-dictionaries-kanji',
+              name: 'Dictionnaires, Kanji N0 & Données',
+              description: 'Bases unifiées, slang, onomatopées, schémas à 38 champs, thèmes et groupes.',
+              order: 3,
+            },
+            {
+              id: 'cat-connections-colors',
+              name: 'Grammaire, Couleurs & Connexions',
+              description: 'Types de connexion 【接続】, codes couleurs syntaxiques et particules.',
+              order: 4,
+            },
+            {
+              id: 'cat-reader-immersion',
+              name: 'Lecteur, Scripts Manga & Immersion',
+              description: 'Script 2 List, furigana adaptatifs, sous-titres vidéo, textes courts et presse.',
+              order: 5,
+            },
+            {
+              id: 'cat-tools-search-stats',
+              name: 'Outils Pédagogiques, Filtres & Stats',
+              description: 'Hub /tools, recherche avancée, objectifs SMART, heatmaps et outils manquants.',
+              order: 6,
+            },
+            {
+              id: 'cat-apps-community',
+              name: 'Inspirations Apps, IA & Ressources',
+              description: 'Kanjiverse 3D, Yomikata Z, JA Sensei, Todai Japan, FAQ, chat IA et sources.',
+              order: 7,
+            },
+          ],
+          tasks: [
+            makeSeedTask('t-polite-transform', 'cat-grammar-drills', 'Transformer une phrase en forme polie / keigo / futsuugo', 100, 'high', 'L2, L52', 'Atelier interactif Poli/Keigo (丁寧語/尊敬語/謙譲語/普通形) + table Keigo + 3 collections fusionnables & correction libre IA dans /practice.'),
+            makeSeedTask('t-particles-practice', 'cat-grammar-drills', 'Exercice dédié : mettre la ou les bonnes particules', 100, 'high', 'L3, L24', 'Atelier Particules dédié dans /practice (QCM + clavier + 3 collections) + guide priorité des particules sur /grammar.'),
+            makeSeedTask('t-sentence-builder-steps', 'cat-grammar-drills', 'Construire par étapes une phrase très basique vers complexe', 100, 'medium', 'L4', 'IncrementalSentenceBuilder : 5 parcours complets en 4 étapes (N5→N1) du noyau verbal à la phrase nuancée + exercices d’expansion.'),
+            makeSeedTask('t-error-correction', 'cat-grammar-drills', 'Corriger une phrase fautive (particule, grammaire, kanji, syntaxe)', 100, 'medium', 'L6', 'Atelier dédié error_correction dans /practice (particule, grammaire, politesse, syntaxe, kanji) + évaluation libre IA.'),
+            makeSeedTask('t-ukemikei', 'cat-grammar-drills', 'Règles et exercices sur la forme passive (Ukemikei)', 100, 'medium', 'L8, L75', 'Conjugateur déterministe Ukemikei + fiche de règles passif direct/迷惑の受身 + atelier dédié dans /practice.'),
+            makeSeedTask('t-conditional-imperative', 'cat-grammar-drills', 'Modules dédiés au conditionnel et à l’impératif', 100, 'low', 'L15', 'Atelier dédiéと/ば/たら/なら & 命令形/禁止形 + conjugateur + mémo comparatif dans /practice.'),
+            makeSeedTask('t-polite-to-casual', 'cat-grammar-drills', 'Passer des formes polies complètes aux formes familières / abrégées', 100, 'medium', 'L16', 'Atelier poli ↔ familier/abrégé (〜てる, 〜とく, 〜ちゃう, 〜なきゃ, 〜じゃない) + mémo contractions dans /practice.'),
+            makeSeedTask('t-double-particles-native', 'cat-grammar-drills', 'Décomposer doubles particules (とは, のを) & phrase natale + particules', 100, 'low', 'L32, L57', 'Atelier dédié décomposition doubles particules (とは, のを, では) + exercices phrase française avec particules japonaises.'),
+
+            makeSeedTask('t-jlpt-full-exams', 'cat-jlpt-quizzes', 'Simulateur JLPT complet N5 → N1 (10 examens officiels, OMR, barème /180)', 95, 'high', 'L92, L174', '10 cahiers officiels complets anonymisés (Examen #1 et #2 par niveau, 1 001 questions) + compositeur modulaire par mondai.'),
+            makeSeedTask('t-jlpt-audio-choukai', 'cat-jlpt-quizzes', 'Exercices audio type JLPT (MP3, script, illustrations, explications FR)', 95, 'high', 'L35', 'Pistes MP3 réelles, scripts complets (audioScript) et explanationFr sur toutes les épreuves Choukai (N5–N1) + ChoukaiAudioPlayer.'),
+            makeSeedTask('t-srs-error-loop', 'cat-jlpt-quizzes', 'Alimenter les prochains quiz avec les erreurs récentes (SM-2)', 90, 'high', 'L53', 'recordErrorToSRS() remonte les erreurs d’examens et de /practice dans localDb.srsCards pour alimenter srs_review.'),
+            makeSeedTask('t-dynamic-quiz-modes', 'cat-jlpt-quizzes', 'Quiz dynamiques QCM multi-modes + chrono (dextérité)', 55, 'high', 'L5, L167, L169, L171, L176', '5 modes QCM texte (kanji, grammaire, intrus, jukugo, SRS) + chrono 10s/20s/30s. Manquent : lecture rapide, écriture notée, traduction, score dextérité.'),
+            makeSeedTask('t-quiz-immediate-feedback', 'cat-jlpt-quizzes', 'Quiz avec réponse et explication immédiate juste après le choix', 45, 'medium', 'L37–L38', 'Actif dans le mode Personnalisé/Modulaire des examens et en indices texte dans /practice. Manquent images, son et GIF dans /practice.'),
+            makeSeedTask('t-intruder-set', 'cat-jlpt-quizzes', 'Trouver l’intrus / l’ensemble (syno, homo, antonyme, paronyme)', 25, 'high', 'L7, L54, L177', 'Mode synonyms_intruder présent sur kanjis, mais données vides sur antonymes (0) et homonymes (0), synonyms à 1 % (32/3042).'),
+            makeSeedTask('t-quiz-multimedia-badges', 'cat-jlpt-quizzes', 'Quiz kanji/vocab enrichis (images sprites WebP, audio + métadonnées grammaticales après choix)', 15, 'medium', 'L23, L51', 'Pipeline sprites WebP : items simples (animaux, couleurs…) -> CDN direct sans IA ; items complexes (ex. 達) -> CDN puis juge IA -> file batch si inadapté. Aucune fiche/sprite encore affichée dans /practice.'),
+            makeSeedTask('t-quiz-dragdrop-sort', 'cat-jlpt-quizzes', 'Quiz drag-and-drop (remise en ordre), tri/catégorisation & 1dan/5dan', 20, 'medium', 'L168, L172, L175', 'Atelier par clics 4 slots ★ (grammar_star) dans le cahier JLPT ; aucun drag-and-drop natif, ni tri/catégorisation, ni 1dan/5dan.'),
+
+            makeSeedTask('t-jlpt-n0-daily', 'cat-dictionaries-kanji', 'JLPT N0 : kanjis (811) et mots de la vie de tous les jours', 100, 'high', 'L10', '811 kanjis N0 + étiquetage N0 sur les 33 425 jukugo, filtrables dans /kanji, /dictionary et textAnalyzer.'),
+            makeSeedTask('t-unified-dicts', 'cat-dictionaries-kanji', 'Dictionnaires complets (kanjis, verbes, adv, adj, prép, conj, ono, proverbes, jukugo)', 100, 'medium', 'L11', 'Hub /dictionary livré : 33 425 jukugo (2/3/4+ kanjis), nature grammaticale, 自動/他動, affixes, 接続詞 et proverbes/citations.'),
+            makeSeedTask('t-slang-era-freq', 'cat-dictionaries-kanji', 'Dictionnaire slang + époque d’utilisation + fréquence annuelle (1er janv)', 100, 'low', 'L12', '851 entrées slang enrichies (époque, usage /100, filtre époque sur /slang) + route cron annuelle /api/cron/slang-refresh.'),
+            makeSeedTask('t-kanji-compounds-ends', 'cat-dictionaries-kanji', 'Lister exhaustivement les mots composés commençant / finissant par un kanji', 100, 'medium', 'L20, L87', 'KanjiRelationsNav interroge dynamiquement et exhaustivement les 33 425 jukugo (début, fin et milieu) avec pagination.'),
+            makeSeedTask('t-kanji-lists-groups', 'cat-dictionaries-kanji', 'Groupes de kanjis (même lecture 90 %, visuels 40 %, sens proche 15 %, opposés 0 %)', 100, 'medium', 'L44–L48', 'Homophones, synonymes, antonymes et ressemblances visuelles enrichis dans kanjiDatabase_unified.json + filtres /kanji et onglet Groupes sur /dictionary.'),
+            makeSeedTask('t-kanji-38-fields', 'cat-dictionaries-kanji', 'Compléter les 38 champs du schéma kanji (antonyms, isKeigo, dualisme, strokeimage…)', 90, 'high', 'L126–L164', 'Schéma 38+ champs enrichi (SKIP, antonymes, dualisme, keigo, soto/uchi, KanjiVG SVG animé) + scripts batch Gemini & sprites WebP (lots médias à lancer selon quotas).'),
+            makeSeedTask('t-dict-by-script', 'cat-dictionaries-kanji', 'Dictionnaire filtré par script (hira seul, kata seul, mixtes, romaji)', 100, 'low', 'L13', 'Classifieur classifyJapaneseScript + filtre 5 scripts (hira seul, kata seul, hira+kata, kanji, romaji) dans /dictionary.'),
+            makeSeedTask('t-kanji-themes', 'cat-dictionaries-kanji', 'Thèmes de kanjis (grammaire, prép, conj, adv, gairaigo, ateji, pronoms…)', 100, 'low', 'L98–L124', '15 thèmes grammaticaux/lexicaux calculés en base (index multiEntry *themes) et filtrables sur /kanji.'),
+            makeSeedTask('t-ono-pairs-affixes', 'cat-dictionaries-kanji', 'Onomatopées par paires opposées, préfixes/suffixes & 接続詞', 100, 'low', 'L30–L31, L56', 'Paires opposées cliquables dans /slang + référentiel préfixes/suffixes et 接続詞 groupés dans /dictionary.'),
+            makeSeedTask('t-polysemy-prob', 'cat-dictionaries-kanji', 'Repérer les mots polysémiques & % d’usage par sens', 100, 'low', 'L19, L49', 'Pondération % par sens sur kanjis & jukugo + onglet dédié Polysémie (%) avec collecte favoris dans /dictionary.'),
+
+            makeSeedTask('t-grammar-connections', 'cat-connections-colors', 'Type de connexion grammaticale 【接続】 & liste globale des patterns', 100, 'medium', 'L22, L61, L96', 'Index récapitulatif global (ConnectionsIndexModal) sur 3 212+ connexions avec filtrage en 1 clic dans /grammar.'),
+            makeSeedTask('t-connection-display-modes', 'cat-connections-colors', 'Customiser l’affichage des connexions (hiragana, romaji, formes mixtes manuels)', 100, 'medium', 'L27', 'Sélecteur 6 formats dans /grammar et VisualSystemContext (Japonais standard, Hiragana, Romaji, Manuels FR, Manuels EN, Mixte compact).'),
+            makeSeedTask('t-color-shape-system', 'cat-connections-colors', 'Système unifié couleurs/formes (bunkei, keigo, soto/uchi, +/-, adj, 1dan/5dan, 自動・他動)', 100, 'medium', 'L26, L65–L66, L74', 'Système 4 canaux simultanés aux tons japonais (Texte = maîtrise SRS 4 paliers, Fond = fréquence 1–10, Soulignement = grammaire, Pastille = JLPT) + VisualLegendBar.'),
+            makeSeedTask('t-particles-usage-guide', 'cat-connections-colors', 'Apprendre signification & cas d’utilisation détaillés des particules', 100, 'medium', 'L50', 'Guide structuré ParticlesPriorityGuide (24 particules clés + table de priorité à 5 niveaux analogie opérateurs) relié aux 284 fiches /grammar.'),
+
+            makeSeedTask('t-script-2-list-core', 'cat-reader-immersion', 'Lecteur Script 2 List : extraction vocabulaire/kanji/grammaire + stats JLPT', 60, 'high', 'L25, L70, L95', 'Analyse temps réel sur /reader avec niveau cible, taux de lisibilité et listes extractibles vers /bookmarks.'),
+            makeSeedTask('t-manga-pdf-quiz-reader', 'cat-reader-immersion', 'Bibliothèque scripts manga/animés + import PDF + extraction par prompt + quiz généré', 20, 'high', 'L25, L70', 'Seulement 3 scripts exemple en dur (N5/N3/N2). Zéro import PDF, zéro catalogue manga, zéro prompt IA ou quiz depuis le texte.'),
+            makeSeedTask('t-video-interactive-subs', 'cat-reader-immersion', 'Lecteur vidéo avec sous-titres interactifs (local MP4/WebM + YouTube + .srt/.vtt)', 0, 'medium', 'L28', 'Double mode validé (fichier local sans upload + YouTube IFrame API synchronisés avec .srt/.vtt cliquable). Non démarré.'),
+            makeSeedTask('t-memorize-texts-proverbs', 'cat-reader-immersion', 'Phrases par cœur JLPT, petits textes/histoires/chansons & proverbes', 10, 'low', 'L36, L41, L55, L60', 'Exemples statiques dans grammar_unified.json et 3 passages dans /reader ; zéro proverbe, chanson ou mode par cœur.'),
+            makeSeedTask('t-ja-defs-press-keyboard', 'cat-reader-immersion', 'Lire définitions JA monolingues, presse & tutoriels clavier JA (Linux/Win/iOS)', 15, 'low', 'L39–L40', 'Courts textes avec définitions au clic couverts sur /reader ; définitions japonaises, presse et guides clavier absents.'),
+            makeSeedTask('t-image-vocab-gairaigo', 'cat-reader-immersion', 'Vocabulaire par image/scénario & programme oral gairaigo débutants', 0, 'low', 'L21, L58', 'Non démarré.'),
+
+            makeSeedTask('t-furigana-engine', 'cat-tools-search-stats', 'Système Furigana global (Toujours / Survol / Masqués) & adaptatif SRS', 90, 'high', 'L77', 'Opérationnel dans la Navbar (FuriganaContext), les cahiers JLPT (RichJLPTText) et le lecteur adaptatif (shouldShowAdaptiveFurigana).'),
+            makeSeedTask('t-smart-goals-analytics', 'cat-tools-search-stats', 'Objectifs SMART & statistiques heatmap kanji / progrès (AnalyticsDashboard)', 65, 'high', 'L42, L72', 'Disponible dans /history (heatmap N5→N1, cartes SM-2, 3 objectifs SMART dynamiques). Manquent affichage post-quiz et stats jukugo globales.'),
+            makeSeedTask('t-advanced-search-filters', 'cat-tools-search-stats', 'Filtres avancés recherche (radical 85 %, SKIP 40 %, only:, exclure, comparer, tri +/-)', 35, 'medium', 'L14, L63–L64, L79–L94', 'Recherche globale FlexSearch/WanaKana + filtres radicaux/traits/fréquence. Absents : comparer, exclure, soto/uchi, tadoushi/jidoushi.'),
+            makeSeedTask('t-freq-scale-1-10', 'cat-tools-search-stats', 'Normaliser la fréquence des kanjis sur une échelle de 1 à 10', 100, 'low', 'L67', 'Indicateur normalisé 1–10 (frequencyScore10) intégré en base, dans frequencyScale.ts, /kanji et /dictionary.'),
+            makeSeedTask('t-missing-tools-hub', 'cat-tools-search-stats', 'Outils à ajouter dans /tools : table conjugaison, récap politesse, おすすめ, todo IA', 0, 'medium', 'L71, L73, L76, L78', '5 onglets actuels dans /tools (Canvas, Ezoe, Arbre, Kanjiverse 3D, Audio). Outil Map (L69) abandonné ; 4 outils restants à créer.'),
+
+            makeSeedTask('t-kanjiverse-3d', 'cat-apps-community', 'Kanjiverse : code couleur fréquence + UI adaptative niveau (et bonus 3D)', 100, 'medium', 'L182', 'Code couleur fréquence 1–10 sur /kanji, profil adaptatif global Débutant/Intermédiaire/Avancé (Romaji/RTK vs SKIP/Encodage) et constellation 3D conservée en bonus.'),
+            makeSeedTask('t-ja-sensei-modules', 'cat-apps-community', 'JA Sensei : modules structurés « Leçons » et « Lecture »', 20, 'medium', 'L179', 'Volet Lecture partiellement présent (/reader + Dokkai), module Leçons progressives manquant.'),
+            makeSeedTask('t-yomikata-z', 'cat-apps-community', 'Yomikata Z : phrase par niveau, mot coloré selon maîtrise SRS (QCM / clavier / oral)', 0, 'high', 'L180', 'Spec validée : phrase adaptée au niveau, mot coloré selon 4 paliers SRS, réponse QCM / clavier / oral (Web Speech + fallback Gemini audio).'),
+            makeSeedTask('t-todai-daily-news', 'cat-apps-community', 'Todai Japan : 1 nouvel article de presse / jour / niveau JLPT (RSS + adaptation IA)', 0, 'medium', 'L181', 'Spec validée : flux RSS réels (NHK / NHK Easy) classés JLPT + adaptation quotidienne Gemini cachée en MongoDB.'),
+            makeSeedTask('t-ai-oral-chat-discussion', 'cat-apps-community', 'Tchat oral IA borné par JLPT + générateur de sujets de discussion', 0, 'low', 'L34, L43', 'Tchat IA uniquement (volet natif abandonné) : session bornée par JLPT/thème + Web Speech / Gemini audio + générateur de sujets.'),
+            makeSeedTask('t-faq-stackoverflow-ai', 'cat-apps-community', 'FAQ publique AI-enhanced à la StackOverflow par catégories et niveaux', 0, 'low', 'L17', 'Spec validée : 100 % publique, anti-doublons IA, anonyme pour questions/commentaires (modération auto), compte Clerk pour votes, modération admin.'),
+            makeSeedTask('t-resources-learning-order', 'cat-apps-community', 'Page ressources vulgarisée (Ezoe, Genki, PDF, YouTube) & ordre kata→hira→clé→part→kanji', 5, 'low', 'L9, L29, L183–L187', 'Pas de page dédiée ni crédits/liens runtime vers edict_database, kanjium, japanese-toolkit ou kanjiapi.dev.'),
+          ],
+        };
+      }
+
+      // Application runtime state
+      let appState = createDefaultState();
+      let pendingOps = [];
+      let serverOnline = false;
+      let activeServerOrigin = '';
+      let isSyncing = false;
+      let editingTaskId = null;
+      let editingCategoryId = null;
+      let confirmHandler = null;
+      let expandedNoteIds = new Set();
+      let toastTimer = null;
+
+      // DOM elements
+      const el = {
+        statusPill: document.getElementById('server-status-pill'),
+        statusIcon: document.getElementById('server-status-icon'),
+        statusText: document.getElementById('server-status-text'),
+        pendingChip: document.getElementById('pending-sync-chip'),
+        pendingText: document.getElementById('pending-sync-text'),
+        btnSyncNow: document.getElementById('btn-sync-now'),
+        kpiAvgPct: document.getElementById('kpi-avg-pct'),
+        kpiAvgProgress: document.getElementById('kpi-avg-progress'),
+        kpiTotal: document.getElementById('kpi-total'),
+        kpiDone: document.getElementById('kpi-done'),
+        kpiProgress: document.getElementById('kpi-progress'),
+        kpiTodo: document.getElementById('kpi-todo'),
+        searchInput: document.getElementById('search-input'),
+        statusFilter: document.getElementById('status-filter'),
+        priorityFilter: document.getElementById('priority-filter'),
+        filterForm: document.getElementById('filter-form'),
+        btnToggleAll: document.getElementById('btn-toggle-all'),
+        btnNewCategory: document.getElementById('btn-new-category'),
+        btnNewTask: document.getElementById('btn-new-task'),
+        accordionSection: document.getElementById('categories-accordion'),
+        categoriesContainer: document.getElementById('categories-container'),
+        visibleCountLabel: document.getElementById('visible-count-label'),
+        lastUpdatedFooter: document.getElementById('last-updated-footer'),
+        toastBar: document.getElementById('toast-bar'),
+        // Task dialog
+        taskDialog: document.getElementById('task-dialog'),
+        taskDialogTitle: document.getElementById('task-dialog-title'),
+        taskDialogClose: document.getElementById('task-dialog-close'),
+        taskForm: document.getElementById('task-form'),
+        taskFormError: document.getElementById('task-form-error'),
+        taskTitleInput: document.getElementById('task-title-input'),
+        taskCategorySelect: document.getElementById('task-category-select'),
+        taskPrioritySelect: document.getElementById('task-priority-select'),
+        taskStatusSelect: document.getElementById('task-status-select'),
+        taskRefInput: document.getElementById('task-ref-input'),
+        taskProgressRange: document.getElementById('task-progress-range'),
+        taskProgressNumber: document.getElementById('task-progress-number'),
+        taskNotesInput: document.getElementById('task-notes-input'),
+        taskFormCancel: document.getElementById('task-form-cancel'),
+        // Category dialog
+        categoryDialog: document.getElementById('category-dialog'),
+        categoryDialogTitle: document.getElementById('category-dialog-title'),
+        categoryDialogClose: document.getElementById('category-dialog-close'),
+        categoryForm: document.getElementById('category-form'),
+        categoryFormError: document.getElementById('category-form-error'),
+        categoryNameInput: document.getElementById('category-name-input'),
+        categoryDescInput: document.getElementById('category-desc-input'),
+        categoryFormCancel: document.getElementById('category-form-cancel'),
+        // Confirm dialog
+        confirmDialog: document.getElementById('confirm-dialog'),
+        confirmDialogClose: document.getElementById('confirm-dialog-close'),
+        confirmDialogMsg: document.getElementById('confirm-dialog-message'),
+        // Server dialog
+        serverDialog: document.getElementById('server-dialog'),
+        serverDialogClose: document.getElementById('server-dialog-close'),
+        serverUrlInput: document.getElementById('server-url-input'),
+        btnSaveServerUrl: document.getElementById('btn-save-server-url'),
+        themeSelect: document.getElementById('theme-select'),
+        btnExportJson: document.getElementById('btn-export-json'),
+        btnImportJson: document.getElementById('btn-import-json'),
+        importJsonInput: document.getElementById('import-json-input'),
+        btnResetSeed: document.getElementById('btn-reset-seed'),
+      };
+
+      function safeParseJson(str, fallback) {
+        try {
+          return str ? JSON.parse(str) : fallback;
+        } catch {
+          return fallback;
+        }
+      }
+
+      function showToast(message) {
+        el.toastBar.textContent = message;
+        el.toastBar.hidden = false;
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          el.toastBar.hidden = true;
+        }, 3200);
+      }
+
+      function clampPct(val) {
+        const num = Number(val);
+        if (!Number.isFinite(num)) return 0;
+        return Math.max(0, Math.min(100, Math.round(num)));
+      }
+
+      function deriveStatus(progress, explicit) {
+        if (progress >= 100) return 'done';
+        if (progress === 0 && explicit === 'done') return 'todo';
+        if (explicit === 'todo' || explicit === 'in_progress' || explicit === 'done') return explicit;
+        return progress > 0 ? 'in_progress' : 'todo';
+      }
+
+      function saveLocalSnapshot() {
+        try {
+          localStorage.setItem(STORAGE_KEYS.state, JSON.stringify(appState));
+          localStorage.setItem(STORAGE_KEYS.pendingOps, JSON.stringify(pendingOps));
+        } catch (err) {
+          console.warn('localStorage indisponible:', err);
+        }
+        renderPendingBadge();
+      }
+
+      function loadLocalSnapshot() {
+        const cached = safeParseJson(localStorage.getItem(STORAGE_KEYS.state), null);
+        const queued = safeParseJson(localStorage.getItem(STORAGE_KEYS.pendingOps), []);
+        pendingOps = Array.isArray(queued) ? queued : [];
+        if (cached && Array.isArray(cached.categories) && Array.isArray(cached.tasks)) {
+          appState = cached;
+        } else {
+          appState = createDefaultState();
+          saveLocalSnapshot();
+        }
+      }
+
+      function getOpenCategoriesSet() {
+        const stored = safeParseJson(localStorage.getItem(STORAGE_KEYS.openCats), null);
+        if (Array.isArray(stored)) return new Set(stored);
+        // Par défaut ouvrir la première catégorie pour un rendu compact et immédiat
+        const first = appState.categories[0]?.id;
+        return first ? new Set([first]) : new Set();
+      }
+
+      function saveOpenCategoriesSet(set) {
+        try {
+          localStorage.setItem(STORAGE_KEYS.openCats, JSON.stringify([...set]));
+        } catch {
+          // ignore
+        }
+      }
+
+      function applyTheme(mode) {
+        const clean = mode === 'dark' || mode === 'light' ? mode : 'system';
+        if (clean === 'system') {
+          document.documentElement.removeAttribute('data-theme');
+        } else {
+          document.documentElement.setAttribute('data-theme', clean);
+        }
+        el.themeSelect.value = clean;
+        try {
+          localStorage.setItem(STORAGE_KEYS.theme, clean);
+        } catch {
+          // ignore
+        }
+      }
+
+      function setServerStatusUI(state, labelText) {
+        el.statusPill.setAttribute('data-state', state);
+        el.statusText.textContent = labelText;
+        if (state === 'online') {
+          el.statusIcon.textContent = '●';
+        } else if (state === 'offline') {
+          el.statusIcon.textContent = '○';
+        } else {
+          el.statusIcon.textContent = '◌';
+        }
+      }
+
+      function renderPendingBadge() {
+        if (pendingOps.length > 0) {
+          el.pendingChip.hidden = false;
+          el.pendingText.textContent = `${pendingOps.length} modif(s) locale(s) en attente`;
+        } else {
+          el.pendingChip.hidden = true;
+        }
+      }
+
+      function buildCandidateUrls() {
+        const saved = (localStorage.getItem(STORAGE_KEYS.serverUrl) || '').trim().replace(/\/+$/, '');
+        if (saved) {
+          return window.location.protocol === 'http:' || window.location.protocol === 'https:'
+            ? Array.from(new Set([saved, window.location.origin]))
+            : [saved];
+        }
+        const list = [];
+        if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+          list.push(window.location.origin);
+        }
+        for (const c of CANDIDATE_SERVERS) {
+          if (!list.includes(c)) list.push(c);
+        }
+        return list;
+      }
+
+      async function fetchWithTimeout(url, options = {}, timeoutMs = 1800) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), timeoutMs);
+        try {
+          return await fetch(url, {
+            ...options,
+            signal: controller.signal,
+            mode: 'cors',
+          });
+        } finally {
+          clearTimeout(timer);
+        }
+      }
+
+      async function probeServerOrigin() {
+        const candidates = buildCandidateUrls();
+        for (const base of candidates) {
+          try {
+            const res = await fetchWithTimeout(`${base}/api/roadmap?ping=1`, { method: 'GET' }, 1400);
+            if (res.ok) {
+              const data = await res.json();
+              if (data && data.ok && data.source === 'ejlpt-nextjs-server') {
+                return base;
+              }
+            }
+          } catch {
+            // Try next candidate
+          }
+        }
+        return null;
+      }
+
+      async function syncWithServer({ manual = false } = {}) {
+        if (isSyncing) return false;
+        isSyncing = true;
+        if (manual) setServerStatusUI('syncing', 'Vérification du serveur…');
+
+        try {
+          const detectedOrigin = await probeServerOrigin();
+          if (!detectedOrigin) {
+            serverOnline = false;
+            activeServerOrigin = '';
+            setServerStatusUI('offline', 'Serveur arrêté · localStorage actif');
+            if (manual) showToast('Serveur non détecté : sauvegarde maintenue en localStorage.');
+            return false;
+          }
+
+          activeServerOrigin = detectedOrigin;
+          serverOnline = true;
+
+          // Flush offline queued operations BEFORE reading server state so local CRUD edits win cleanly
+          if (pendingOps.length > 0) {
+            const syncRes = await fetchWithTimeout(
+              `${activeServerOrigin}/api/roadmap`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'sync_ops', ops: pendingOps }),
+              },
+              4000
+            );
+            if (!syncRes.ok) throw new Error('Échec sync_ops');
+            const syncData = await syncRes.json();
+            if (syncData.ok && syncData.state) {
+              appState = syncData.state;
+              pendingOps = [];
+              saveLocalSnapshot();
+              renderAll();
+              const hostLabel = activeServerOrigin.replace(/^https?:\/\//, '');
+              setServerStatusUI('online', `Serveur connecté (${hostLabel})`);
+              showToast(`${syncData.appliedCount} modification(s) locale(s) synchronisée(s) vers le serveur.`);
+              return true;
+            }
+          }
+
+          // Pull fresh authoritative server state
+          const getRes = await fetchWithTimeout(`${activeServerOrigin}/api/roadmap`, { method: 'GET' }, 3000);
+          if (!getRes.ok) throw new Error('Échec GET /api/roadmap');
+          const payload = await getRes.json();
+          if (payload.ok && payload.state) {
+            appState = payload.state;
+            saveLocalSnapshot();
+            renderAll();
+            const hostLabel = activeServerOrigin.replace(/^https?:\/\//, '');
+            setServerStatusUI('online', `Serveur connecté (${hostLabel})`);
+            if (manual) showToast('Synchronisé avec le serveur eJLPT.');
+            return true;
+          }
+          throw new Error('Réponse serveur invalide');
+        } catch {
+          serverOnline = false;
+          activeServerOrigin = '';
+          setServerStatusUI('offline', 'Serveur arrêté · localStorage actif');
+          if (manual) showToast('Serveur indisponible · persistance en localStorage.');
+          return false;
+        } finally {
+          isSyncing = false;
+        }
+      }
+
+      async function persistMutation(op, remoteRequestFn, { rerenderOnAck = false } = {}) {
+        appState.updatedAt = new Date().toISOString();
+        saveLocalSnapshot();
+        renderAll();
+
+        if (!serverOnline || !activeServerOrigin) {
+          pendingOps.push(op);
+          saveLocalSnapshot();
+          setServerStatusUI('offline', 'Serveur arrêté · localStorage actif');
+          return false;
+        }
+
+        try {
+          const reqSpec = remoteRequestFn(activeServerOrigin);
+          const targetUrl = reqSpec.url || `${activeServerOrigin}/api/roadmap`;
+          const fetchOpts = reqSpec.options || reqSpec;
+          const res = await fetchWithTimeout(targetUrl, fetchOpts, 3000);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+          if (data.ok && data.state) {
+            appState.updatedAt = data.state.updatedAt || appState.updatedAt;
+            if (rerenderOnAck) {
+              appState = data.state;
+              saveLocalSnapshot();
+              renderAll();
+            } else {
+              saveLocalSnapshot();
+              renderKPIs();
+            }
+          }
+          return true;
+        } catch {
+          // Server stopped mid-session -> switch to offline queue automatically!
+          serverOnline = false;
+          activeServerOrigin = '';
+          pendingOps.push(op);
+          saveLocalSnapshot();
+          setServerStatusUI('offline', 'Serveur arrêté · localStorage actif');
+          showToast('Serveur déconnecté : changement sauvegardé en localStorage.');
+          return false;
+        }
+      }
+
+      // Local state mutations (CRUD)
+      function upsertTaskLocal(taskPayload) {
+        const now = new Date().toISOString();
+        const idx = taskPayload.id ? appState.tasks.findIndex((t) => t.id === taskPayload.id) : -1;
+        const progress = clampPct(taskPayload.progress ?? (idx >= 0 ? appState.tasks[idx].progress : 0));
+        const status = deriveStatus(progress, taskPayload.status);
+        let savedTask;
+
+        if (idx >= 0) {
+          savedTask = {
+            ...appState.tasks[idx],
+            ...taskPayload,
+            progress,
+            status,
+            updatedAt: now,
+          };
+          appState.tasks[idx] = savedTask;
+        } else {
+          savedTask = {
+            id: taskPayload.id || `task_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+            categoryId: taskPayload.categoryId || appState.categories[0]?.id || 'cat-general',
+            title: String(taskPayload.title || '').trim(),
+            progress,
+            status,
+            priority: taskPayload.priority || 'medium',
+            ref: String(taskPayload.ref || '').trim(),
+            notes: String(taskPayload.notes || '').trim(),
+            createdAt: now,
+            updatedAt: now,
+          };
+          appState.tasks.unshift(savedTask);
+        }
+
+        const op = {
+          opId: `op_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+          type: 'upsert_task',
+          payload: savedTask,
+          ts: now,
+        };
+
+        void persistMutation(op, () => ({
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'upsert_task', task: savedTask }),
+        }));
+      }
+
+      function deleteTaskLocal(taskId) {
+        const now = new Date().toISOString();
+        appState.tasks = appState.tasks.filter((t) => t.id !== taskId);
+        const op = {
+          opId: `op_${Date.now()}`,
+          type: 'delete_task',
+          payload: { id: taskId },
+          ts: now,
+        };
+
+        void persistMutation(op, (origin) => ({
+          url: `${origin}/api/roadmap?kind=task&id=${encodeURIComponent(taskId)}`,
+          options: { method: 'DELETE' },
+        }));
+      }
+
+      function upsertCategoryLocal(catPayload) {
+        const now = new Date().toISOString();
+        const idx = catPayload.id ? appState.categories.findIndex((c) => c.id === catPayload.id) : -1;
+        let savedCat;
+        if (idx >= 0) {
+          savedCat = { ...appState.categories[idx], ...catPayload };
+          appState.categories[idx] = savedCat;
+        } else {
+          const maxOrder = appState.categories.reduce((m, c) => Math.max(m, c.order || 0), 0);
+          savedCat = {
+            id: catPayload.id || `cat_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+            name: String(catPayload.name || '').trim(),
+            description: String(catPayload.description || '').trim(),
+            order: maxOrder + 1,
+          };
+          appState.categories.push(savedCat);
+          const openSet = getOpenCategoriesSet();
+          openSet.add(savedCat.id);
+          saveOpenCategoriesSet(openSet);
+        }
+
+        const op = {
+          opId: `op_${Date.now()}`,
+          type: 'upsert_category',
+          payload: savedCat,
+          ts: now,
+        };
+
+        void persistMutation(op, () => ({
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'upsert_category', category: savedCat }),
+        }));
+      }
+
+      function deleteCategoryLocal(categoryId) {
+        const now = new Date().toISOString();
+        appState.categories = appState.categories.filter((c) => c.id !== categoryId);
+        appState.tasks = appState.tasks.filter((t) => t.categoryId !== categoryId);
+        if (appState.categories.length === 0) {
+          appState.categories.push({ id: 'cat-general', name: 'Général', description: '', order: 1 });
+        }
+
+        const op = {
+          opId: `op_${Date.now()}`,
+          type: 'delete_category',
+          payload: { id: categoryId },
+          ts: now,
+        };
+
+        void persistMutation(op, (origin) => ({
+          url: `${origin}/api/roadmap?kind=category&id=${encodeURIComponent(categoryId)}`,
+          options: { method: 'DELETE' },
+        }));
+      }
+
+      // Filtering & Rendering
+      function getFilters() {
+        return {
+          query: el.searchInput.value.trim().toLowerCase(),
+          status: el.statusFilter.value,
+          priority: el.priorityFilter.value,
+        };
+      }
+
+      function matchesFilters(task, filters) {
+        if (filters.status !== 'all' && task.status !== filters.status) return false;
+        if (filters.priority !== 'all' && task.priority !== filters.priority) return false;
+        if (filters.query) {
+          const haystack = `${task.title} ${task.ref || ''} ${task.notes || ''}`.toLowerCase();
+          if (!haystack.includes(filters.query)) return false;
+        }
+        return true;
+      }
+
+      function priorityLabel(p) {
+        if (p === 'high') return 'Haute';
+        if (p === 'low') return 'Basse';
+        return 'Normale';
+      }
+
+      function priorityIcon(p) {
+        if (p === 'high') return '▲';
+        if (p === 'low') return '▼';
+        return '●';
+      }
+
+      function renderKPIs() {
+        const tasks = appState.tasks;
+        const total = tasks.length;
+        const done = tasks.filter((t) => t.status === 'done' || t.progress >= 100).length;
+        const todo = tasks.filter((t) => t.status === 'todo' && t.progress === 0).length;
+        const inProgress = Math.max(0, total - done - todo);
+        const avg = total > 0
+          ? Math.round(tasks.reduce((sum, t) => sum + clampPct(t.progress), 0) / total)
+          : 0;
+
+        el.kpiAvgPct.textContent = `${avg} %`;
+        el.kpiAvgProgress.value = avg;
+        el.kpiTotal.textContent = String(total);
+        el.kpiDone.textContent = String(done);
+        el.kpiProgress.textContent = String(inProgress);
+        el.kpiTodo.textContent = String(todo);
+
+        if (appState.updatedAt) {
+          try {
+            const dt = new Date(appState.updatedAt).toLocaleString('fr-FR');
+            el.lastUpdatedFooter.textContent = `Dernière mise à jour : ${dt}`;
+          } catch {
+            el.lastUpdatedFooter.textContent = `Dernière mise à jour : ${appState.updatedAt}`;
+          }
+        }
+      }
+
+      function syncExpandAllButton() {
+        const detailsList = el.categoriesContainer.querySelectorAll(':scope > details.cat-card');
+        const allOpen = detailsList.length > 0 && Array.prototype.every.call(detailsList, (d) => d.open);
+        el.btnToggleAll.setAttribute('aria-expanded', String(allOpen));
+      }
+
+      function renderCategories() {
+        const filters = getFilters();
+        const hasActiveFilter = Boolean(filters.query || filters.status !== 'all' || filters.priority !== 'all');
+        const openSet = getOpenCategoriesSet();
+
+        el.categoriesContainer.innerHTML = '';
+        let totalVisible = 0;
+
+        const sortedCats = [...appState.categories].sort((a, b) => (a.order || 0) - (b.order || 0));
+
+        for (const cat of sortedCats) {
+          const catAllTasks = appState.tasks.filter((t) => t.categoryId === cat.id);
+          const visibleTasks = catAllTasks.filter((t) => matchesFilters(t, filters));
+          if (hasActiveFilter && visibleTasks.length === 0) continue;
+
+          totalVisible += visibleTasks.length;
+
+          const doneCount = catAllTasks.filter((t) => t.status === 'done' || t.progress >= 100).length;
+          const avgCatPct = catAllTasks.length > 0
+            ? Math.round(catAllTasks.reduce((s, t) => s + clampPct(t.progress), 0) / catAllTasks.length)
+            : 0;
+
+          const details = document.createElement('details');
+          details.className = 'cat-card';
+          details.dataset.categoryId = cat.id;
+          details.open = hasActiveFilter ? visibleTasks.length > 0 : openSet.has(cat.id);
+
+          // Summary (no headings, no interactive controls nested inside <summary> per accordion guide)
+          const summary = document.createElement('summary');
+          summary.className = 'cat-summary';
+
+          const titleWrap = document.createElement('span');
+          titleWrap.className = 'cat-summary__title';
+          const nameSpan = document.createElement('span');
+          nameSpan.textContent = cat.name;
+          titleWrap.appendChild(nameSpan);
+
+          if (cat.description) {
+            const descSpan = document.createElement('span');
+            descSpan.className = 'cat-summary__desc';
+            descSpan.textContent = `— ${cat.description}`;
+            titleWrap.appendChild(descSpan);
+          }
+
+          const countSpan = document.createElement('span');
+          countSpan.className = 'cat-summary__count';
+          countSpan.textContent = hasActiveFilter
+            ? `${visibleTasks.length}/${catAllTasks.length} affichées`
+            : `${doneCount}/${catAllTasks.length} terminées`;
+
+          const meterWrap = document.createElement('span');
+          meterWrap.className = 'cat-summary__meter-wrap';
+          const catMeter = document.createElement('progress');
+          catMeter.className = 'progress-meter';
+          catMeter.value = avgCatPct;
+          catMeter.max = 100;
+          catMeter.setAttribute('aria-label', `Avancement ${cat.name}`);
+          const pctSpan = document.createElement('span');
+          pctSpan.className = 'cat-summary__pct';
+          pctSpan.textContent = `${avgCatPct} %`;
+          meterWrap.append(catMeter, pctSpan);
+
+          summary.append(titleWrap, countSpan, meterWrap);
+          details.appendChild(summary);
+
+          // Body inside <details>
+          const body = document.createElement('div');
+          body.className = 'cat-body';
+
+          if (visibleTasks.length > 0) {
+            const ul = document.createElement('ul');
+            ul.className = 'task-list';
+
+            for (const task of visibleTasks) {
+              const li = document.createElement('li');
+              const row = document.createElement('div');
+              row.className = 'task-row';
+
+              // Checkbox toggle 100% <-> 0%
+              const checkWrap = document.createElement('span');
+              checkWrap.className = 'task-check-wrap';
+              const chkId = `chk-${task.id}`;
+              const chkLabel = document.createElement('label');
+              chkLabel.htmlFor = chkId;
+              chkLabel.className = 'visually-hidden';
+              chkLabel.textContent = `Marquer comme terminée : ${task.title}`;
+              const chk = document.createElement('input');
+              chk.id = chkId;
+              chk.type = 'checkbox';
+              chk.className = 'task-check';
+              chk.checked = task.status === 'done' || task.progress >= 100;
+              chk.addEventListener('change', () => {
+                const nextPct = chk.checked ? 100 : 0;
+                const nextStatus = chk.checked ? 'done' : 'todo';
+                upsertTaskLocal({ id: task.id, progress: nextPct, status: nextStatus });
+                showToast(chk.checked ? 'Tâche marquée terminée (100 %).' : 'Tâche remise à 0 %.');
+              });
+              checkWrap.append(chkLabel, chk);
+
+              // Main text + ref + compact notes
+              const mainCol = document.createElement('div');
+              mainCol.className = 'task-main';
+              const titleLine = document.createElement('div');
+              titleLine.className = 'task-title-line';
+              const tSpan = document.createElement('span');
+              tSpan.className = 'task-title';
+              tSpan.textContent = task.title;
+              titleLine.appendChild(tSpan);
+
+              if (task.ref) {
+                const rBadge = document.createElement('span');
+                rBadge.className = 'ref-badge';
+                rBadge.textContent = task.ref;
+                titleLine.appendChild(rBadge);
+              }
+              mainCol.appendChild(titleLine);
+
+              if (task.notes) {
+                const nDiv = document.createElement('p');
+                nDiv.className = expandedNoteIds.has(task.id)
+                  ? 'task-notes task-notes--expanded'
+                  : 'task-notes';
+                nDiv.textContent = task.notes;
+                mainCol.appendChild(nDiv);
+              }
+
+              // Priority badge (text + icon, never color alone)
+              const prioSpan = document.createElement('span');
+              prioSpan.className = 'priority-tag task-row__meta-group';
+              prioSpan.dataset.priority = task.priority;
+              prioSpan.textContent = `${priorityIcon(task.priority)} ${priorityLabel(task.priority)}`;
+
+              // Inline status selector
+              const stId = `st-${task.id}`;
+              const stLabel = document.createElement('label');
+              stLabel.htmlFor = stId;
+              stLabel.className = 'visually-hidden';
+              stLabel.textContent = `Statut de ${task.title}`;
+              const stSel = document.createElement('select');
+              stSel.id = stId;
+              stSel.className = 'status-select';
+              stSel.dataset.status = task.status;
+              for (const optDef of [
+                { v: 'todo', l: 'À faire' },
+                { v: 'in_progress', l: 'En cours' },
+                { v: 'done', l: 'Terminé' },
+              ]) {
+                const o = document.createElement('option');
+                o.value = optDef.v;
+                o.textContent = optDef.l;
+                o.selected = task.status === optDef.v;
+                stSel.appendChild(o);
+              }
+              stSel.addEventListener('change', () => {
+                const val = stSel.value;
+                let nextPct = task.progress;
+                if (val === 'done') nextPct = 100;
+                else if (val === 'todo') nextPct = 0;
+                else if (nextPct === 0 || nextPct === 100) nextPct = 25;
+                upsertTaskLocal({ id: task.id, status: val, progress: nextPct });
+                showToast('Statut mis à jour.');
+              });
+
+              // Inline editable % numeric field
+              const pctWrap = document.createElement('div');
+              pctWrap.className = 'pct-editor';
+              const pctId = `pct-${task.id}`;
+              const pctLabel = document.createElement('label');
+              pctLabel.htmlFor = pctId;
+              pctLabel.className = 'visually-hidden';
+              pctLabel.textContent = `Pourcentage d'avancement de ${task.title}`;
+              const pctInput = document.createElement('input');
+              pctInput.id = pctId;
+              pctInput.type = 'number';
+              pctInput.min = '0';
+              pctInput.max = '100';
+              pctInput.className = 'pct-input';
+              pctInput.value = String(clampPct(task.progress));
+              const pctUnit = document.createElement('span');
+              pctUnit.textContent = '%';
+
+              const commitPct = () => {
+                const nextPct = clampPct(pctInput.value);
+                pctInput.value = String(nextPct);
+                if (nextPct !== task.progress) {
+                  upsertTaskLocal({
+                    id: task.id,
+                    progress: nextPct,
+                    status: deriveStatus(nextPct),
+                  });
+                  showToast(`Progression mise à jour (${nextPct} %).`);
+                }
+              };
+              pctInput.addEventListener('change', commitPct);
+              pctInput.addEventListener('keydown', (ev) => {
+                if (ev.key === 'Enter') {
+                  ev.preventDefault();
+                  commitPct();
+                }
+              });
+              pctWrap.append(pctLabel, pctInput, pctUnit);
+
+              // Row CRUD actions (accessible disambiguated names)
+              const actions = document.createElement('div');
+              actions.className = 'row-actions';
+
+              if (task.notes) {
+                const noteBtn = document.createElement('button');
+                noteBtn.type = 'button';
+                noteBtn.className = 'btn btn--compact';
+                noteBtn.setAttribute('aria-expanded', String(expandedNoteIds.has(task.id)));
+                const noteLabel = document.createTextNode(expandedNoteIds.has(task.id) ? 'Moins' : 'Note');
+                const noteSr = document.createElement('span');
+                noteSr.className = 'visually-hidden';
+                noteSr.textContent = ` pour ${task.title}`;
+                noteBtn.append(noteLabel, noteSr);
+                noteBtn.addEventListener('click', () => {
+                  if (expandedNoteIds.has(task.id)) expandedNoteIds.delete(task.id);
+                  else expandedNoteIds.add(task.id);
+                  renderCategories();
+                });
+                actions.appendChild(noteBtn);
+              }
+
+              const editBtn = document.createElement('button');
+              editBtn.type = 'button';
+              editBtn.className = 'btn btn--compact';
+              const editSr = document.createElement('span');
+              editSr.className = 'visually-hidden';
+              editSr.textContent = ` ${task.title}`;
+              editBtn.append(document.createTextNode('Éditer'), editSr);
+              editBtn.addEventListener('click', () => openTaskModal(task));
+
+              const delBtn = document.createElement('button');
+              delBtn.type = 'button';
+              delBtn.className = 'btn btn--compact btn--danger';
+              const delSr = document.createElement('span');
+              delSr.className = 'visually-hidden';
+              delSr.textContent = ` ${task.title}`;
+              delBtn.append(document.createTextNode('Suppr.'), delSr);
+              delBtn.addEventListener('click', () => {
+                openConfirmDialog(
+                  `Supprimer définitivement la tâche « ${task.title} » ?`,
+                  () => {
+                    deleteTaskLocal(task.id);
+                    showToast('Tâche supprimée.');
+                  }
+                );
+              });
+
+              actions.append(editBtn, delBtn);
+
+              const stWrap = document.createElement('div');
+              stWrap.append(stLabel, stSel);
+
+              row.append(checkWrap, mainCol, prioSpan, stWrap, pctWrap, actions);
+              li.appendChild(row);
+              ul.appendChild(li);
+            }
+
+            body.appendChild(ul);
+          }
+
+          // Category quick-add & management bar (outside <summary>)
+          const catFooter = document.createElement('div');
+          catFooter.className = 'cat-footer-bar';
+
+          const quickForm = document.createElement('form');
+          quickForm.className = 'quick-add-form';
+          const qaId = `qa-${cat.id}`;
+          const qaLabel = document.createElement('label');
+          qaLabel.htmlFor = qaId;
+          qaLabel.className = 'visually-hidden';
+          qaLabel.textContent = `Ajouter rapidement une tâche dans ${cat.name}`;
+          const qaInput = document.createElement('input');
+          qaInput.id = qaId;
+          qaInput.type = 'text';
+          qaInput.className = 'input-control quick-add-input';
+          qaInput.placeholder = `+ Ajouter une tâche dans « ${cat.name} »…`;
+          qaInput.required = true;
+
+          const qaPctId = `qapct-${cat.id}`;
+          const qaPctLabel = document.createElement('label');
+          qaPctLabel.htmlFor = qaPctId;
+          qaPctLabel.className = 'visually-hidden';
+          qaPctLabel.textContent = `Pourcentage initial dans ${cat.name}`;
+          const qaPct = document.createElement('input');
+          qaPct.id = qaPctId;
+          qaPct.type = 'number';
+          qaPct.min = '0';
+          qaPct.max = '100';
+          qaPct.value = '0';
+          qaPct.className = 'pct-input';
+
+          const qaSubmit = document.createElement('button');
+          qaSubmit.type = 'submit';
+          qaSubmit.className = 'btn btn--compact btn--primary';
+          qaSubmit.textContent = 'Ajouter';
+
+          quickForm.addEventListener('submit', (ev) => {
+            ev.preventDefault();
+            const title = qaInput.value.trim();
+            if (!title) return;
+            const progress = clampPct(qaPct.value);
+            upsertTaskLocal({
+              categoryId: cat.id,
+              title,
+              progress,
+              status: deriveStatus(progress),
+              priority: 'medium',
+            });
+            showToast(`Tâche ajoutée dans ${cat.name}.`);
+          });
+
+          quickForm.append(qaLabel, qaInput, qaPctLabel, qaPct, qaSubmit);
+
+          const catAdmin = document.createElement('div');
+          catAdmin.className = 'cat-admin-actions';
+
+          const renameCatBtn = document.createElement('button');
+          renameCatBtn.type = 'button';
+          renameCatBtn.className = 'btn btn--compact';
+          const renSr = document.createElement('span');
+          renSr.className = 'visually-hidden';
+          renSr.textContent = ` la catégorie ${cat.name}`;
+          renameCatBtn.append(document.createTextNode('Renommer'), renSr);
+          renameCatBtn.addEventListener('click', () => openCategoryModal(cat));
+
+          const delCatBtn = document.createElement('button');
+          delCatBtn.type = 'button';
+          delCatBtn.className = 'btn btn--compact btn--danger';
+          const delCatSr = document.createElement('span');
+          delCatSr.className = 'visually-hidden';
+          delCatSr.textContent = ` la catégorie ${cat.name}`;
+          delCatBtn.append(document.createTextNode('Suppr. cat.'), delCatSr);
+          delCatBtn.addEventListener('click', () => {
+            openConfirmDialog(
+              `Supprimer la catégorie « ${cat.name} » et ses ${catAllTasks.length} tâche(s) associée(s) ?`,
+              () => {
+                deleteCategoryLocal(cat.id);
+                showToast('Catégorie supprimée.');
+              }
+            );
+          });
+
+          catAdmin.append(renameCatBtn, delCatBtn);
+          catFooter.append(quickForm, catAdmin);
+          body.appendChild(catFooter);
+
+          details.appendChild(body);
+          el.categoriesContainer.appendChild(details);
+        }
+
+        if (totalVisible === 0) {
+          const empty = document.createElement('div');
+          empty.className = 'empty-state';
+          empty.textContent = hasActiveFilter
+            ? 'Aucune tâche ne correspond aux filtres actuels.'
+            : 'Aucune tâche enregistrée. Cliquez sur « + Nouvelle tâche » pour commencer.';
+          el.categoriesContainer.appendChild(empty);
+        }
+
+        el.visibleCountLabel.textContent = `${totalVisible} tâche(s) affichée(s)`;
+        syncExpandAllButton();
+      }
+
+      function renderAll() {
+        renderKPIs();
+        renderCategories();
+        renderPendingBadge();
+      }
+
+      // Modals
+      function populateCategoryDropdown(selectedId) {
+        el.taskCategorySelect.innerHTML = '';
+        const sorted = [...appState.categories].sort((a, b) => (a.order || 0) - (b.order || 0));
+        for (const c of sorted) {
+          const opt = document.createElement('option');
+          opt.value = c.id;
+          opt.textContent = c.name;
+          if (c.id === selectedId) opt.selected = true;
+          el.taskCategorySelect.appendChild(opt);
+        }
+      }
+
+      function openTaskModal(task = null, defaultCategoryId = null) {
+        editingTaskId = task ? task.id : null;
+        el.taskFormError.hidden = true;
+        el.taskDialogTitle.textContent = task ? 'Modifier la tâche' : 'Nouvelle tâche';
+        el.taskTitleInput.value = task ? task.title : '';
+        populateCategoryDropdown(task?.categoryId || defaultCategoryId || appState.categories[0]?.id);
+        el.taskPrioritySelect.value = task?.priority || 'medium';
+        const pct = task ? clampPct(task.progress) : 0;
+        el.taskProgressRange.value = String(pct);
+        el.taskProgressNumber.value = String(pct);
+        el.taskStatusSelect.value = task?.status || deriveStatus(pct);
+        el.taskRefInput.value = task?.ref || '';
+        el.taskNotesInput.value = task?.notes || '';
+        el.taskDialog.showModal();
+      }
+
+      function openCategoryModal(category = null) {
+        editingCategoryId = category ? category.id : null;
+        el.categoryFormError.hidden = true;
+        el.categoryDialogTitle.textContent = category ? 'Modifier la catégorie' : 'Nouvelle catégorie';
+        el.categoryNameInput.value = category ? category.name : '';
+        el.categoryDescInput.value = category?.description || '';
+        el.categoryDialog.showModal();
+      }
+
+      function openConfirmDialog(message, onConfirm) {
+        el.confirmDialogMsg.textContent = message;
+        confirmHandler = onConfirm;
+        el.confirmDialog.showModal();
+      }
+
+      function bindModalEvents() {
+        // Range <-> number sync inside task dialog
+        const syncPctInputs = (val) => {
+          const clean = clampPct(val);
+          el.taskProgressRange.value = String(clean);
+          el.taskProgressNumber.value = String(clean);
+          if (clean === 100) el.taskStatusSelect.value = 'done';
+          else if (clean === 0 && el.taskStatusSelect.value === 'done') el.taskStatusSelect.value = 'todo';
+          else if (clean > 0 && clean < 100 && el.taskStatusSelect.value !== 'in_progress') {
+            el.taskStatusSelect.value = 'in_progress';
+          }
+        };
+        el.taskProgressRange.addEventListener('input', () => syncPctInputs(el.taskProgressRange.value));
+        el.taskProgressNumber.addEventListener('input', () => syncPctInputs(el.taskProgressNumber.value));
+
+        el.taskStatusSelect.addEventListener('change', () => {
+          const s = el.taskStatusSelect.value;
+          if (s === 'done') syncPctInputs(100);
+          else if (s === 'todo') syncPctInputs(0);
+          else if (clampPct(el.taskProgressNumber.value) === 0 || clampPct(el.taskProgressNumber.value) === 100) {
+            syncPctInputs(25);
+          }
+        });
+
+        el.taskForm.addEventListener('submit', (ev) => {
+          ev.preventDefault();
+          const title = el.taskTitleInput.value.trim();
+          if (!title) {
+            el.taskFormError.textContent = 'Veuillez saisir un intitulé.';
+            el.taskFormError.hidden = false;
+            el.taskTitleInput.focus();
+            return;
+          }
+          const progress = clampPct(el.taskProgressNumber.value);
+          const payload = {
+            id: editingTaskId || undefined,
+            title,
+            categoryId: el.taskCategorySelect.value,
+            priority: el.taskPrioritySelect.value,
+            status: el.taskStatusSelect.value,
+            progress,
+            ref: el.taskRefInput.value.trim(),
+            notes: el.taskNotesInput.value.trim(),
+          };
+          upsertTaskLocal(payload);
+          el.taskDialog.close('save');
+          showToast(editingTaskId ? 'Tâche mise à jour.' : 'Nouvelle tâche créée.');
+        });
+
+        el.taskFormCancel.addEventListener('click', () => el.taskDialog.close('cancel'));
+        el.taskDialogClose.addEventListener('click', () => el.taskDialog.close('cancel'));
+        el.taskDialog.addEventListener('close', () => {
+          el.taskDialog.returnValue = '';
+          editingTaskId = null;
+        });
+
+        el.categoryForm.addEventListener('submit', (ev) => {
+          ev.preventDefault();
+          const name = el.categoryNameInput.value.trim();
+          if (!name) {
+            el.categoryFormError.textContent = 'Veuillez saisir un nom de catégorie.';
+            el.categoryFormError.hidden = false;
+            el.categoryNameInput.focus();
+            return;
+          }
+          upsertCategoryLocal({
+            id: editingCategoryId || undefined,
+            name,
+            description: el.categoryDescInput.value.trim(),
+          });
+          el.categoryDialog.close('save');
+          showToast(editingCategoryId ? 'Catégorie renommée.' : 'Catégorie créée.');
+        });
+
+        el.categoryFormCancel.addEventListener('click', () => el.categoryDialog.close('cancel'));
+        el.categoryDialogClose.addEventListener('click', () => el.categoryDialog.close('cancel'));
+        el.categoryDialog.addEventListener('close', () => {
+          el.categoryDialog.returnValue = '';
+          editingCategoryId = null;
+        });
+
+        el.confirmDialogClose.addEventListener('click', () => el.confirmDialog.close('cancel'));
+        el.confirmDialog.addEventListener('close', () => {
+          const rv = el.confirmDialog.returnValue;
+          el.confirmDialog.returnValue = '';
+          const cb = confirmHandler;
+          confirmHandler = null;
+          if (rv === 'confirm' && typeof cb === 'function') {
+            cb();
+          }
+        });
+
+        el.serverDialogClose.addEventListener('click', () => el.serverDialog.close('close'));
+        el.serverDialog.addEventListener('close', () => {
+          el.serverDialog.returnValue = '';
+        });
+
+        // Progressive enhancement fallback for closedby="any" on browsers without it
+        if (!('closedBy' in HTMLDialogElement.prototype)) {
+          const isOutside = (e, dialog) => {
+            const r = dialog.getBoundingClientRect();
+            return e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+          };
+          for (const dialog of document.querySelectorAll('dialog[closedby="any"]')) {
+            let pressedOutside = false;
+            dialog.addEventListener('pointerdown', (e) => {
+              pressedOutside = isOutside(e, dialog);
+            });
+            dialog.addEventListener('pointerup', (e) => {
+              if (pressedOutside && isOutside(e, dialog)) dialog.close();
+            });
+          }
+        }
+      }
+
+      function bindGlobalEvents() {
+        el.filterForm.addEventListener('submit', (ev) => ev.preventDefault());
+        el.searchInput.addEventListener('input', renderCategories);
+        el.statusFilter.addEventListener('change', renderCategories);
+        el.priorityFilter.addEventListener('change', renderCategories);
+
+        el.btnNewTask.addEventListener('click', () => openTaskModal(null));
+        el.btnNewCategory.addEventListener('click', () => openCategoryModal(null));
+        el.btnSyncNow.addEventListener('click', () => {
+          void syncWithServer({ manual: true });
+        });
+
+        // Invoker commands + fallback for Expand/Collapse All per accordion guide
+        const runToggleAll = () => {
+          const expand = el.btnToggleAll.getAttribute('aria-expanded') !== 'true';
+          const detailsList = el.categoriesContainer.querySelectorAll(':scope > details.cat-card');
+          const openSet = getOpenCategoriesSet();
+          for (const d of detailsList) {
+            d.open = expand;
+            if (expand) openSet.add(d.dataset.categoryId);
+            else openSet.delete(d.dataset.categoryId);
+          }
+          saveOpenCategoriesSet(openSet);
+          syncExpandAllButton();
+        };
+
+        document.addEventListener(
+          'command',
+          (ev) => {
+            if (ev.command === '--toggle-all') runToggleAll();
+          },
+          { capture: true }
+        );
+
+        if (!Object.hasOwn(HTMLButtonElement.prototype, 'commandForElement')) {
+          el.btnToggleAll.addEventListener('click', runToggleAll);
+          document.querySelectorAll('[command="show-modal"]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const target = document.getElementById(btn.getAttribute('commandfor') || '');
+              if (target && typeof target.showModal === 'function') target.showModal();
+            });
+          });
+        }
+
+        // Persist open/closed state of individual dropdowns + sync Expand All
+        document.addEventListener(
+          'toggle',
+          (ev) => {
+            const target = ev.target;
+            if (!(target instanceof HTMLDetailsElement) || !target.matches('details.cat-card')) return;
+            const filters = getFilters();
+            const hasFilter = Boolean(filters.query || filters.status !== 'all' || filters.priority !== 'all');
+            if (!hasFilter && target.dataset.categoryId) {
+              const openSet = getOpenCategoriesSet();
+              if (target.open) openSet.add(target.dataset.categoryId);
+              else openSet.delete(target.dataset.categoryId);
+              saveOpenCategoriesSet(openSet);
+            }
+            syncExpandAllButton();
+          },
+          { capture: true }
+        );
+
+        // Server dialog controls
+        el.serverUrlInput.value = localStorage.getItem(STORAGE_KEYS.serverUrl) || '';
+        el.btnSaveServerUrl.addEventListener('click', () => {
+          const url = el.serverUrlInput.value.trim().replace(/\/+$/, '');
+          try {
+            if (url) localStorage.setItem(STORAGE_KEYS.serverUrl, url);
+            else localStorage.removeItem(STORAGE_KEYS.serverUrl);
+          } catch {
+            // ignore
+          }
+          void syncWithServer({ manual: true });
+        });
+
+        el.themeSelect.addEventListener('change', () => {
+          applyTheme(el.themeSelect.value);
+        });
+
+        el.btnExportJson.addEventListener('click', () => {
+          const blob = new Blob([JSON.stringify(appState, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `ejlpt-roadmap-${new Date().toISOString().slice(0, 10)}.json`;
+          a.click();
+          URL.revokeObjectURL(url);
+          showToast('Export JSON téléchargé.');
+        });
+
+        el.btnImportJson.addEventListener('click', () => {
+          el.importJsonInput.click();
+        });
+
+        el.importJsonInput.addEventListener('change', async () => {
+          const file = el.importJsonInput.files?.[0];
+          if (!file) return;
+          try {
+            const text = await file.text();
+            const parsed = JSON.parse(text);
+            if (!Array.isArray(parsed.categories) || !Array.isArray(parsed.tasks)) {
+              throw new Error('Format JSON invalide');
+            }
+            appState = parsed;
+            const op = {
+              opId: `op_${Date.now()}`,
+              type: 'replace_all',
+              payload: { categories: parsed.categories, tasks: parsed.tasks },
+              ts: new Date().toISOString(),
+            };
+            await persistMutation(
+              op,
+              () => ({
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ state: appState }),
+              }),
+              { rerenderOnAck: true }
+            );
+            el.serverDialog.close();
+            showToast('Roadmap importée avec succès.');
+          } catch {
+            showToast('Erreur : fichier JSON invalide.');
+          } finally {
+            el.importJsonInput.value = '';
+          }
+        });
+
+        el.btnResetSeed.addEventListener('click', () => {
+          el.serverDialog.close();
+          openConfirmDialog(
+            'Réinitialiser toute la roadmap avec les tâches et pourcentages initiaux du README.md ?',
+            () => {
+              appState = createDefaultState();
+              const op = {
+                opId: `op_${Date.now()}`,
+                type: 'replace_all',
+                payload: { categories: appState.categories, tasks: appState.tasks },
+                ts: new Date().toISOString(),
+              };
+              void persistMutation(op, () => ({
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'reset_seed' }),
+              }));
+              showToast('Roadmap réinitialisée depuis le README.');
+            }
+          );
+        });
+
+        // Reconnect detection when browser comes back online or server boots
+        window.addEventListener('online', () => {
+          void syncWithServer();
+        });
+        setInterval(() => {
+          if (!serverOnline || pendingOps.length > 0) {
+            void syncWithServer();
+          }
+        }, 5000);
+      }
+
+      // Bootstrap
+      const savedTheme = localStorage.getItem(STORAGE_KEYS.theme) || 'system';
+      applyTheme(savedTheme);
+      loadLocalSnapshot();
+      renderAll();
+      bindModalEvents();
+      bindGlobalEvents();
+      void syncWithServer();
+    })();
+  </script>
+</body>
+</html>
