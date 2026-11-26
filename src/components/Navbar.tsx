@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { UserButton, SignInButton, useUser } from '@clerk/nextjs';
@@ -21,6 +21,11 @@ import {
   Library,
   SlidersHorizontal,
   Headphones,
+  Newspaper,
+  MessageCircleQuestion,
+  Compass,
+  ChevronDown,
+  MessageSquareText,
 } from 'lucide-react';
 import { isAdminEmail } from '@/lib/admin';
 import { localDb } from '@/lib/db';
@@ -37,9 +42,28 @@ export default function Navbar() {
   const { adaptiveProfile, cycleAdaptiveProfile } = useVisualSystem();
   const [isOnline, setIsOnline] = useState(true);
   const [unsyncedCount, setUnsyncedCount] = useState(0);
+  const [exploreOpen, setExploreOpen] = useState(false);
+  const exploreRef = useRef<HTMLDivElement | null>(null);
 
   const userEmail = user?.primaryEmailAddress?.emailAddress;
   const isAdmin = isAdminEmail(userEmail);
+
+  useEffect(() => {
+    const handleOutside = (e: MouseEvent) => {
+      if (exploreRef.current && !exploreRef.current.contains(e.target as Node)) {
+        setExploreOpen(false);
+      }
+    };
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setExploreOpen(false);
+    };
+    document.addEventListener('mousedown', handleOutside);
+    window.addEventListener('keydown', handleEsc);
+    return () => {
+      document.removeEventListener('mousedown', handleOutside);
+      window.removeEventListener('keydown', handleEsc);
+    };
+  }, []);
 
   useEffect(() => {
     const syncOnline = () => setIsOnline(navigator.onLine);
@@ -84,20 +108,35 @@ export default function Navbar() {
     };
   }, [isLoaded, isSignedIn]);
 
-  const navLinks = [
+  const primaryLinks = [
     { href: '/', label: 'Examens', icon: GraduationCap },
+    { href: '/lessons', label: 'Leçons', icon: BookOpen },
+    { href: '/practice', label: 'Quiz & SRS', icon: Zap },
     { href: '/kanji', label: 'Kanji', icon: BookOpen },
     { href: '/dictionary', label: 'Dico', icon: Library },
     { href: '/grammar', label: 'Grammaire', icon: Sparkles },
-    { href: '/slang', label: 'Slang', icon: MessageSquare },
-    { href: '/practice', label: 'Quiz & SRS', icon: Zap },
-    { href: '/reader', label: 'Lecteur', icon: BookText },
-    { href: '/immersion', label: 'Immersion', icon: Headphones },
-    { href: '/bookmarks', label: 'Carnet', icon: Bookmark },
-    { href: '/tools', label: 'Outils', icon: PenTool },
-    { href: '/history', label: 'Historique', icon: History },
-    ...(isAdmin ? [{ href: '/admin', label: 'Admin', icon: ShieldCheck, adminOnly: true }] : []),
   ];
+
+  const secondaryLinks = [
+    { href: '/news', label: 'Presse Todai', icon: Newspaper },
+    { href: '/reader', label: 'Lecteur & Vidéo', icon: BookText },
+    { href: '/immersion', label: 'Immersion', icon: Headphones },
+    { href: '/chat', label: 'Tchat Oral IA', icon: MessageSquareText },
+    { href: '/faq', label: 'FAQ Publique', icon: MessageCircleQuestion },
+    { href: '/slang', label: 'Slang & Ono', icon: MessageSquare },
+    { href: '/tools', label: 'Outils (9)', icon: PenTool },
+    { href: '/resources', label: 'Ressources', icon: Compass },
+    { href: '/bookmarks', label: 'Carnet', icon: Bookmark },
+    { href: '/history', label: 'Historique', icon: History },
+  ];
+
+  const allMobileLinks = [
+    ...primaryLinks,
+    ...secondaryLinks,
+    ...(isAdmin ? [{ href: '/admin', label: 'Admin', icon: ShieldCheck }] : []),
+  ];
+
+  const isSecondaryActive = secondaryLinks.some((l) => pathname === l.href);
 
   const getFuriganaModeBadge = () => {
     switch (furiganaMode) {
@@ -126,21 +165,17 @@ export default function Navbar() {
 
       <div className="site-header__inner">
         <Link href="/" className="site-header__brand">
-          <div className="site-header__logo-badge">
-            JLPT
-          </div>
+          <div className="site-header__logo-badge">JLPT</div>
           <div className="site-header__brand-text">
             <div className="site-header__brand-title">
               <span>eJLPT</span>
-              <span className="site-header__brand-tag">
-                日本語
-              </span>
+              <span className="site-header__brand-tag">日本語</span>
             </div>
           </div>
         </Link>
 
         <nav aria-label="Navigation principale" className="site-header__nav">
-          {navLinks.map((link) => {
+          {primaryLinks.map((link) => {
             const Icon = link.icon;
             const isActive = pathname === link.href;
             return (
@@ -149,17 +184,61 @@ export default function Navbar() {
                 href={link.href}
                 className={`site-header__nav-link ${
                   isActive ? 'site-header__nav-link--active' : ''
-                } ${link.adminOnly ? 'site-header__nav-link--admin' : ''}`}
+                }`}
               >
-                <Icon
-                  className={`site-header__nav-icon ${
-                    link.adminOnly ? 'site-header__nav-icon--admin' : ''
-                  }`}
-                />
+                <Icon className="site-header__nav-icon" />
                 <span>{link.label}</span>
               </Link>
             );
           })}
+
+          <div ref={exploreRef} className="site-header__dropdown-wrap">
+            <button
+              type="button"
+              aria-expanded={exploreOpen}
+              onClick={() => setExploreOpen((v) => !v)}
+              className={`site-header__nav-link cursor-pointer ${
+                isSecondaryActive ? 'site-header__nav-link--active' : ''
+              }`}
+            >
+              <span>Explorer</span>
+              <ChevronDown className="w-3.5 h-3.5" />
+            </button>
+
+            {exploreOpen && (
+              <div className="site-header__dropdown-menu" role="menu">
+                {secondaryLinks.map((link) => {
+                  const Icon = link.icon;
+                  const active = pathname === link.href;
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setExploreOpen(false)}
+                      className={`site-header__dropdown-item ${
+                        active ? 'site-header__dropdown-item--active' : ''
+                      }`}
+                    >
+                      <Icon className="w-4 h-4 shrink-0" />
+                      <span>{link.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className={`site-header__nav-link site-header__nav-link--admin ${
+                pathname === '/admin' ? 'site-header__nav-link--active' : ''
+              }`}
+            >
+              <ShieldCheck className="site-header__nav-icon site-header__nav-icon--admin" />
+              <span>Admin</span>
+            </Link>
+          )}
         </nav>
 
         <HeaderSearch />
@@ -224,7 +303,7 @@ export default function Navbar() {
 
       {/* Compact Secondary Nav Bar for tablet/mobile viewports */}
       <nav aria-label="Navigation mobile" className="site-header__mobile-nav">
-        {navLinks.map((link) => {
+        {allMobileLinks.map((link) => {
           const Icon = link.icon;
           const isActive = pathname === link.href;
           return (

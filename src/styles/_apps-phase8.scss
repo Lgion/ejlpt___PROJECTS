@@ -1,0 +1,97 @@
+.site-header {
+  &__dropdown-wrap {
+    @apply relative;
+  }
+
+  &__dropdown-menu {
+    @apply absolute left-0 top-full mt-2 w-56 rounded-2xl border border-slate-700 bg-slate-900/95 backdrop-blur-md p-2 shadow-2xl z-50 grid grid-cols-1 gap-0.5;
+  }
+
+  &__dropdown-item {
+    @apply flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-white transition-colors;
+
+    &--active {
+      @apply bg-indigo-600/30 text-sky-300;
+    }
+  }
+}
+
+.phase8-page {
+  @apply space-y-6;
+}
+
+.phase8-header {
+  @apply rounded-2xl border border-slate-800 bg-slate-900 p-6 flex flex-col lg:flex-row lg:items-end justify-between gap-4 shadow-xl;
+}
+
+.phase8-kicker {
+  @apply inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider mb-1;
+
+  &--sky {
+    @apply text-sky-400;
+  }
+
+  &--indigo {
+    @apply text-indigo-400;
+  }
+
+  &--emerald {
+    @apply text-emerald-400;
+  }
+
+  &--amber {
+    @apply text-amber-400;
+  }
+}
+
+.phase8-title {
+  @apply text-2xl md:text-3xl font-extrabold text-white;
+}
+
+.phase8-subtitle {
+  @apply text-xs text-slate-400 mt-1;
+}
+
+.phase8-card {
+  @apply rounded-2xl border border-slate-800 bg-slate-950 p-5 shadow-lg;
+}
+
+.phase8-pill {
+  @apply inline-block px-2.5 py-0.5 rounded-full bg-indigo-950/80 border border-indigo-700/60 text-[11px] font-bold text-indigo-300;
+
+  &--muted {
+    @apply bg-slate-900 border-slate-700 text-slate-300;
+  }
+}
+
+.phase8-tab {
+  @apply px-3 py-1.5 rounded-xl border border-slate-700 bg-slate-950 text-xs font-bold text-slate-300 hover:border-sky-500 cursor-pointer transition-colors;
+
+  &--active {
+    @apply bg-sky-600 border-sky-500 text-white;
+  }
+}
+
+.phase8-input {
+  @apply rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-100 placeholder:text-slate-500;
+}
+
+.phase8-select {
+  @apply rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-semibold text-slate-100;
+}
+
+.phase8-ai-btn {
+  @apply inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-xs font-bold text-white cursor-pointer transition-colors;
+}
+
+.phase8-outline-btn {
+  @apply inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-700 bg-slate-900 hover:border-sky-500 text-xs font-bold text-slate-200 cursor-pointer transition-colors;
+}
+
+.phase8-icon-btn {
+  @apply inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-900 hover:bg-slate-800 text-xs font-semibold text-slate-200 cursor-pointer;
+}
+
+.phase8-toast {
+  @apply rounded-xl border border-emerald-700 bg-emerald-950/70 p-3 text-xs font-bold text-emerald-200;
+}

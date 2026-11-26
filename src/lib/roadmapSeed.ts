@@ -30,35 +30,35 @@ export interface RoadmapState {
 
 export type RoadmapSyncOp =
   | {
-      opId: string;
-      type: 'upsert_task';
-      payload: Partial<RoadmapTask> & { id: string };
-      ts: string;
-    }
+    opId: string;
+    type: 'upsert_task';
+    payload: Partial<RoadmapTask> & { id: string };
+    ts: string;
+  }
   | {
-      opId: string;
-      type: 'delete_task';
-      payload: { id: string };
-      ts: string;
-    }
+    opId: string;
+    type: 'delete_task';
+    payload: { id: string };
+    ts: string;
+  }
   | {
-      opId: string;
-      type: 'upsert_category';
-      payload: Partial<RoadmapCategory> & { id: string };
-      ts: string;
-    }
+    opId: string;
+    type: 'upsert_category';
+    payload: Partial<RoadmapCategory> & { id: string };
+    ts: string;
+  }
   | {
-      opId: string;
-      type: 'delete_category';
-      payload: { id: string };
-      ts: string;
-    }
+    opId: string;
+    type: 'delete_category';
+    payload: { id: string };
+    ts: string;
+  }
   | {
-      opId: string;
-      type: 'replace_all';
-      payload: { categories: RoadmapCategory[]; tasks: RoadmapTask[] };
-      ts: string;
-    };
+    opId: string;
+    type: 'replace_all';
+    payload: { categories: RoadmapCategory[]; tasks: RoadmapTask[] };
+    ts: string;
+  };
 
 const SEED_TS = '2026-11-26T08:30:00.000Z';
 
@@ -533,10 +533,10 @@ export function createDefaultRoadmapState(): RoadmapState {
       't-ja-sensei-modules',
       'cat-apps-community',
       'JA Sensei : modules structurés « Leçons » et « Lecture »',
-      20,
+      100,
       'medium',
       'L179',
-      'Volet Lecture partiellement présent (/reader + Dokkai), module Leçons progressives manquant.'
+      'Curriculum /lessons (10 modules N5–N1 avec suivi d’avancement, 【接続】, vocabulaire audio, dialogues, textes reliés à /reader et quiz de contrôle).'
     ),
     seedTask(
       't-yomikata-z',
@@ -551,37 +551,37 @@ export function createDefaultRoadmapState(): RoadmapState {
       't-todai-daily-news',
       'cat-apps-community',
       'Todai Japan : 1 nouvel article de presse / jour / niveau JLPT (RSS + adaptation IA)',
-      0,
+      100,
       'medium',
       'L181',
-      'Spec validée : flux RSS réels (NHK / NHK Easy) classés JLPT + adaptation quotidienne Gemini cachée en MongoDB.'
+      'Presse hybride /news : flux RSS NHK réels + adaptation quotidienne IA (/api/news/daily & cron /api/cron/daily-news dans vercel.json) cachée par date UTC et niveau N5–N1.'
     ),
     seedTask(
       't-ai-oral-chat-discussion',
       'cat-apps-community',
       'Tchat oral IA borné par JLPT + générateur de sujets de discussion',
-      0,
+      100,
       'low',
       'L34, L43',
-      'Tchat IA uniquement (volet natif abandonné) : session bornée par JLPT/thème + Web Speech / Gemini audio + générateur de sujets.'
+      'Tchat IA /chat (/api/chat/session) strictement borné par niveau JLPT et thème, avec générateur de sujets/champs lexicaux, audio TTS et saisie vocale Web Speech / Gemini.'
     ),
     seedTask(
       't-faq-stackoverflow-ai',
       'cat-apps-community',
       'FAQ publique AI-enhanced à la StackOverflow par catégories et niveaux',
-      0,
+      100,
       'low',
       'L17',
-      'Spec validée : 100 % publique, anti-doublons IA, anonyme pour questions/commentaires (modération auto), compte Clerk pour votes, modération admin.'
+      'FAQ 100 % publique /faq (/api/faq, /api/faq/[id]) : anti-doublons IA, réponses Gemini instantanées, questions/commentaires anonymes modérés, votes Clerk et modération admin.'
     ),
     seedTask(
       't-resources-learning-order',
       'cat-apps-community',
       'Page ressources vulgarisée (Ezoe, Genki, PDF, YouTube) & ordre kata→hira→clé→part→kanji',
-      5,
+      100,
       'low',
       'L9, L29, L183–L187',
-      'Pas de page dédiée ni crédits/liens runtime vers edict_database, kanjium, japanese-toolkit ou kanjiapi.dev.'
+      'Page /resources dédiée : ordre exact en 5 étapes (Katakana→Hiragana→Clés→Particules→Kanjis), méthodes vulgarisées, médiathèque externe et crédits runtime (edict_database, japanese-toolkit, kanjium, kanjiapi.dev).'
     ),
   ];
 
