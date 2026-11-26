@@ -20,6 +20,7 @@ import {
   BookText,
   Library,
   SlidersHorizontal,
+  Headphones,
 } from 'lucide-react';
 import { isAdminEmail } from '@/lib/admin';
 import { localDb } from '@/lib/db';
@@ -91,6 +92,7 @@ export default function Navbar() {
     { href: '/slang', label: 'Slang', icon: MessageSquare },
     { href: '/practice', label: 'Quiz & SRS', icon: Zap },
     { href: '/reader', label: 'Lecteur', icon: BookText },
+    { href: '/immersion', label: 'Immersion', icon: Headphones },
     { href: '/bookmarks', label: 'Carnet', icon: Bookmark },
     { href: '/tools', label: 'Outils', icon: PenTool },
     { href: '/history', label: 'Historique', icon: History },

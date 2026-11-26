@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { type TextAnalysisResult } from '@/lib/textAnalyzer';
 import { getLevelPillClass } from '@/components/reader/ReaderPassagePanel';
-import { Bookmark } from 'lucide-react';
+import { Bookmark, Download } from 'lucide-react';
 
 interface ScriptExtractedListsProps {
   analysis: TextAnalysisResult;
@@ -29,10 +29,39 @@ export function ScriptExtractedLists({
     { id: 'grammar', label: `Grammaire (${analysis.grammarHits.length})` },
   ] as const;
 
+  const handleExportCsv = () => {
+    const rows = [
+      ['Type', 'Terme', 'Lecture', 'JLPT', 'Sens'],
+      ...analysis.vocabList.map((v) => ['Vocab', v.word, v.reading, v.jlpt, v.meaning]),
+      ...analysis.kanjiList.map((k) => ['Kanji', k.kanji, k.reading, k.jlpt, k.meaning]),
+      ...analysis.grammarHits.map((g) => ['Grammaire', g.term, g.reading, g.jlpt_level, g.meaning]),
+    ];
+    const csv = rows
+      .map((r) => r.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+    const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'ejlpt_script2list.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <section className="reader-lists">
       <div className="reader-lists__head">
-        <h2 className="reader-lists__title">Listes extraites (Script 2 List)</h2>
+        <div className="flex flex-wrap items-center gap-3">
+          <h2 className="reader-lists__title">Listes extraites (Script 2 List)</h2>
+          <button
+            type="button"
+            onClick={handleExportCsv}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-950 hover:bg-slate-800 px-2.5 py-1 text-xs font-bold text-sky-300 cursor-pointer"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>Export CSV</span>
+          </button>
+        </div>
         <div className="reader-lists__tabs">
           {tabs.map((t) => (
             <button

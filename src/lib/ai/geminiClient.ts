@@ -379,3 +379,41 @@ export async function transcribeJapaneseAudio(
     }
   );
 }
+
+export async function extractJapaneseTextFromPdf(
+  input: { base64Pdf: string },
+  options: GeminiCallOptions = {}
+): Promise<GeminiResult<string>> {
+  const cleanPdf = input.base64Pdf.trim();
+  if (!cleanPdf) {
+    return {
+      ok: false,
+      usedFallback: false,
+      retriesCount: 0,
+      events: [{ phase: 'failed', attempt: 0, messageFr: 'Fichier PDF vide.' }],
+      userError: 'Aucun document PDF valide détecté.',
+    };
+  }
+
+  return callGeminiWithParts(
+    [
+      {
+        text: [
+          'Extrais fidèlement tout le texte japonais contenu dans ce document PDF.',
+          'Conserve les sauts de ligne naturels et retourne uniquement le texte extrait, sans commentaire ni balisage markdown.',
+        ].join(' '),
+      },
+      {
+        inlineData: {
+          mimeType: 'application/pdf',
+          data: cleanPdf,
+        },
+      },
+    ],
+    {
+      ...options,
+      temperature: options.temperature ?? 0.1,
+      maxOutputTokens: options.maxOutputTokens ?? 2048,
+    }
+  );
+}

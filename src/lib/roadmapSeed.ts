@@ -421,55 +421,55 @@ export function createDefaultRoadmapState(): RoadmapState {
       't-script-2-list-core',
       'cat-reader-immersion',
       'Lecteur Script 2 List : extraction vocabulaire/kanji/grammaire + stats JLPT',
-      60,
+      100,
       'high',
       'L25, L70, L95',
-      'Analyse temps réel sur /reader avec niveau cible, taux de lisibilité et listes extractibles vers /bookmarks.'
+      'Analyse temps réel sur /reader avec niveau cible, taux de lisibilité, coloration 4 canaux, export CSV et listes extractibles vers /bookmarks.'
     ),
     seedTask(
       't-manga-pdf-quiz-reader',
       'cat-reader-immersion',
       'Bibliothèque scripts manga/animés + import PDF + extraction par prompt + quiz généré',
-      20,
+      100,
       'high',
       'L25, L70',
-      'Seulement 3 scripts exemple en dur (N5/N3/N2). Zéro import PDF, zéro catalogue manga, zéro prompt IA ou quiz depuis le texte.'
+      '8 scripts libres/originaux N5–N1 (OPEN_SCRIPTS_LIBRARY), import .PDF (.txt/.srt/.vtt via /api/reader/parse-pdf), extraction par prompt (/api/reader/extract) et quiz généré instantanément (ReaderGeneratedQuizPanel).'
     ),
     seedTask(
       't-video-interactive-subs',
       'cat-reader-immersion',
       'Lecteur vidéo avec sous-titres interactifs (local MP4/WebM + YouTube + .srt/.vtt)',
-      0,
+      100,
       'medium',
       'L28',
-      'Double mode validé (fichier local sans upload + YouTube IFrame API synchronisés avec .srt/.vtt cliquable). Non démarré.'
+      'InteractiveVideoPlayer (/reader?tab=video) : mode local MP4/WebM sans upload + YouTube IFrame API synchronisés avec .srt/.vtt cliquables, pause/carnet/SRS au clic.'
     ),
     seedTask(
       't-memorize-texts-proverbs',
       'cat-reader-immersion',
       'Phrases par cœur JLPT, petits textes/histoires/chansons & proverbes',
-      10,
+      100,
       'low',
       'L36, L41, L55, L60',
-      'Exemples statiques dans grammar_unified.json et 3 passages dans /reader ; zéro proverbe, chanson ou mode par cœur.'
+      'Hub /immersion (MemorizeAndProverbsTab) : 15 phrases clés N5–N1 avec mode par cœur & SRS, 4 contes/chansons/fables analysables dans /reader, et quiz proverbes FR→JA sur 34 entrées.'
     ),
     seedTask(
       't-ja-defs-press-keyboard',
       'cat-reader-immersion',
       'Lire définitions JA monolingues, presse & tutoriels clavier JA (Linux/Win/iOS)',
-      15,
+      100,
       'low',
       'L39–L40',
-      'Courts textes avec définitions au clic couverts sur /reader ; définitions japonaises, presse et guides clavier absents.'
+      'Hub /immersion (MonolingualPressKeyboardTab) : textes courts et articles de presse (見出し + 5W1H) avec définitions 国語辞典 en japonais, plus guides IME complets Linux/Windows/iOS et bac à sable.'
     ),
     seedTask(
       't-image-vocab-gairaigo',
       'cat-reader-immersion',
       'Vocabulaire par image/scénario & programme oral gairaigo débutants',
-      0,
+      100,
       'low',
       'L21, L58',
-      'Non démarré.'
+      'Hub /immersion (ImageScenariosGairaigoTab) : 3 scénarios narratifs illustrés par sprites WebP + mini-quiz SRS et parcours oral Gairaigo débutants (14 cartes Katakana + Web Speech / Gemini audio).'
     ),
 
     // Cat 6 — Outils Pédagogiques, Filtres & Stats
